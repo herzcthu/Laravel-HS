@@ -149,6 +149,11 @@ return [
          */
         'Cartalyst\Sentinel\Laravel\SentinelServiceProvider',
 
+        /*
+        *https://github.com/kristijanhusak/laravel-form-builder
+        */
+        'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
+
     ],
 
     /*
@@ -200,6 +205,8 @@ return [
         'Activation' => 'Cartalyst\Sentinel\Laravel\Facades\Activation',
         'Reminder'   => 'Cartalyst\Sentinel\Laravel\Facades\Reminder',
         'Sentinel'   => 'Cartalyst\Sentinel\Laravel\Facades\Sentinel',
+
+        'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder',
 
 
     ],
