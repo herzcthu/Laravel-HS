@@ -7,5 +7,9 @@
 /tests
 /storage
 /bootstrap
+<<<<<<< HEAD
 composer.lock
 
+=======
+composer.lock
+>>>>>>> c9d8eb1910c2795ad28feefb22cf595bba6100f6
