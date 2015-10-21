@@ -1,0 +1,121 @@
+@extends ('backend.layouts.master')
+
+@section ('title', 'Participant Management | Edit Participant')
+
+@section ('before-styles-end')
+    {!! HTML::style('css/plugin/jquery.onoff.css') !!}
+@stop
+
+@section('page-header')
+    <h1>
+        Participant Management
+        <small>Edit Participant</small>
+    </h1>
+@endsection
+
+@section ('breadcrumbs')
+    <li><a href="{!!route('backend.dashboard')!!}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+    <li>{!! link_to_route('admin.participants.index', 'Participant Management') !!}</li>
+    <li class="active">{!! link_to_route('admin.participants.edit', "Edit ".$participant->name, $participant->id) !!}</li>
+@stop
+
+@section('content')
+    @include('backend.participant.includes.partials.header-buttons')
+
+    {!! Form::model($participant, ['route' => ['admin.participants.update', $participant->id], 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'PATCH']) !!}
+
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Profile Image</label>
+            <div class="col-lg-10 form-inline">
+                
+                {!! Form::hidden('avatar',null, ['class' => 'form-control', 'id' => 'avatar_url']) !!}
+                <!-- compose message btn -->
+                <a class="btn img-thumbnail" data-toggle="modal" data-target="#compose-modal">
+                <img id="avatar" class="img-responsive profile-avatar" width="100" height="100" src="{!! (!empty($participant->avatar)? $participant->avatar: asset('img/backend/participant2-160x160.png')) !!}">
+                Select/Upload</a>
+            </div>
+        </div><!--form control-->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Name</label>
+            <div class="col-lg-10">
+                {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'First Name']) !!}
+            </div>
+        </div><!--form control-->
+
+        <div class="form-group">
+            <label class="col-lg-2 control-label">NRC ID</label>
+            <div class="col-lg-10">
+                {!! Form::text('nrc_id', null, ['class' => 'form-control', 'placeholder' => '5/SaKaNa(N)010203']) !!}
+            </div>
+        </div><!--form control-->
+        
+        <div class="form-group">
+            <label class="col-lg-2 control-label">E-mail</label>
+            <div class="col-lg-10">
+                {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'E-mail Address']) !!}
+            </div>
+        </div><!--form control-->
+
+        @if (count($roles) > 0)
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Role</label>
+            <div class="col-lg-10">
+                <select name="role" class="form-control" id="prole">
+                    @foreach($roles as $role)
+                        @if($participant->role->name === $role->name)
+                        <option value="{{ $role->id }}" data-role="{{ $role->level }}" selected="1">{{ $role->name }} ({!! ucfirst($role->level) !!})</option>
+                        @else
+                            <option value="{{ $role->id }}" data-role="{{ $role->level }}">{{ $role->name }} ({!! ucfirst($role->level) !!}) </option>
+                        @endif    
+                    @endforeach
+                </select>
+                
+            </div>
+        </div><!--form control-->
+        @endif
+        
+        @if ($p_location)
+        <div class="form-group">
+            <label class="col-lg-2 control-label">{!! ucfirst($participant->role->level) !!}</label>
+            <div class="col-lg-10">
+                @if($participant->role->level== 'village')
+                    {!! Form::select("locations[$participant->role->level]",$locations->getVillagesScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
+                @elseif($participant->role->level=='village_tract')
+                    {!! Form::select("locations[$participant->role->level]",$locations->getVTracksScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
+                @elseif($participant->role->level=='township')
+                    {!! Form::select("locations[$participant->role->level]",$locations->getTownshipsScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
+                @elseif($participant->role->level=='district')
+                    {!! Form::select("locations[$participant->role->level]",$locations->getDistrictsScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
+                @elseif($participant->role->level=='state')
+                    {!! Form::select("locations[$participant->role->level]",$locations->getStatesScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
+                @else
+                    {!! Form::select("locations[$participant->role->level]",$locations->getCountryScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
+                @endif
+             
+                
+            </div>
+        </div><!--form control-->
+        @endif
+        
+        <div class="form-group" id="ajax_insert">
+            
+        </div><!--form control-->        
+
+        <div class="pull-left">
+            <a href="{{route('admin.participants.index')}}" class="btn btn-danger">Cancel</a>
+        </div>
+
+        <div class="pull-right">
+            <input type="submit" class="btn btn-success" value="Save" />
+        </div>
+        <div class="clearfix"></div>
+
+    {!! Form::close() !!}
+     
+
+@include('includes.partials.medialist_grid') 
+@include('includes.partials.mediaUploadModel') 
+
+@yield('model')
+@endsection
+@include('backend.participant.includes.partials.footer-script')
