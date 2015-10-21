@@ -267,7 +267,7 @@ class EloquentProjectRepository implements ProjectContract {
 
             });
             $store =  $file->store('xls', false, true);// dd($store);
-            $media = new Media;
+            $media = Media::firstOrNew(['filename' => $store['title'], 'filedir' => $store['full']]);
             $media->filename = $store['title'];
             $media->filedir = $store['full'];
             $media->file = json_encode($store);
