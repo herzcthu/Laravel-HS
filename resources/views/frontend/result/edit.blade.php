@@ -103,7 +103,8 @@
                                     <label class="col-xs-1 control-label">&nbsp;</label>
                                     <div class="col-xs-11">
                                         @if($question->qanswers->count() > 0 )
-                                            @foreach($question->qanswers as $key => $answer)
+                                            <?php $key = 0 ?>
+                                            @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6">
@@ -152,6 +153,7 @@
                                                 @else
                                                 {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => $section_key, 'project' => $project->id,  'validator' => $validated['validator_key']],['class' => "form-control"]) !!} 
                                                 @endif
+                                                <?php $key++ ?>
                                             @endforeach                        
                                         @endif
                                     </div>
@@ -195,7 +197,7 @@
                             <div class="col-xs-11">
                                 <div class="form-control-static">
                                 @if($question->qanswers->count() > 0 )
-                                    @foreach($question->answers as $key => $answer)
+                                    @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
                                         <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
                                         {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 

@@ -59,7 +59,7 @@ class ProjectController extends Controller
 		]);
         return view('backend.project.create')
         ->withProjects($this->projects->getAllProjects('name','asc',true))
-        ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', true));
+        ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', ['projects']));
     }
 
     /**

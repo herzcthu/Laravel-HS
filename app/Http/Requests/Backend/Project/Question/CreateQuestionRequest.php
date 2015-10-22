@@ -21,8 +21,9 @@ class CreateQuestionRequest extends Request {
 	 */
 	public function rules()
 	{
-		return [
-			'qnum' => 'required|unique_with:questions, project_id',
+		$project = $this->route('project');
+                return [
+			'qnum' => ['required','unique:questions,qnum,NULL,id,project_id,'.$project->id],
                         'question' => 'required',
                         'project_id' => 'required',
                         'answers' => 'required',
@@ -33,7 +34,7 @@ class CreateQuestionRequest extends Request {
             
             return [
               'qnum.required' => 'Question Number field is required.',
-              'qnum.unique_with' => 'Question Number already exists in this project'  
+              'qnum.unique' => 'Question Number already exists in this project'  
             ];            
         }
         

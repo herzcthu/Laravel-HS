@@ -39,7 +39,7 @@
                 <label class="control-label">{{ $project->organization->name }} </label>
             </div>
         </div>
-        @if(is_array($project->sections))
+        @if($project->sections)
         <div class="form-group">
             <label class="col-lg-2 control-label">Section</label>
             <div class="col-lg-10">
@@ -162,8 +162,8 @@
                 <div class="row">
                     <div class="col-xs-1"><label class="control-label">ID</label></div>
                     <div class="col-xs-2"><label class="control-label">Answer</label></div>
-                    <div class="col-xs-1"><label class="control-label">Input Type</label></div>
-                    <div class="col-xs-2"><label class="control-label">Value</label></div>
+                    <div class="col-xs-2"><label class="control-label">Input Type</label></div>
+                    <div class="col-xs-1"><label class="control-label">Value</label></div>
                     <div class="col-xs-2"><label class="control-label">CSS Class</label></div>
                     <div class="col-xs-2"><label class="control-label">Required Answer</label></div>
                     <div class="col-xs-2"></div>
@@ -176,11 +176,12 @@
                     <div class="col-xs-2">
                         {!! Form::text('answers[_QN_a0][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                     </div>
-                    <div class="col-xs-1">
+                    <div class="col-xs-2">
                         {!! Form::select('answers[_QN_a0][type]',['text' => 'Text', 
                                                             'radio' => 'Radio', 
                                                             'checkbox' => 'Checkbox',
                                                             'select' => 'Select',
+                                                            'textarea' => 'Textarea',
                                                             'question' => 'Question',
                                                             'number' => 'Number', 
                                                             'datetime' => 'Datetime', 
@@ -189,14 +190,14 @@
                                                             'week' => 'Week', 
                                                             'month' => 'Month'], null, ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-1">
                         {!! Form::text('answers[_QN_a0][value]', null, ['class' => 'form-control', 'placeholder' => 'Value']) !!}
                     </div>
                     <div class="col-xs-2">
                         {!! Form::text('answers[_QN_a0][css]', null, ['class' => 'form-control', 'placeholder' => 'validate']) !!}
                     </div>    
                     <div class="col-xs-2">
-                        {!! Form::text('answers[_QN_a0][remark]', null, ['class' => 'form-control', 'placeholder' => 'Remark']) !!}
+                        {!! Form::text('answers[_QN_a0][require]', null, ['class' => 'form-control', 'placeholder' => 'Required Answer']) !!}
                     </div>
                     <div class="col-xs-2">
                         <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>                    

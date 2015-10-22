@@ -17,12 +17,15 @@ class EloquentUserRepository implements UserContract {
 	 * @var RoleRepositoryContract
 	 */
 	protected $role;
+        
+        protected $organization;
 
-	/**
+        /**
 	 * @param RoleRepositoryContract $role
 	 */
-	public function __construct(RoleRepositoryContract $role) {
+	public function __construct(RoleRepositoryContract $role, \App\Repositories\Frontend\Organization\OrganizationContract $organization) {
 		$this->role = $role;
+                $this->organization = $organization;
 	}
 
 	/**
@@ -42,6 +45,10 @@ class EloquentUserRepository implements UserContract {
 	 * @return static
 	 */
 	public function create($data, $provider = false) {
+                if(empty($data['organization'])){
+                    throw new GeneralException('You need to select one organization.');
+                }
+                $org = $this->organization->findOrThrowException($data['organization']);
 		$user = User::create([
 			'name' => $data['name'],
 			'email' => $data['email'],
@@ -49,8 +56,11 @@ class EloquentUserRepository implements UserContract {
 			'confirmation_code' => md5(uniqid(mt_rand(), true)),
 			'confirmed' => config('access.users.confirm_email') ? 0 : 1,
 		]);
-		$user->attachRole($this->role->getDefaultUserRole());
-
+                
+                $user->organization()->associate($org);
+                
+                $user->role()->associate($this->role->getDefaultUserRole());
+                $user->save();
 		if (config('access.users.confirm_email'))
 			$this->sendConfirmationEmail($user);
 

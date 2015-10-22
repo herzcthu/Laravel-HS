@@ -32,7 +32,7 @@
                     <select id="region" name="region" class="dropdown" style="width:35px;">
                         <option value="">-</option>
                         @foreach(array_unique($all_loc->lists('state')->toArray()) as $region)
-                        <option value="{{ $region }}">{!! ucfirst($region) !!}</option>
+                        <option value="{{ $region }}">{!! _t(ucfirst($region)) !!}</option>
                         @endforeach
                     </select>
                 </th>
@@ -41,7 +41,7 @@
                     <select id="district" name="district" class="dropdown" style="width:35px;">
                         <option value="">-</option>
                         @foreach(array_unique($all_loc->lists('district')->toArray()) as $district)
-                        <option value="{{ $district }}">{!! ucfirst($district) !!}</option>
+                        <option value="{{ $district }}">{!! _t(ucfirst($district)) !!}</option>
                         @endforeach
                     </select>
                 </th>
@@ -50,13 +50,13 @@
                     <select id="station" name="station" class="dropdown" style="width:35px;">
                         <option value="">-</option>
                         @foreach(array_unique($all_loc->lists('village')->toArray()) as $village)
-                        <option value="{{ $village }}">{!! ucfirst($village) !!}</option>
+                        <option value="{{ $village }}">{!! _t(ucfirst($village)) !!}</option>
                         @endforeach
                     </select>
                 </th>
                 <th class="observers">{!! _t('Observers') !!}</th>
                 @foreach($sections as $k => $section)
-                <th class="section{{ $k }}" title="{{ $section->text }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
+                <th class="section{{ $k }}" title="{{ _t($section->text) }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
                     <i>{{ $k + 1}}</i>
                     <br />
                     <select id="section{{ $k }}" name="status" class="dropdown" style="width:35px;">

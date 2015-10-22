@@ -50,7 +50,7 @@
                 </div>
                 <div id="sectForm">
                     
-                    @if(is_array($project->sections))
+                    @if($project->sections)
                         @foreach($project->sections as $key => $section)
                         <div class="form-group">
                         <div class="col-xs-2">
@@ -92,7 +92,7 @@
                     <div class="col-xs-2">
                         {!! Form::text('sections[0][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-1">
                         {!! Form::select('sections[0][column]',[   '1' => '1',
                                                                 '2' => '2',
                                                                 '3' => '3',

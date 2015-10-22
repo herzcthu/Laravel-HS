@@ -161,9 +161,9 @@ class EloquentQuestionRepository implements QuestionContract {
                 //$question->related_data = $input['related_data'];
                 //$question->answer_view = $input['answer_view'];
                 $question->sameanswer = isset($input['sameanswer']) ? 1 : 0;
-                $display['qnum'] = isset($input['display']['qnum'])? 1 : 0;
-                $display['question'] = isset($input['display']['question'])? 1 : 0;
-                $question->display = $display;
+                $input['display']['qnum'] = isset($input['display']['qnum'])? 1 : 0;
+                $input['display']['question'] = isset($input['display']['question'])? 1 : 0;
+                $question->display = $input['display'];
                 
 		if ($question->whereQnum($question->qnum)->whereProjectId($project['project_id'])->first()->update($input)) { 
                     \App\QAnswers::where('qid', $question->id)->delete();

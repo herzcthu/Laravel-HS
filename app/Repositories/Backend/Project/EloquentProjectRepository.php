@@ -127,7 +127,7 @@ class EloquentProjectRepository implements ProjectContract {
 	 * @throws ProjectNeedsOrganizationsException
 	 */
 	public function create($input, $org_id) {
-                $project = $this->createProjectStub($input);
+                $project = $this->createProjectStub($input, $org_id['organization']);
                 if(array_key_exists('project', $input)){
                 $parent_project = $input['project'];
                 
@@ -161,7 +161,9 @@ class EloquentProjectRepository implements ProjectContract {
 	 */
 	public function update($project, $input, $parent_project, $organization) {
 		//$project = $this->findOrThrowException($id);
-		if($parent_project['project'] != 'none'){                    
+            //dd($organization);
+                $project = $this->createProjectStub($input, $organization['organization']);
+		if(!empty($parent_project) && $parent_project['project'] != 'none'){                    
                            $parent = $this->findOrThrowException($parent_project['project']);
                            
                            $project->parent()->associate($parent);
@@ -169,10 +171,10 @@ class EloquentProjectRepository implements ProjectContract {
                     }else{
                         $org_id = $organization['organization'];
                     }
-                    
-		if ($project->update($input)) {  
                     $this->flushOrganization($org_id, $project);
-                    $project->save();
+		if ($project->update()) {  
+                    
+//                    /$project->save();
                     return true;
 		}
 
@@ -378,9 +380,9 @@ class EloquentProjectRepository implements ProjectContract {
 	 * @param $input
 	 * @return mixed
 	 */
-	private function createProjectStub($input)
+	private function createProjectStub($input, $org_id)
 	{
-		$project = new Project;
+		$project = Project::firstOrNew(['name' => $input['name'], 'org_id' => $org_id]);
 		$project->name = $input['name'];
                 $project->validate = $input['validate'];
                 $project->sections = $input['sections'];

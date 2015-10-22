@@ -85,7 +85,7 @@ class QuestionController extends Controller
 			$request->all(),
 			$project
 		);
-        return redirect()->route('admin.project.questions.editall', $project_id)->withFlashSuccess('The question was successfully created.');
+        return redirect()->route('admin.project.questions.editall', $project->id)->withFlashSuccess('The question was successfully created.');
         }
 
     /**

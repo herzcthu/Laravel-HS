@@ -162,8 +162,8 @@
                 <div class="row">
                     <div class="col-xs-1"><label class="control-label">ID</label></div>
                     <div class="col-xs-2"><label class="control-label">Answer</label></div>
-                    <div class="col-xs-1"><label class="control-label">Input Type</label></div>
-                    <div class="col-xs-2"><label class="control-label">Value</label></div>
+                    <div class="col-xs-2"><label class="control-label">Input Type</label></div>
+                    <div class="col-xs-1"><label class="control-label">Value</label></div>
                     <div class="col-xs-2"><label class="control-label">CSS Class</label></div>
                     <div class="col-xs-2"><label class="control-label">Require</label></div>
                     <div class="col-xs-2"></div>
@@ -178,11 +178,12 @@
                         <div class="col-xs-2">
                             {!! Form::text("answers[$key][text]", (isset($answer->text)? $answer->text:null), ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                         </div>
-                        <div class="col-xs-1">
+                        <div class="col-xs-2">
                             {!! Form::select("answers[$key][type]",['text' => 'Text', 
                                                                 'radio' => 'Radio', 
                                                                 'checkbox' => 'Checkbox',
                                                                 'select' => 'Select',
+                                                                'textarea' => 'Textarea',
                                                                 'question' => 'Question',
                                                                 'number' => 'Number', 
                                                                 'datetime' => 'Datetime', 
@@ -191,7 +192,7 @@
                                                                 'week' => 'Week', 
                                                                 'month' => 'Month'], (isset($answer->type)? $answer->type:null), ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                         </div>
-                        <div class="col-xs-2">
+                        <div class="col-xs-1">
                             {!! Form::text("answers[$key][value]", (isset($answer->value)? $answer->value:null), ['class' => 'form-control', 'placeholder' => 'Value']) !!}
                         </div>
                         <div class="col-xs-2">
@@ -200,7 +201,8 @@
                         <div class="col-xs-2">
                             {!! Form::text("answers[$key][require]", (isset($answer->require)? $answer->require:null), ['class' => 'form-control', 'placeholder' => 'Require']) !!}
                         </div>
-                            @if(preg_replace('/(.*)([0-9]+)$/','$2',$key) > 0 )
+                            
+                            @if(preg_replace('/(.*)a([0-9]{1,})$/','$2',$key) > 0 )
                             <div class="col-xs-2">
                                 <button type="button" class="btn btn-warning removeButton"><i class="fa fa-minus"></i></button>                    
                             </div>
@@ -219,11 +221,12 @@
                     <div class="col-xs-2">
                         {!! Form::text('answers[_QN_a0][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                     </div>
-                    <div class="col-xs-1">
+                    <div class="col-xs-2">
                         {!! Form::select('answers[_QN_a0][type]',['text' => 'Text', 
                                                             'radio' => 'Radio', 
                                                             'checkbox' => 'Checkbox',
                                                             'select' => 'Select',
+                                                            'textarea' => 'Textarea',
                                                             'question' => 'Question',
                                                             'number' => 'Number', 
                                                             'datetime' => 'Datetime', 
@@ -232,7 +235,7 @@
                                                             'week' => 'Week', 
                                                             'month' => 'Month'], null, ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-1">
                         {!! Form::text('answers[_QN_a0][value]', null, ['class' => 'form-control', 'placeholder' => 'Value']) !!}
                     </div>
                     <div class="col-xs-2">

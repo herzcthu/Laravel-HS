@@ -72,7 +72,7 @@
                                     <label class="col-lg-1 control-label">&nbsp;</label>
                                     <div class="col-lg-11">
                                         @if($question->qanswers->count() > 0 )
-                                            @foreach($question->qanswers as $key => $answer)
+                                            @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                                 
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
@@ -151,7 +151,7 @@
                             <div class="col-lg-11">
                                 <div class="form-control-static">
                                 @if($question->qanswers->count() > 0 )
-                                    @foreach($question->answers as $key => $answer)
+                                    @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
                                         <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
                                         {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 

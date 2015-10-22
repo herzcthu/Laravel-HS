@@ -28,11 +28,12 @@
                     <div class="col-xs-2">
                         {!! Form::text('answers[_QN_aINDEX][text]', null, ['id' => 'ans_text_INDEX', 'class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                     </div>
-                    <div class="col-xs-1">
+                    <div class="col-xs-2">
                         {!! Form::select('answers[_QN_aINDEX][type]',[   'text' => 'Text', 
                                                                     'radio' => 'Radio', 
                                                                     'checkbox' => 'Checkbox',
                                                                     'select' => 'Select',
+                                                                    'textarea' => 'Textarea',
                                                                     'question' => 'Question',
                                                                     'number' => 'Number', 
                                                                     'datetime' => 'Datetime', 
@@ -41,14 +42,14 @@
                                                                     'week' => 'Week', 
                                                                     'month' => 'Month'], null, ['id' => 'input_type_INDEX', 'class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-1">
                         {!! Form::text('answers[_QN_aINDEX][value]', null, ['id' => 'ans_value_INDEX', 'class' => 'form-control', 'placeholder' => 'Value']) !!}
                     </div>
                     <div class="col-xs-2">
                         {!! Form::text('answers[_QN_aINDEX][css]', null, ['id' => 'ans_value_INDEX', 'class' => 'form-control', 'placeholder' => 'validate']) !!}
                     </div>
                     <div class="col-xs-2">
-                        {!! Form::text('answers[_QN_aINDEX][remark]', null, ['id' => 'remark_INDEX', 'class' => 'form-control', 'placeholder' => 'Remark']) !!}
+                        {!! Form::text('answers[_QN_aINDEX][require]', null, ['id' => 'require_INDEX', 'class' => 'form-control', 'placeholder' => 'Require']) !!}
                     </div>
                     <div class="col-xs-2">
                         <button type="button" class="btn btn-warning removeButton"><i class="fa fa-minus"></i></button>                    

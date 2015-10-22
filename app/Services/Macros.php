@@ -53,10 +53,10 @@ class Macros extends FormBuilder {
             $name = $answer->text;
             $display_value = $answer->value;
             $type = $answer->type;
-            $akey = $answer->akey; 
+            $akey = isset($answer->akey) ? $answer->akey:''; 
             $qnum = $question->qnum;
             if(in_array($type, ['radio'])){
-                $default = $answer->akey;
+                $default = isset($answer->akey) ? $answer->akey:null;
             }else{
                 $default = $answer->value;
             }
@@ -178,7 +178,7 @@ class Macros extends FormBuilder {
                 $selecthtml .= "</div>";
                 return $selecthtml;
             }
-            if($type == 'text'){
+            if(in_array($type,['text','textarea'])){
                 
                 $texthtml = "<div class='form-group'>";
                 if($wrap){

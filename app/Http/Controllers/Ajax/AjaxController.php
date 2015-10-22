@@ -60,7 +60,8 @@ class AjaxController extends Controller
     }
     
     public function timeGraph($project, Request $request){
-        $last = Result::where('project_id', $project->id)->orderBy('created_at', 'desc')->first();;
+        $last = Result::where('project_id', $project->id)->orderBy('created_at', 'desc')->first();
+        if(!$last) return;
         $last_time = $last->created_at;
         $last_time = $last_time->subDay();
         
@@ -88,9 +89,9 @@ class AjaxController extends Controller
             if($loctype && $location){
                 $total_forms = PLocation::where('org_id', $project->org_id)->where($loctype, $location)->count(); //dd($total_forms);
                 $total_results = Result::where('project_id', $project->id)->where('section_id', $section)->OfWithPcode($loctype,$location)->count();
-                $result['complete'][$section]['y'] = Result::where('section_id', $section)->where('information', 'complete')->OfWithPcode($loctype,$location)->count();
-                $result['incomplete'][$section]['y'] = Result::where('section_id', $section)->where('information', 'incomplete')->OfWithPcode($loctype,$location)->count();
-                $result['error'][$section]['y'] = Result::where('section_id', $section)->where('information', 'error')->OfWithPcode($loctype,$location)->count();
+                $result['complete'][$section]['y'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'complete')->OfWithPcode($loctype,$location)->count();
+                $result['incomplete'][$section]['y'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'incomplete')->OfWithPcode($loctype,$location)->count();
+                $result['error'][$section]['y'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'error')->OfWithPcode($loctype,$location)->count();
                 $result['missing'][$section]['y'] = $total_forms - $total_results;
                 $result['complete'][$section]['label'] = $section_value->text;
                 $result['incomplete'][$section]['label'] = $section_value->text;
@@ -101,14 +102,22 @@ class AjaxController extends Controller
             }else{
                 $total_forms = PLocation::where('org_id', $project->org_id)->count();
                 $total_results = Result::where('project_id', $project->id)->where('section_id', $section)->count();
-                $result['complete'][$section]['y'] = Result::where('section_id', $section)->where('information', 'complete')->count();
-                $result['incomplete'][$section]['y'] = Result::where('section_id', $section)->where('information', 'incomplete')->count();
-                $result['error'][$section]['y'] = Result::where('section_id', $section)->where('information', 'error')->count();
+                $result['complete'][$section]['y'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'complete')->count();
+                $result['incomplete'][$section]['y'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'incomplete')->count();
+                $result['error'][$section]['y'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'error')->count();
                 $result['missing'][$section]['y'] = $total_forms - $total_results;
                 $result['complete'][$section]['label'] = _t($section_value->text);
                 $result['incomplete'][$section]['label'] = _t($section_value->text);
                 $result['error'][$section]['label'] = _t($section_value->text);
                 $result['missing'][$section]['label'] = _t($section_value->text);
+                //$result['complete'][$section]['indexLabel'] = _t($section_value->text);
+                //$result['incomplete'][$section]['indexLabel'] = _t($section_value->text);
+                //$result['error'][$section]['indexLabel'] = _t($section_value->text);
+                //$result['missing'][$section]['indexLabel'] = _t($section_value->text);
+                //$result['complete'][$section]['indexLabelPlacement'] = 'inside';
+                //$result['incomplete'][$section]['indexLabelPlacement'] = 'inside';
+                //$result['error'][$section]['indexLabelPlacement'] = 'inside';
+                //$result['missing'][$section]['indexLabelPlacement'] = 'inside';
 
             }
         }
@@ -193,13 +202,16 @@ class AjaxController extends Controller
                     //}
                 })
                 ->editColumn('state', function ($model) use ($project){
-                    return _t($model->state);
+                    $state = (!is_null($model->state))? $model->state:'';
+                    return _t($state);
                 })
                 ->editColumn('district', function ($model) use ($project){
-                    return _t($model->district);
+                    $district = (!is_null($model->district))? $model->district:'';
+                    return _t($district);
                 })
                 ->editColumn('village', function ($model) use ($project){
-                    return _t($model->village);
+                    $village = (!is_null($model->village))? $model->village:'';
+                    return _t($village);
                 })
                 ->editColumn('observers', function ($model) {
                     $p = '';
