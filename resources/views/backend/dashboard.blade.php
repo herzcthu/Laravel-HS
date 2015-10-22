@@ -25,7 +25,7 @@
             <div class="tab-content">
                 @foreach($orgs as $k => $org)
                 
-                  <div id="{{ $org->short }}" class="tab-pane fade">
+                  <div id="{{ $org->short }}" class="tab-pane fade in @if($k == 0) active @endif">
                     @foreach($org->projects as $project)
                     <div class="box box-success">
                         <div class="box-header with-border">
