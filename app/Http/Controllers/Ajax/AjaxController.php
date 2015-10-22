@@ -170,16 +170,16 @@ class AjaxController extends Controller
             $search_key = $request->get('status');
             if($search_key == 'missing'){
 
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($section, $search_key){
-                        $query->where('section_id', (int)$section)
+                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
+                        $query->where('project_id', $project->id)->where('section_id', (int)$section)
                                 ->whereNotIn('information',['complete', 'incomplete', 'error']);
 
                 })->orNotWithResults()->with('results')->with('participants')->get();
             }else{
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($section, $search_key){
-                        $query->where('information', $search_key)->where('section_id', (int)$section);
+                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
+                        $query->where('project_id', $project->id)->where('information', $search_key)->where('section_id', (int)$section);
 
-                })->with('results')->with('participants')->with('answers')->get();
+                })->orNotWithResults()->with('results')->with('participants')->with('answers')->get();
             }
         }else{
             
@@ -191,7 +191,10 @@ class AjaxController extends Controller
         }else{
             $results = $project->results;
             $sections = $project->sections;
-            $locations = PLocation::where('org_id', $project->organization->id )->with('results')->with('participants')->get();
+            $locations = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project){
+                        $query->where('project_id', $project->id);
+
+                })->orNotWithResults()->with('results')->with('participants')->get();
         }
         
         //dd($locations);
