@@ -10,6 +10,7 @@ use App\Repositories\Backend\Organization\OrganizationContract;
 use App\Repositories\Backend\Organization\OrganizationRepositoryContract;
 use App\Repositories\Backend\PLocation\PLocationContract;
 use App\Repositories\Frontend\Auth\AuthenticationContract;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\Facades\Excel;
@@ -258,7 +259,7 @@ class EloquentProjectRepository implements ProjectContract {
                     }
                 }
             }
-            $filename = preg_filter('/[^\d\w\s\.]/', ' ', $project->name);
+            $filename = preg_filter('/[^\d\w\s\.]/', ' ', $project->name.Carbon::now());
             $file = Excel::create(str_slug($filename), function($excel) use($array) {
 
                 $excel->sheet('Sheetname', function($sheet) use($array) {
