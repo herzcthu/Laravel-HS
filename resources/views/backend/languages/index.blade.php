@@ -62,23 +62,44 @@
 								
 
 								@foreach($translation_list as $translation)
-                                                                
+                                                                @if($translation->translation_id === null)
+                                                                <tr>
+                                                                    @foreach($locale_list as $lang)
+                                                                            @if($lang->code == $translation->locale->code)
+                                                                                    <td>{{ $translation->translation }}<span class="alert success text-green pull-right"></span></td>
+                                                                            @elseif(!$translation->children->isEmpty())
+                                                                                @foreach($translation->children as $child)
+                                                                                    @if($lang->code == $child->locale->code)
+                                                                                        <td lang="{!! $lang->code !!}">
+                                                                                        {!! Form::text("lang_id[$child->id]", $child->translation, ['class' => 'form-control']) !!}
+                                                                                        </td>
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            @else
+                                                                            <td lang="{!! $lang->code !!}">{!! Form::text("lang_id[$translation->id][$lang->code]", null, ['class' => 'form-control']) !!}</td>
+                                                                            @endif
+                                                                    @endforeach
+                                                                    <td><a href="#" class="update">Update</a></td>
+                                                                </tr>
+                                                                @endif
+                                                                {{--
                                                                     @if($translation->translation_id === null)
                                                                     <tr>
                                                                             <td>{!! $translation->translation !!}<span class="alert success text-green pull-right"></span></td>
-                                                                        @if($translation->children !== null)
+                                                                        @if(!$translation->children->isEmpty())
                                                                             @foreach($translation->children as $child)
                                                                             <td lang="{!! $child->locale->code !!}">
                                                                                 {!! Form::text("lang_id[$child->translation_id]", $child->translation, ['class' => 'form-control']) !!}
                                                                             </td>
                                                                             @endforeach
                                                                         @else
-                                                                            <td> No Translation</td>
+                                                                            <td>{!! Form::text("lang_id[$child->translation_id]", null, ['class' => 'form-control']) !!}</td>
                                                                         @endif    
                                                                             <td><a href="#" class="update">Update</a></td>
                                                                     </tr>
 
                                                                     @endif
+                                                                    --}}
 								@endforeach
 
 								</tbody>

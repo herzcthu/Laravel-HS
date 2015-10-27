@@ -27,6 +27,7 @@
                 
                   <div id="{{ $org->short }}" class="tab-pane fade in @if($k == 0) active @endif">
                     @foreach($org->projects as $project)
+                    @if($project->type == 'checklist')
                     <div class="box box-success">
                         <div class="box-header with-border">
                           <h3 class="box-title">{!! _t($project->name) !!}!</h3>
@@ -45,7 +46,7 @@
                     updateInterval = 5000;
                     $(document).ready(function () {
 
-                        $.getJSON("{{route('ajax.project.status', $project->id)}}", function (result) {
+                        $.getJSON("{{route('ajax.project.statuscount', $project->id)}}", function (result) {
                             var chart = new CanvasJS.Chart("{{ $project->id }}",
                             {
                                     colorSet: "statusColor",
@@ -116,7 +117,7 @@
                             chart.render();
                             
                             var updateChart = function(){
-                            $.getJSON("{{route('ajax.project.status', $project->id)}}", function (result) { 
+                            $.getJSON("{{route('ajax.project.statuscount', $project->id)}}", function (result) { 
                                 chart.options.data[0].dataPoints = result.complete.reverse();
                                 chart.options.data[1].dataPoints = result.incomplete.reverse();
                                 chart.options.data[2].dataPoints = result.error.reverse();
@@ -195,7 +196,14 @@
                         @endforeach
                         </div>
                     </div>
-      @endforeach
+                    @else
+                        @foreach($project->children as $childproject)
+                            @if($childproject == 'incident')
+                            
+                            @endif
+                        @endforeach
+                    @endif
+                    @endforeach
                   </div>
                 @endforeach
             </div>

@@ -13,7 +13,8 @@ class RouteServiceProvider extends ServiceProvider {
 	 * @var string
 	 */
 	protected $namespace = 'App\Http\Controllers';
-
+        
+        
 	/**
 	 * Define your route model bindings, pattern filters, etc.
 	 *
@@ -29,7 +30,33 @@ class RouteServiceProvider extends ServiceProvider {
                 $router->model('project', 'App\Project');
                 $router->model('projects', 'App\Project');
                 $router->model('questions', 'App\Question');
-                $router->model('pcode', 'App\PLocation');
+                //$router->model('pcode', 'App\PLocation');
+                $router->bind('pcode', function($value, $route){
+                    if($route->project->type == 'incident'){
+                        if(\Request::ajax()){
+                            if($route->project->validate == 'person'){
+                                $pcode = \App\Participant::find($value);
+                            }elseif($route->project->validate == 'pcode'){
+                                $pcode = \App\PLocation::find($value);
+                            }
+                        }else{
+                            $pcode = \App\Result::find($value);
+                        }
+                    }elseif($route->project->type == 'checklist'){
+                        if($route->project->validate == 'person'){
+                            $pcode = \App\Participant::find($value);
+                        }elseif($route->project->validate == 'pcode'){
+                            $pcode = \App\PLocation::find($value);
+                        }
+                    }else{
+                        
+                    }
+                    if(!is_null($pcode)){
+                        return $pcode;
+                    }else{
+                        \App::abort(404, 'Not Found.');
+                    }
+                });
                 
                 $router->bind('person', function($value, $route){ //dd($route->project);
                     $person = \App\Participant::where('participant_id', $value)->where('org_id', $route->project->org_id)->first();

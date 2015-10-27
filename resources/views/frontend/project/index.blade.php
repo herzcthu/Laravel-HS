@@ -52,7 +52,13 @@
                     
                     <td class="visible-lg">{!! $project->created_at->diffForHumans() !!}</td>
                     <td class="visible-lg">{!! $project->updated_at->diffForHumans() !!}</td>
-                    <td class="visible-lg">{!! $project->frontend_action_buttons !!}</td>
+                    <td class="visible-lg">
+                        @if($project->type == 'incident')
+                        {!! $project->frontend_incident_action_buttons !!}
+                        @else
+                        {!! $project->view_status_frontend_button !!}
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         </tbody>

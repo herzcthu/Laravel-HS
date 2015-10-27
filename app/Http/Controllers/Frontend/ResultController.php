@@ -44,59 +44,52 @@ class ResultController extends Controller
      */
     public function index($project, Request $request)
     {
+        /**
+        $located = PLocation::where('org_id', $project->organization->id );
+        
+        
         if($request->get('region')){
-            $search_key = $request->get('region');
+            $state = $request->get('region');
             
-            $located = PLocation::where('org_id', $project->organization->id )->where('state',$search_key)->get();
+            $located->where('state',$state);
         }
         if($request->get('district')){
-            $search_key = $request->get('district');
-            $located = PLocation::where('org_id', $project->organization->id )->where('district',$search_key)->get();
+            $district = $request->get('district');
+            $located->where('district',$district);
         }
         if($request->get('station')){
-            $search_key = $request->get('station');
-            $located = PLocation::where('org_id', $project->organization->id )->where('village',$search_key)->get();
-        }
-        if($request->get('section') >= 0){
-            $section = $request->get('section');
-            $search_key = $request->get('status');
-            if($search_key == 'missing'){
-
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($section, $search_key){
-                        $query->where('section_id', (int)$section)
-                                ->whereNotIn('information',['complete', 'incomplete', 'error']);
-
-                })->orNotWithResults()->get();
-            }else{
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($section, $search_key){
-                        $query->where('information', $search_key)->where('section_id', (int)$section);
-
-                })->get();
-            }
-        }
-        $alocations = PLocation::where('org_id', $project->organization->id )->get();
-        if(isset($search_key)){
-            $locations = $located;
-            $sections = $project->sections;
-        }else{
-            $results = $project->results;
-            $sections = $project->sections;
-            //dd($project->organization->id);
-            /**
-            $locations = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project){
-                    $query->where('project_id', $project->id);
-                
-            })->get();
-             * 
-             */
-            $locations = $alocations;
+            $station = $request->get('station');
+            $located->where('village',$station);
         }
         
+        if($request->get('section') >= 0){
+            $section = $request->get('section');
+            $status = $request->get('status');
+            if($status == 'missing'){
+
+                $located->OfwithAndWhereHas('results', function($query) use ($section, $status){
+                        $query->where('section_id', (int)$section)
+                                ->whereNotIn('information',['complete', 'incomplete', 'error']);
+                })->orNotWithResults();
+            }else{
+                
+                $located->OfwithAndWhereHas('results', function($query) use ($section, $status){
+                        $query->where('information', $status)->where('section_id', (int)$section);
+                });
+            }
+            
+        }
+        
+        $locations = $located->get();
+         * 
+         */
+        $sections = $project->sections;
+        $alocations = PLocation::where('org_id', $project->organization->id )->get();
         return view('frontend.result.index-locations')
                         ->withParticipants($this->participants)
                         ->withProject($project)
                         ->withSections($sections)
-                        ->withLocations($locations)
+                        //->withLocations($locations)
                         ->withAllLoc($alocations);
     }
 
@@ -119,7 +112,7 @@ class ResultController extends Controller
 			'url' => $route,
                         //'org' => 
 		]);
-        return view('frontend.result.edit')
+        return view('frontend.result.create')
 			->withUser($user)
                         ->withProject($project);
     }
@@ -132,14 +125,19 @@ class ResultController extends Controller
      */
     public function store($project, $section_id = false, CreateResultRequest $request)
     {
-        
+        if($section_id == 'incident'){
+            $section_id = $request->get('qnum');
+        }
         $this->results->create(
 			$request->except('project_id'),
 			$project,
                         $section_id
 		);
+        if($project->type == 'incident'){
         return redirect()->route('data.project.results.index', $project->id)->withFlashSuccess('The results was successfully created.');
-        
+        }else{
+        return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
+        }
     }
 
     /**
@@ -179,14 +177,20 @@ class ResultController extends Controller
             $validated['validator'] = $code->participant_id;
             $validated['validator_key'] = $code->participant_id;
         }
+        if($code instanceof \App\Result){
+            $validated = $this->formValidatePcode($project, $code->resultable, $request);
+            $validated['validator'] = $code->resultable->pcode;
+            $validated['validator_key'] = $code->resultable->pcode.'-'.$project->organization->id;
+        }
         javascript()->put([
 			'url' => $route,
                         //'org' => 
-		]); //dd($pcode)
+		]); //dd($code);
         return view('frontend.result.edit')
 			->withUser($user)
                         ->withProject($project)
                         ->withValidated($validated)
+                        ->withCode($code)
                         ->withResults($this->results);
     }
 

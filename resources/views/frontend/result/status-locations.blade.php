@@ -1,6 +1,6 @@
 @extends ('frontend.layouts.master')
 
-@section ('title', 'Result Management | Create Result')
+@section ('title', 'Status Report')
 
 @section ('before-styles-end')
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
@@ -8,36 +8,24 @@
 
 @section('page-header')
     <h1>
-        Result Management
-        <small>Add Incident</small>
+        Status
+        <small>Data Entry Status</small>
     </h1>
 @endsection
 
 @section ('breadcrumbs')
      <li><a href="{!!route('frontend.dashboard')!!}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
      <li>{!! link_to_route('data.projects.index', 'Project Management'); !!}</li>
-     <li>{!! link_to_route('data.project.results.index', $project->name. ' Incident', $project->id) !!}</li>
+     <li>{!! link_to_route('data.project.status.index', $project->name. ' Status', $project->id) !!}</li>
 @stop
 
 @section('content')
-<div class="pull-left">
-        {!! link_to_route('data.project.results.index', 'Reset filters', $project->id, ['class'=>'btn btn-primary btn-xs']) !!}
-</div>
-<div class="pull-right">
-        {!! link_to_route('data.project.results.create', 'Add Results', $project->id, ['class'=>'btn btn-primary btn-xs']) !!}
-</div>
-        
+        {!! link_to_route('data.project.status.index', 'Reset filters', $project->id, ['class'=>'btn btn-primary btn-xs']) !!}
     <table id="results-table" class="table table-bordered table-inverse panel panel-default">
         <thead>
             <tr>
                 <th id="code"># <br>
                     <input type="text" name="code" style="width:80px;" class="form-control" id="input-code">
-                </th>
-                <th id="incident">
-                   {!! _t('Incident') !!}
-                </th>
-                <th id="cq">
-                   {!! _t('Checklist Q') !!}
                 </th>
                 <th id="state">{!! _t('Region') !!}
                     <br />
@@ -66,15 +54,17 @@
                         @endforeach
                     </select>
                 </th>
-                <!--th class="observers">{!! _t('Observers') !!}</th-->
-                @foreach($project->questions as $k => $question)
-                <th class="{{ $question->qnum }}" id="{{ $question->qnum }}" title="{{ $question->question }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
-                    <i>{{ $question->qnum }}</i>
+                <th class="observers">{!! _t('Observers') !!}</th>
+                @foreach($sections as $k => $section)
+                <th class="section{{ $k }}" title="{{ _t($section->text) }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
+                    <i>{{ $k + 1}}</i>
                     <br />
-                    <select id="question-{{ $question->id }}" name="{{ $question->id }}" class="dropdown" style="width:35px;">
-                        @foreach($question->qanswers as $ans)
-                        <option value="{{ $ans->akey }}">{{ $ans->text }} </option>
-                        @endforeach
+                    <select id="section{{ $k }}" name="status" class="dropdown" style="width:35px;">
+                        <option value="">-</option>
+                        <option value="complete">{!! _t('Complete') !!}</option>
+                        <option value="incomplete">{!! _t('Incomplete') !!}</option>
+                        <option value="error">{!! _t('Error') !!}</option>
+                        <option value="missing">{!! _t('Missing') !!}</option>
                     </select>
                 </th>
                 @endforeach                
@@ -93,4 +83,4 @@ $(function() {
 });
 </script>
 @endpush
-@include('frontend.result.includes.partials.results-script')  
+@include('frontend.result.includes.partials.status-script')  

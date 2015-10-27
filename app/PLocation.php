@@ -74,8 +74,13 @@ class PLocation extends Model
     }
     
     public function scopeOfWithAndWhereHas($query, $relation, $constraint){
-    return $query->whereHas($relation, $constraint)
-                 ->with([$relation => $constraint]);
+    return $query->with([$relation => $constraint])
+            ->whereHas($relation, $constraint);
+    }
+    
+    public function scopeOfWithOrWhereHas($query, $relation, $constraint){
+    return $query->with([$relation => $constraint])
+            ->orWhereHas($relation, $constraint);
     }
     
     public function scopeNotWithResults($query){
@@ -90,6 +95,16 @@ class PLocation extends Model
         return $query->orWhereNotExists(function($query){
             $this_table = DB::getTablePrefix() . $this->table; 
             $query->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.primaryid'); 
+            
+        });
+    }
+    
+     public function scopeOfOrWithResults($query,$relation, $project){
+        return $query->with($relation)->whereExists(function($query) use ($project) {
+            $this_table = DB::getTablePrefix() . $this->table; 
+            $query->selectRaw(DB::raw('resultable_id')) ->from('results')
+                    ->where('project_id', $project)
+                    ->whereRaw('resultable_id = '.$this_table.'.primaryid'); 
             
         });
     }

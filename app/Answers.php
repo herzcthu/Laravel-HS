@@ -19,11 +19,11 @@ class Answers extends Model
    */
   protected $guarded = ['id'];
   
-  public function qanswer() {
-      $this->belongsTo('App\QAnswers', 'aid');
+  public function question() {
+      return $this->belongsTo('App\Question', 'qid');
   }
   
   public function results() {
-      $this->belongsTo('App\Result', 'status_id');
+      return $this->belongsTo('App\Result', 'status_id');
   }
 }

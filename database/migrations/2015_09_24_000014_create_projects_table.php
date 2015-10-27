@@ -19,6 +19,8 @@ class CreateProjectsTable extends Migration {
             $table->increments('id')
                   ->unsigned();
             $table->string('name', 255)->index();
+            $table->string('desc', 255)->index();
+            $table->string('type', 255)->index();
             $table->integer('project_id')
                   ->unsigned()
                   ->nullable();

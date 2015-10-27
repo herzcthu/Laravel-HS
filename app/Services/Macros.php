@@ -68,12 +68,14 @@ class Macros extends FormBuilder {
                 $answer_index = $akey;
                 $inputname = "answer[$qnum][$akey]";
             }
+            
             if(is_array($results)){
                 $result = $results['results'];
                 $section_id = $results['section'];
                 $project_id = $results['project'];
                 $resultable = $results['validator'];
-                $value = $result->getResultBySection($section_id, $project_id, $resultable, $qnum, $answer_index);
+                $incident = $results['incident'];//dd($incident);
+                $value = $result->getResultBySection($section_id, $project_id, $resultable, $qnum, $answer_index, $incident);
             }else{
                 $value = null;
             }

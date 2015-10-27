@@ -18,79 +18,85 @@
            return n == parseFloat(n);
         }
         var url = [location.protocol, '//', location.host, location.pathname].join('');
-            @foreach($sections as $k => $section)
-                $('#section{{$k}}').on('change', function(e){
-                    window.location.href = url + "?section={{$k}}&status=" + $(this).val();
+        var ajaxurl;
+            @foreach($project->questions as $k => $question)
+                $("#question-{!! $question->id !!}").on('change', function(e){
+                    window.location.href = url + "?question={{$question->id}}&answer=" + $(this).val();
+                    //ajaxurl = url + "?question={{$question->id}}&answer=" + $(this).val();
+                    //e.preventDefault();
                 });
             @endforeach
             $('#region').on('change', function(e){
                 window.location.href = url + "?region=" + $(this).val();
+                //ajaxurl = url + "?region=" + $(this).val();
+                //e.preventDefault();
             });
             $('#district').on('change', function(e){
                 window.location.href = url + "?district=" + $(this).val();
+                //ajaxurl = url + "?district=" + $(this).val();
             });
             $('#station').on('change', function(e){
                 window.location.href = url + "?station=" + $(this).val();
+                //ajaxurl = url + "?station=" + $(this).val();
             });
             $('#input-code').keyup(function(e) { 
                 if(e.which == 13) {
                     var code = $('#input-code').val();
                     window.location.href = url + "?code=" + $(this).val();
+                    //ajaxurl = url + "?code=" + $(this).val();
                 }
             });
+        if(typeof ajaxurl == "undefined"){
         var ajaxurl =  window.location.href;  
+         }
         ajax = ajaxurl.replace('data', 'ajax');
             $('#results-table').DataTable({
                 lengthMenu: [ 50, 100, 150, 200, 250 ],
+                scrollX: true,
                 processing: true,
                 serverSide: true,
                 searching: false,
-                pageLength: 100,
+                pageLength: 50,
                 ajax: ajax,
                 columns: [
                     { data: 'code', name: 'code' },
-                    { data: 'state', name: 'region' },
-                    { data: 'district', name: 'district' },
-                    { data: 'village', name: 'station' },
-                    { data: 'observers', name: 'observers'},
-                    @foreach($sections as $k => $section)
-                    //{ data: 'results.{{$k}}.information', name: 'section{{$k}}'},
-                    
-                    { data: function(row, type, val, meta){
-                        var status{{$k}};
-                        var pc = row.participants.length;
-                        var rc = row.results.length;
-                        var i = 0;
-                        var r = 0;
-                            var sections = row.results.reduce(function(sec, cur){ 
-                                    sec[cur.section_id] = sec[cur.section_id] || [];
-                                    sec[cur.section_id].push(cur);
-                                    return sec;
-                                }, {});
-                            
-                            if(typeof sections[{{$k}}] != "undefined"){ //console.log(sections[{{$k}}][0].section_id);
-                                $.each(sections[{{$k}}], function(section, results){
-                                    if(typeof status{{$k}} == "undefined"){
-                                        status{{$k}} = '';
-                                    }
-                                    //console.log(results);
-                                    //if(typeof results[{{$k}}] == "undefined"){
-                                    //    return;
-                                    //}
-                                        status{{$k}} += '<img src="{{ asset('img/') }}/' + results.information + '.png" title="'+ results.information +'" class="status-icon">';
-                                    
-                                });
-                            }else{
-                                    if(typeof status{{$k}} == "undefined"){
-                                        status{{$k}} = '';
-                                    }
-                                    status{{$k}} += '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
+                    { data: 'incident_id', name: 'incident'},
+                    { data: 'cq', name:'cq'},
+                    { data: function(row, type, val, meta){ //console.log(row.resultable.state);
+                        if(row.resultable_type == 'App\\PLocation'){
+                                return row.resultable.state;
+                        }else{
+                            return '';
+                        }
+                    }, name: 'state' },
+                    { data: function(row, type, val, meta){ //console.log(row.resultable.district);
+                        if(row.resultable_type == 'App\\PLocation'){
+                                return row.resultable.district;
+                        }else{
+                            return '';
+                        }
+                    }, name: 'district' },
+                    { data: function(row, type, val, meta){ //console.log(row.resultable.village);
+                        if(row.resultable_type == 'App\\PLocation'){
+                                return row.resultable.village;
+                        }else{
+                            return '';
+                        }
+                    }, name: 'village' },
+                    @foreach($project->questions as $k => $question)
+                    { data: function(row, type, val, meta){ //console.log(row.resultable.village);
+                            var ans = '';
+                        $.each(row.answers, function(i,v){ 
+                            if(v.qid == '{{ $question->id }}'){
+                                console.log(v.question.answers[v.akey].text);
+                                ans = v.question.answers[v.akey].text;
                             }
-                            
-                        return status{{$k}};
-                    }, name: 'section{{$k}}', defaultContent: "<i>Not set</i>"},
+                        });
+                        return ans;
+                    }, name: '{{ $question->qnum }}' },
                     
                     @endforeach
+                    
                 ]
             });
             

@@ -27,6 +27,7 @@ class CreateResultsTable extends Migration {
             $table->integer('user_id')->index()
                   ->unsigned();            
             $table->integer('section_id')->index();
+            $table->integer('incident_id')->index();
             //$table->morphs('resultable');
             $table->string('resultable_id');
             $table->string('resultable_type');

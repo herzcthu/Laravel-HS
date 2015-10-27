@@ -29,10 +29,25 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <div class="col-xs-2">
+                            @if($project->type == 'incident')
+                                {!! Form::open(['route' => ['data.project.results.section.store', $project->id, 'incident'], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
+                                {!! Form::hidden('project_id', $project->id) !!}
+                                {!! Form::hidden('org_id', $project->organization->id) !!}
+                                {!! Form::hidden('validator_id', null,['class' => 'hidden-validator']) !!}
+                                {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
+                                {!! Form::select('qnum', $project->parent->questions->lists('qnum','id'), null, ['class'=>'form-control']) !!}
+                            @endif
                             {!! Form::label('validator', 'Location Code', ['class'=>'control-label']) !!}
                             {!! Form::text('validator',null,['class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
                         </div>
-                        <div id="validated" class="col-xs-10">
+                        <div class="col-xs-5">
+                            @if(is_array($project->sections))
+                                @foreach($project->sections as $section_key => $section)
+                                <a href="#{{$section_key}}">{!! _t($section->text) !!}</a><br>
+                                @endforeach
+                            @endif    
+                        </div>
+                        <div id="validated" class="col-xs-5">
                             
                         </div>
                     </div>                    
@@ -56,7 +71,7 @@
                 @endif
                 </div>
                 <div class="panel-body">
-                @if($section->submit)
+                @if($project->type == 'checklist')
                     {!! Form::open(['route' => ['data.project.results.section.store', $project->id, $section_key], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
                     {!! Form::hidden('project_id', $project->id) !!}
                     {!! Form::hidden('org_id', $project->organization->id) !!}
@@ -147,7 +162,7 @@
                         @endif
                     @endforeach        
                 @endif
-                @if($section->submit)
+                @if($project->type == 'checklist')
                     <div class="row">
                         <div class="col-xs-1 pull-right">
                         <input type="submit" class="btn btn-success" value="Save" />
@@ -161,6 +176,13 @@
                 </div>
             </div><!-- panel end -->    
             @endforeach
+            @if($project->type == 'incident')
+                
+                    <div class="pull-right">
+                    <input type="submit" class="btn btn-success" value="Save" />
+                    </div>
+                {!! Form::close() !!}
+            @endif
         @else
         {!! Form::open(['route' => ['data.project.results.store', $project->id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
     
@@ -226,17 +248,6 @@
                         $('#validated').html("<span class='text-danger'>Record not found!</span>");
                       }
                     },
-                }).done(function (data) {
-                    
-                        //console.log(data);
-                        //console.log(index);
-                        //console.log(location.name);
-                        //$('<option />', {
-                          //      value: location.id,
-                            //    text: location.name + '(' + location.pcode + ')'
-                            //}).appendTo('#'+level);
-                        //$('<p/>').text(file.original_filedir).appendTo('#medialist');
-                    //});
                 }).success(function(data, status, response){
                     $('#validator').removeClass('alert-danger');
                     
@@ -249,9 +260,9 @@
                             if(index == 'Location ID'){
                                 
                                 if(output){                            
-                                    $('#validator').val($('.hidden-validator').val() + {{'-'.$project->org_id}});
+                                    $('#validator').val($('.hidden-validator').val());
                                 }
-                                $('.hidden-validator').val($('#validator').val() + {{'-'.$project->org_id}});
+                                $('.hidden-validator').val($('#validator').val());
                             }
                        @elseif($project->validate == 'person')
                             if(index == 'Observer'){

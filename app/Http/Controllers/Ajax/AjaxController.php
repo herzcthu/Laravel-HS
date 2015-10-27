@@ -47,12 +47,23 @@ class AjaxController extends Controller
     
     public function updateTranslation(Request $request) {
         $lang_id = $request->get('lang_id');
+            
 		foreach($lang_id as $id => $translation){
-			$locale_id = Translation::where('translation_id', '=', $id)->pluck('id');
-			$locale = Translation::find($locale_id);
-			$locale->translation_id = $id;
-			$locale->translation = $translation;
-			$locale->update();
+                    $translate = Translation::find($id);
+                    if(is_array($translation)){
+                        foreach($translation as $lang => $translation){
+                            $locale = \App\Locale::where('code', $lang)->first();
+                            $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $translate->id]);
+                            $child->translation = $translation;
+                            $child->parent()->associate($locale);
+                            $child->locale()->associate($locale);
+                            $child->save();
+                        }
+                    }else{
+			
+			$translate->translation = $translation;
+			$translate->update();
+                    }
 		}
 		$json['status'] = true;
 		$json['message'] = 'Translation updated!';
@@ -80,8 +91,66 @@ class AjaxController extends Controller
         $result['last'] = $last_time->timestamp * 1000;
         return response()->json($result);
     }
+    public function getResponse($project, Request $request) {
+        $total_forms = PLocation::where('org_id', $project->org_id)->count();
+        $total_results = Result::where('project_id', $project->id)->count();
+        $locations = PLocation::where('org_id', $project->org_id)->groupBy('state')->get();
+        
+        foreach($locations as $state => $location){
+            
+            //skip the loop if $location->state is null
+            if(is_null($location->state)){
+                continue;
+            }
+            $result[$location->state]['group'] = $location->state;
+            $result[$location->state]['region'] = $location->primaryid;
+            $state = PLocation::where('org_id', $project->org_id)->where('state', $location->state)->count();
+            $statetotal = PLocation::where('org_id', $project->org_id)->where('state', $location->state)->has('results')->count();
+            foreach($project->sections as $section => $section_value){
+                
+                $result[$location->state][$section]['complete'] = PLocation::where('org_id', $project->org_id)
+                        ->where('state', $location->state)
+                        ->ofWithAndWhereHas('results', function($query) use($section){
+                            $query->where('section_id', $section)->where('information', 'complete');
+                        })->count();
+                $result[$location->state][$section]['incomplete'] = PLocation::where('org_id', $project->org_id)
+                        ->where('state', $location->state)
+                        ->ofWithAndWhereHas('results', function($query) use($section){
+                            $query->where('section_id', $section)->where('information', 'incomplete');
+                        })->count();
+                $result[$location->state][$section]['error'] = PLocation::where('org_id', $project->org_id)
+                        ->where('state', $location->state)
+                        ->ofWithAndWhereHas('results', function($query) use($section){
+                            $query->where('section_id', $section)->where('information', 'error');
+                        })->count();   
+                        
+                ${$location->state}{$section} = PLocation::where('org_id', $project->id)
+                        ->where('state', $location->state)
+                        ->ofWithAndWhereHas('results', function($query) use($section){
+                            $query->where('section_id', $section);
+                        })->count();
+                $result[$location->state][$section]['missing'] = $state - ${$location->state}{$section};
+            }
+            $result[$location->state]['totalmissing'] = $state - $statetotal;
+        }
+        $result['total']['group'] = 'total';
+        $result['total']['region'] = 'all';
+        foreach($project->sections as $section => $section_value){
+                
+                $total_results_by_section = Result::where('project_id', $project->id)->where('section_id', $section)->count();
+                
+                $result['total'][$section]['complete'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'complete')->count();
+                $result['total'][$section]['incomplete'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'incomplete')->count();
+                $result['total'][$section]['error'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'error')->count();
+                $result['total'][$section]['missing'] = $total_forms - $total_results_by_section;
+        } 
+        
+        $result['total']['totalmissing'] = $total_forms - $total_results;
+        //dd(collect($result));
+        return Datatables::of(collect($result))->make(true);
+    }
     
-    public function getStatus($project, Request $request) {
+    public function getStatusCount($project, Request $request) {
         //$section = $request->get('section');
         $location = $request->get('location');
         $loctype = $request->get('loctype');
@@ -125,80 +194,120 @@ class AjaxController extends Controller
         return response()->json($result);
     }
     
-    public function getAllResultsBK($project, Request $request) {
-        $results = Result::where('project_id', $project->id )->with('resultable')->get();
-        return Datatables::of($results)
-                ->editColumn('locations',function($model){
-                    if($model->resultable instanceof PLocation){
-                        return $model->resultable;
-                    }
-                })
-                ->editColumn('observers', function($model){
-                    $p = '';
-                    if($model->resultable instanceof PLocation){
-                        foreach($model->resultable->participants as $participant){
-                           //dd($participant);
-                            $p .= $participant->name.'('.$participant->participant_id.')<br>';
-                        }
-                        return $p;
-                    }
-                    if($model->resultable instanceof Participant){
-                        return 'participant';
-                    }
-                })
-                ->make(true);
-    }
-    
-    public function getAllResults($project, Request $request)
-    { //dd($request->all());
+    public function getAllResults($project, Request $request) {
+        //$project = $project->with('results')->with('answersR');
+        
+        $start = $request->get('start');
+        $length = $request->get('length');
         if($request->get('code')){
             $search_key = $request->get('code');
-            $located = PLocation::where('org_id', $project->organization->id )->where('pcode',$search_key)->with('results')->with('participants')->get();
+            
+            $result = Result::where('project_id', $project->id)->OfWithPcode('pcode', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
         
         }elseif($request->get('region')){
             $search_key = $request->get('region');
             
-            $located = PLocation::where('org_id', $project->organization->id )->where('state',$search_key)->with('results')->with('participants')->get();
+            $result = Result::where('project_id', $project->id)->OfWithPcode('state', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
+        
         }elseif($request->get('district')){
             $search_key = $request->get('district');
-            $located = PLocation::where('org_id', $project->organization->id )->where('district',$search_key)->with('results')->with('participants')->get();
+            $result = Result::where('project_id', $project->id)->OfWithPcode('district', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
+        
         }elseif($request->get('station')){
             $search_key = $request->get('station');
-            $located = PLocation::where('org_id', $project->organization->id )->where('village',$search_key)->with('results')->with('participants')->get();
-        }elseif($request->get('section') >= 0){
-            $section = $request->get('section');
-            $search_key = $request->get('status');
-            if($search_key == 'missing'){
-
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
-                        $query->where('project_id', $project->id)->where('section_id', (int)$section)
-                                ->whereNotIn('information',['complete', 'incomplete', 'error']);
-
-                })->orNotWithResults()->with('results')->with('participants')->get();
-            }else{
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
-                        $query->where('project_id', $project->id)->where('information', $search_key)->where('section_id', (int)$section);
-
-                })->orNotWithResults()->with('results')->with('participants')->with('answers')->get();
-            }
+        
+            $result = Result::where('project_id', $project->id)->OfWithPcode('village', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
+        
+        
+        }elseif($request->get('question') && $request->get('answer')){
+            $q = $request->get('question');
+            $search_key = $request->get('answer');
+            $result = Result::where('project_id', $project->id)
+                        ->ofWithAndWhereHas('answers', function($query) use ($q, $search_key){
+                            $query->where('qid', $q)->where('akey', $search_key);
+                        })
+                        ->with('resultable')
+                        ->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')
+                        ->get();
         }else{
             
         }
         //dd($search_key);
         if(isset($search_key)){
-            $locations = $located;
-            $sections = $project->sections;
+            $result = $result;
         }else{
-            $results = $project->results;
-            $sections = $project->sections;
-            $locations = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project){
-                        $query->where('project_id', $project->id);
-
-                })->orNotWithResults()->with('results')->with('participants')->get();
+                        
+            $result = Result::where('project_id', $project->id)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
+        
         }
         
-        //dd($locations);
-        return Datatables::of($locations)
+        return Datatables::of($result)
+                ->editColumn('code', function ($model) use ($project){
+                if($model->resultable_type == 'App\\PLocation'){
+                    return $model->resultable->pcode."<a href='".route('data.project.results.edit', [$project->id, $model->id])."' title='Edit'> <i class='fa fa-edit'></i></a>";
+                    }
+                })
+                ->editColumn('cq', function ($model) use ($project){
+                    $q = \App\Question::find($model->section_id);
+                    return $q->question;
+                })
+                ->make(true);
+    }
+    
+    public function getAllStatus($project, Request $request){
+        $located = PLocation::where('org_id', $project->organization->id )->with('participants')->with('results')->with('answers');
+        
+        
+        if($request->get('region')){
+            $state = $request->get('region');
+            if($state != 'total'){
+            $located->where('state',$state);
+            }
+            $filter = true;
+        }
+        if($request->get('district')){
+            $district = $request->get('district');
+            $located->where('district',$district);
+            $filter = true;
+        }
+        if($request->get('station')){
+            $station = $request->get('station');
+            $located->where('village',$station);
+            $filter = true;
+        }
+        
+        if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
+            $section = $request->get('section');
+            $status = $request->get('status');
+            if($status == 'missing'){
+                $located->whereDoesntHave('results', function($query) use ($section){
+                    $query->where('section_id', $section);
+                });
+            }else{
+                
+                $located->OfwithAndWhereHas('results', function($query) use ($section, $status){
+                        $query->where('information', $status)->where('section_id', (int)$section);
+                });
+            }
+            
+            $filter = true;
+        }
+        
+        $locations = $located->get();
+        /**
+        if(isset($filter)){
+            
+        $locations = $located->get();
+        }else{
+        $locations = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project){
+                        $query->where('project_id', $project->id);
+
+                })->orNotWithResults()->with('participants')->get();
+        }
+         * 
+         */
+        
+        $datatable = Datatables::of($locations)
                 ->editColumn('code', function ($model) use ($project){
                     //if($model->results){
                     return $model->pcode."<a href='".route('data.project.results.edit', [$project->id, $model->primaryid])."' title='Edit'> <i class='fa fa-edit'></i></a>";
@@ -224,6 +333,112 @@ class AjaxController extends Controller
                     return $p;
                 })
                 ->make(true);
+        return $datatable; 
+    }
+    
+    public function getAllStatusBK($project, Request $request)
+    { //dd($request->all());
+        $start = $request->get('start');
+        $length = $request->get('length');
+        if($request->get('code')){
+            $pcode = $request->get('code');
+            $located = PLocation::where('org_id', $project->organization->id )
+                    ->where('pcode',$pcode)
+                    ->orNotWithResults()
+                    ->OfWithAndWhereHas('results',function($query) use ($project){
+                        $query->where('project_id', $project->id);
+                    })
+                    ->with('participants')
+                    ->get();
+        
+        }elseif($request->get('region')){
+            $state = $request->get('region');
+            
+            $located = PLocation::where('org_id', $project->organization->id )
+                    ->where('state',$state)
+                    ->orNotWithResults()
+                    ->OfWithAndWhereHas('results',function($query) use ($project){
+                        $query->where('project_id', $project->id);
+                    })
+                    ->with('participants')->get();
+        }elseif($request->get('district')){
+            $district = $request->get('district');
+            $located = PLocation::where('org_id', $project->organization->id )
+                    ->where('district',$district)
+                    ->orNotWithResults()
+                    ->OfWithAndWhereHas('results',function($query) use ($project){
+                        $query->where('project_id', $project->id);
+                    })
+                    ->with('participants')->get();
+        }elseif($request->get('station')){
+            $search_key = $request->get('station');
+            $located = PLocation::where('org_id', $project->organization->id )
+                    ->where('village',$search_key)
+                    ->orNotWithResults()
+                    ->OfWithAndWhereHas('results',function($query) use ($project){
+                        $query->where('project_id', $project->id);
+                    })
+                    ->orderBy('village')
+                    ->with('participants')->get();
+        }elseif($request->get('section') >= 0){
+            $section = $request->get('section');
+            $search_key = $request->get('status');
+            if($search_key == 'missing'){
+
+                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
+                        $query->where('project_id', $project->id)->where('section_id', (int)$section)
+                                ->whereNotIn('information',['complete', 'incomplete', 'error']);
+
+                })->orNotWithResults()->with('participants')->get();
+            }else{
+                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
+                        $query->where('project_id', $project->id)->where('information', $search_key)->where('section_id', (int)$section);
+
+                })->with('participants')->with('answers')->get();
+            }
+        }else{
+            
+        }
+        //dd($search_key);
+        if(isset($search_key)){
+            $locations = $located;
+            $sections = $project->sections;
+        }else{
+            $results = $project->results;
+            $sections = $project->sections;
+            $locations = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project){
+                        $query->where('project_id', $project->id);
+
+                })->orNotWithResults()->with('participants')->get();
+        }
+        
+        $datatable = Datatables::of($locations)
+                ->editColumn('code', function ($model) use ($project){
+                    //if($model->results){
+                    return $model->pcode."<a href='".route('data.project.results.edit', [$project->id, $model->primaryid])."' title='Edit'> <i class='fa fa-edit'></i></a>";
+                    //}
+                })
+                ->editColumn('state', function ($model) use ($project){
+                    $state = (!is_null($model->state))? $model->state:'';
+                    return _t($state);
+                })
+                ->editColumn('district', function ($model) use ($project){
+                    $district = (!is_null($model->district))? $model->district:'';
+                    return _t($district);
+                })
+                ->editColumn('village', function ($model) use ($project){
+                    $village = (!is_null($model->village))? $model->village:'';
+                    return _t($village);
+                })
+                ->editColumn('observers', function ($model) {
+                    $p = '';
+                    foreach($model->participants as $participant){
+                        $p .= $participant->name.'('.$participant->participant_id.') <br>';
+                    }
+                    return $p;
+                })
+                ->make(true);
+        return $datatable;
     }
     
     public function formValidatePerson($project, $person, Request $request) {

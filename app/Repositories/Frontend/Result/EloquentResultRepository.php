@@ -65,8 +65,13 @@ class EloquentResultRepository implements ResultContract {
 		throw new GeneralException('That result does not exist.');
 	}
         
-        public function getResultBySection($section, $project, $resultable, $qnum, $anskey){
-            $result_ByNum = Result::where('section_id', $section)->where('project_id', $project)->where('resultable_id', $resultable)->first();
+        public function getResultBySection($section, $project, $resultable, $qnum, $anskey, $incident = ''){
+            $result_ByNum = Result::where('section_id', $section)->where('project_id', $project)->where('resultable_id', $resultable);
+            if(!empty($incident)){      
+                    $result_ByNum = $result_ByNum->where('incident_id', $incident)->first();
+            }else{
+                $result_ByNum = $result_ByNum->first();
+            }
             if (! is_null($result_ByNum)){
                 if(!is_null($result_ByNum->results)){
                     /**
@@ -138,21 +143,28 @@ class EloquentResultRepository implements ResultContract {
 	 * @throws GeneralException
 	 * @throws ResultNeedsOrganizationsException
 	 */
-	public function create($input, $project, $section) { 
-            
-                
+	public function create($input, $project, $section) {
                 $validate = $input['validator_id'];
+                if($project->type == 'incident'){
+                    $incident = \App\Result::where('project_id', $project->id)->where('section_id', $section)->orderBy('incident_id', 'desc')->first();
+                    if(!is_null($incident)){
+                    $incident_id = $incident->incident_id + 1;
+                    }else{$incident_id = 0;}
+                }else{$incident_id = 0;}
+                
                 if($project->validate == 'person'){
                     $resultable = $this->participant->getParticipantByCode($validate, $project->organization->id);
-                    $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id,'resultable_id' => $resultable->id, 'resultable_type' => 'App\Participant']);
+                    $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 'incident_id' => $incident_id,'resultable_id' => $resultable->id, 'resultable_type' => 'App\Participant']);
                     //$pcode = $person->pcode;
                 }else{
                     $resultable = $this->pcode->findOrThrowException($validate); //dd($resultable->primaryid);
-                    $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id,'resultable_id' => $resultable->primaryid, 'resultable_type' => 'App\PLocation']);
+                    $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 'incident_id' => $incident_id,'resultable_id' => $resultable->primaryid, 'resultable_type' => 'App\PLocation']);
                     //$person = $pcode->participants->first();
                     $result->resultable_id = $resultable->primaryid;
                 }
-                
+                if($incident_id){
+                    $result->incident_id = $incident_id;
+                }
                 $result->results = $input['answer'];
                 $result->section_id = $section;
                 $result->information = $this->updateStatus($project, $section, $input['answer']);
@@ -163,7 +175,6 @@ class EloquentResultRepository implements ResultContract {
                 if(isset($resultable)){
                     $result->resultable()->associate($resultable);
                 }
-                
                 if ($result->save()) {
                     Answers::where('status_id', $result->id)->delete();
                     foreach($input['answer'] as $qnum => $answers){
@@ -214,6 +225,9 @@ class EloquentResultRepository implements ResultContract {
                     $result->report = null;
                 } else {
                     $result->report = $input['report'];
+                }
+                if(isset($input['incident_id'])){
+                    $result->incident_id = $input['incident_id'];
                 }
                 $result->answers = $input['answers'];
                 $result->related_data = $input['related_data'];
@@ -408,11 +422,17 @@ class EloquentResultRepository implements ResultContract {
 		$result = new Result;
                 $result->section_id = isset($input['section'])?$input['section']:null;
                 //$result->report = isset($input['report'])?$input['report']:null;
+                if(isset($input['incident_id'])){
+                    $result->incident_id = $input['incident_id'];
+                }
                 $result->results = $input['answer'];
 		return $result;
 	}
         
         private function updateStatus($project, $section, $answers) {
+            if($project->type == 'incident'){
+                return 'incident';
+            }
             $section = (int) $section;
             //dd($answers);
             $section_qcount = $project->questions->where('section', $section)->count();

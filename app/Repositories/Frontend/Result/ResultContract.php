@@ -13,7 +13,7 @@ interface ResultContract {
 	 */
 	public function findOrThrowException($id, $withProject = false);
         
-        public function getResultBySection($section, $project, $resultable, $qnum, $anskey);
+        public function getResultBySection($section, $project, $resultable, $qnum, $anskey, $incident = '');
 
 	/**
 	 * @param $per_page

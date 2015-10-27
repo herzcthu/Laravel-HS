@@ -45,6 +45,7 @@ class CreateResultRequest extends Request {
     public function dataentryValidation($validator) {
         
         // Use an "after validation hook" (see laravel docs)
+        /**
         $validator->after(function ($validator) {
             $section = (integer) $this->route('section');
             $project = $this->route('project');
@@ -57,6 +58,8 @@ class CreateResultRequest extends Request {
 
          //   }  
         });
+         * *
+         */
     }
         
 }

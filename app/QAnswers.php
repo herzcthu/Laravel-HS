@@ -20,7 +20,10 @@ class QAnswers extends Model
   protected $guarded = ['id'];
   
   public function question() {
-      $this->belongsTo('App\Question', 'qid');
+      return $this->belongsTo('App\Question', 'qid');
   }
   
+  public function answers(){
+      return $this->hasMany('App\Answers', 'qid');
+  }
 }

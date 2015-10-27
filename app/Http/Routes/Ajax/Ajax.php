@@ -21,8 +21,10 @@ Route::group(['middleware' => 'auth'], function ()
 {
     Route::group(['prefix' => 'ajax'], function ()
     {
-        Route::get('project/{project}/status', ['as' => 'ajax.project.status', 'uses' => 'AjaxController@getStatus']);
+        Route::get('project/{project}/statuscount', ['as' => 'ajax.project.statuscount', 'uses' => 'AjaxController@getStatusCount']);
         Route::get('project/{project}/timegraph', ['as' => 'ajax.project.timegraph', 'uses' => 'AjaxController@timeGraph']);
+        Route::get('project/{project}/response', ['as' => 'ajax.project.response', 'uses' => 'AjaxController@getResponse']);
+        Route::get('project/{project}/status', ['as' => 'ajax.project.status', 'uses' => 'AjaxController@getAllStatus']);
         Route::get('project/{project}/results', ['as' => 'ajax.project.results', 'uses' => 'AjaxController@getAllResults']);
         Route::get('locations/allstates', ['as' => 'ajax.locations.allstates', 'uses' => 'AjaxController@allstates']);
         Route::get('locations/alldistricts', ['as' => 'ajax.locations.alldistricts', 'uses' => 'AjaxController@alldistricts']);

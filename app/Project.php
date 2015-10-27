@@ -34,7 +34,7 @@ class Project extends Model
   }
 
   public function answersR() {
-      return $this->hasManyThrough('App\Answers', 'App\Result', 'project_id', 'qid');
+      return $this->hasManyThrough('App\Answers', 'App\Result', 'project_id', 'status_id');
   }
 
   public function parent() {
@@ -116,10 +116,23 @@ class Project extends Model
   /**
   * @return string
   */
-  public function getViewResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results List</h5><p>click here to add data</p>"><i class="fa fa-database"></i><i class="fa fa-eye"></i></a>';
+  public function getViewStatusFrontendButtonAttribute() {
+     return '<a href="'.route('data.project.status.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Status</h5><p>click here to add data or check status</p>"><i class="fa fa-database"></i><i class="fa fa-eye"></i></a>';
   }
   
+  /**
+  * @return string
+  */
+  public function getViewResponseFrontendButtonAttribute() {
+     return '<a href="'.route('data.project.response.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
+  }
+  
+  /**
+  * @return string
+  */
+  public function getViewResultsFrontendButtonAttribute() {
+     return '<a href="'.route('data.project.results.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to add data or check results</p>"><i class="fa fa-database"></i><i class="fa fa-table"></i></a>';
+  }
   /**
   * @return string
   */
@@ -127,16 +140,31 @@ class Project extends Model
      return '<a href="'.route('admin.project.questions.editall', ['p' => $this->id]).'" class="btn btn-xs btn-primary"><i class="fa fa-question"></i><i class="fa fa-wrench" data-toggle="tooltip" data-placement="top" title="Edit Questions"></i></a>';
   }
   
-  public function getActionButtonsAttribute() {
+  public function getIncidentActionButtonsAttribute() {
       return $this->getEditButtonAttribute().' '.
               $this->getDeleteButtonAttribute().' '.
               $this->getShowQuestionsButtonAttribute().' '.
               $this->getAddQuestionButtonAttribute().' '.
               $this->getEditQuestionsButtonAttribute().' '.
+              $this->getViewResultsFrontendButtonAttribute().' '.
+              $this->getExportButtonAttribute();
+  }
+  
+  public function getCheclkistActionButtonsAttribute() {
+      return $this->getEditButtonAttribute().' '.
+              $this->getDeleteButtonAttribute().' '.
+              $this->getShowQuestionsButtonAttribute().' '.
+              $this->getAddQuestionButtonAttribute().' '.
+              $this->getEditQuestionsButtonAttribute().' '.
+              $this->getViewStatusFrontendButtonAttribute().' '.
               $this->getExportButtonAttribute();
   }
   
   public function getFrontendActionButtonsAttribute(){
+      return $this->getViewStatusFrontendButtonAttribute();
+  }
+  
+  public function getFrontendIncidentActionButtonsAttribute(){
       return $this->getViewResultsFrontendButtonAttribute();
   }
   

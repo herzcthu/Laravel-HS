@@ -28,7 +28,6 @@
             <th>Organizations</th>
             <th class="visible-lg">Created</th>
             <th class="visible-lg">Last Updated</th>
-            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -36,7 +35,12 @@
                 <tr>
                     <td><input type='checkbox' class='checkall checkbox' name='projects[{!! $project->id !!}]'></td>                    
                     <td>
-                        <a href="{{ route('admin.project.analysis', $project->id) }}">{!! $project->name !!}</a>
+                        <a href="{{ route('admin.project.analysis', $project->id) }}" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>{!! $project->name !!}</h5><p>Click here to go to analysis</p>" >{!! $project->name !!}</a><br>
+                        @if($project->type == 'incident')
+                            {!! $project->incident_action_buttons !!}
+                        @else
+                            {!! $project->checklist_action_buttons !!}
+                        @endif
                     </td>
                     <td>
                         @if ($project->parent)
@@ -55,7 +59,6 @@
                     
                     <td class="visible-lg">{!! $project->created_at->diffForHumans() !!}</td>
                     <td class="visible-lg">{!! $project->updated_at->diffForHumans() !!}</td>
-                    <td>{!! $project->action_buttons !!}</td>
                 </tr>
             @endforeach
         </tbody>

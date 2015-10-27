@@ -384,6 +384,8 @@ class EloquentProjectRepository implements ProjectContract {
 	{
 		$project = Project::firstOrNew(['name' => $input['name'], 'org_id' => $org_id]);
 		$project->name = $input['name'];
+                $project->desc = $input['desc'];
+                $project->type = $input['type'];
                 $project->validate = $input['validate'];
                 $project->sections = $input['sections'];
                 $project->reporting = $input['reporting'];

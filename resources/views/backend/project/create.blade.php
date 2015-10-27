@@ -35,9 +35,21 @@
             </div>
         </div><!--form control--> 
         <div class="form-group">
+            <label class="col-lg-2 control-label">Description</label>
+            <div class="col-lg-10">
+                {!! Form::text('desc', null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
+            </div>
+        </div><!--form control-->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Project Type</label>
+            <div class="col-lg-10">
+                {!! Form::select('type', ['checklist' => 'Check List', 'incident' => 'Incident Form'], null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
+            </div>
+        </div><!--form control--> 
+        <div class="form-group">
             <label class="col-lg-2 control-label">Validate Method</label>
             <div class="col-lg-10">
-                {!! Form::select('validate', ['' => '', 'person' => 'Observer ID','pcode' => 'Custom Location Code', 'uec_code' => 'Poll Station Code'], null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
+                {!! Form::select('validate', ['' => '', 'person' => 'Observer ID','pcode' => 'Custom Location Code'], null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group">

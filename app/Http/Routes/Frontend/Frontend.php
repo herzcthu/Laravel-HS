@@ -16,6 +16,11 @@ Route::group(['middleware' => 'auth'], function ()
         //Route::resource('media', 'MediaController', ['only' => ['show', 'edit', 'update']]);
         Route::group(['prefix' => 'data'], function(){
             Route::get('projects', ['as' => 'data.projects.index', 'uses' => 'ProjectController@index']);
+            
+            Route::get('project/{project}/status', ['as' => 'data.project.status.index', 'uses' => 'StatusController@index']);
+            
+            Route::get('project/{project}/response', ['as' => 'data.project.response.index', 'uses' => 'StatusController@response']);
+            
             Route::group(['prefix' => 'project'], function(){
                 
                         

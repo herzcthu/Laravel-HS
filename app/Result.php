@@ -60,10 +60,9 @@ class Result extends Model
             $prefix = DB::getTablePrefix();
             $this_table = $prefix . $this->table; 
             $query->select(DB::raw('primaryid')) ->from($prefix.'pcode') ->whereRaw('primaryid = '.$this_table.'.resultable_id')
-                ->where($column,'=',$value); 
-            
+                ->where($column,'=',$value);
         });
-    }
+  }
     
   public function scopeCreatedAt($query){
       return $query->where(function($query) {

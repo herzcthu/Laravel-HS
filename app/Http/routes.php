@@ -25,9 +25,7 @@ Route::group(['prefix' => Translation::getRoutePrefix(), 'middleware' => ['local
             // Error
             exit('Requested file does not exist on our server!');
         }
-    })->where([
-				'file' => '(.*)'
-			]);
+    })->where(['file' => '(.*)']);
 /**
  * Frontend Routes
  * Namespaces indicate folder structure

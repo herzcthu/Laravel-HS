@@ -125,6 +125,13 @@
                 </div>
             </div><!-- panel end -->    
             @endforeach
+            @if($project->type == 'incident')
+                
+                    <div class="pull-right">
+                    <input type="submit" class="btn btn-success" value="Save" />
+                    </div>
+                {!! Form::close() !!}
+            @endif
         @else
         {!! Form::open(['route' => ['admin.project.results.store', $project->id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
     
