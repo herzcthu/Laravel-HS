@@ -25,7 +25,6 @@
             <th>Organizations</th>
             <th class="visible-lg">Created</th>
             <th class="visible-lg">Last Updated</th>
-            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -33,7 +32,12 @@
                 <tr>
                                     
                     <td>
-                        {!! $project->name !!}
+                        {!! $project->name !!} <br>
+                        @if($project->type == 'incident')
+                        {!! $project->frontend_incident_action_buttons !!}
+                        @else
+                        {!! $project->frontend_action_buttons !!}
+                        @endif
                     </td>
                     <td>
                         @if ($project->parent)
@@ -52,13 +56,7 @@
                     
                     <td class="visible-lg">{!! $project->created_at->diffForHumans() !!}</td>
                     <td class="visible-lg">{!! $project->updated_at->diffForHumans() !!}</td>
-                    <td class="visible-lg">
-                        @if($project->type == 'incident')
-                        {!! $project->frontend_incident_action_buttons !!}
-                        @else
-                        {!! $project->view_status_frontend_button !!}
-                        @endif
-                    </td>
+                    
                 </tr>
             @endforeach
         </tbody>

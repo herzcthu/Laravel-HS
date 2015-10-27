@@ -150,18 +150,20 @@ class Project extends Model
               $this->getExportButtonAttribute();
   }
   
-  public function getCheclkistActionButtonsAttribute() {
+  public function getChecklistActionButtonsAttribute() {
       return $this->getEditButtonAttribute().' '.
               $this->getDeleteButtonAttribute().' '.
               $this->getShowQuestionsButtonAttribute().' '.
               $this->getAddQuestionButtonAttribute().' '.
               $this->getEditQuestionsButtonAttribute().' '.
+              $this->getViewResponseFrontendButtonAttribute().' '.
               $this->getViewStatusFrontendButtonAttribute().' '.
               $this->getExportButtonAttribute();
   }
   
   public function getFrontendActionButtonsAttribute(){
-      return $this->getViewStatusFrontendButtonAttribute();
+      return  $this->getViewResponseFrontendButtonAttribute().' '.
+              $this->getViewStatusFrontendButtonAttribute();
   }
   
   public function getFrontendIncidentActionButtonsAttribute(){
