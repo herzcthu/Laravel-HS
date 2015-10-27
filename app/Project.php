@@ -110,12 +110,6 @@ class Project extends Model
   /**
   * @return string
   */
-  public function getAddResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="Add Results"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
-  }
-  /**
-  * @return string
-  */
   public function getViewStatusFrontendButtonAttribute() {
      return '<a href="'.route('data.project.status.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Status</h5><p>click here to add data or check status</p>"><i class="fa fa-database"></i><i class="fa fa-eye"></i></a>';
   }
@@ -126,12 +120,17 @@ class Project extends Model
   public function getViewResponseFrontendButtonAttribute() {
      return '<a href="'.route('data.project.response.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
   }
-  
+  /**
+  * @return string
+  */
+  public function getAddResultsFrontendButtonAttribute() {
+     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to add incident data</p>"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
+  }
   /**
   * @return string
   */
   public function getViewResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to add data or check results</p>"><i class="fa fa-database"></i><i class="fa fa-table"></i></a>';
+     return '<a href="'.route('data.project.results.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to edit incident or check results</p>"><i class="fa fa-database"></i><i class="fa fa-table"></i></a>';
   }
   /**
   * @return string
@@ -146,6 +145,7 @@ class Project extends Model
               $this->getShowQuestionsButtonAttribute().' '.
               $this->getAddQuestionButtonAttribute().' '.
               $this->getEditQuestionsButtonAttribute().' '.
+              $this->getAddResultsFrontendButtonAttribute().' '.
               $this->getViewResultsFrontendButtonAttribute().' '.
               $this->getExportButtonAttribute();
   }
@@ -167,7 +167,8 @@ class Project extends Model
   }
   
   public function getFrontendIncidentActionButtonsAttribute(){
-      return $this->getViewResultsFrontendButtonAttribute();
+      return $this->getAddResultsFrontendButtonAttribute().' '.
+              $this->getViewResultsFrontendButtonAttribute();
   }
   
 }
