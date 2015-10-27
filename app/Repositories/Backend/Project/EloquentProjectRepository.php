@@ -172,7 +172,7 @@ class EloquentProjectRepository implements ProjectContract {
                         $org_id = $organization['organization'];
                     }
                     $this->flushOrganization($org_id, $project);
-		if ($project->update()) {  
+		if ($project->save()) {  
                     
 //                    /$project->save();
                     return true;
