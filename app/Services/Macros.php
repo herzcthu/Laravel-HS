@@ -75,11 +75,10 @@ class Macros extends FormBuilder {
                 $project_id = $results['project'];
                 $resultable = $results['validator'];
                 $incident = $results['incident'];//dd($incident);
-                $value = $result->getResultBySection($section_id, $project_id, $resultable, $qnum, $answer_index, $incident);
+                $value = $result->getResultBySection($section_id, $project_id, $resultable, $qnum, $akey, $incident);
             }else{
                 $value = null;
             }
-            
             $cssId = $question->qnum.'_a'.$answer_key;
             
             if(property_exists($answer, "css")) {
@@ -207,7 +206,7 @@ class Macros extends FormBuilder {
                     $cbhtml .= $wrap['start'];
                 }
                 $cbhtml .= '<div class="checkbox"><label>';
-                $cbhtml .= $this->{$type}($inputname, $default, $cbvalue, $options).'<span class="badge">'._t($display_value).'</span> '._t(ucfirst($answer->text)).' </label></div>';
+                $cbhtml .= $this->{$type}($inputname, $default, $value, $options).'<span class="badge">'._t($display_value).'</span> '._t(ucfirst($answer->text)).' </label></div>';
                 if($wrap){
                     $cbhtml .= $wrap['end'];
                 }
@@ -226,7 +225,7 @@ class Macros extends FormBuilder {
                     $rdhtml .= $wrap['start'];
                 }
                 $rdhtml .= '<div class="radio"><label>';
-                $rdhtml .= $this->radio($inputname, $default, $radiovalue, $options).'<span class="badge">'._t($display_value).'</span> '._t(ucfirst($answer->text)).' </label></div>';
+                $rdhtml .= $this->radio($inputname, $default, $value, $options).'<span class="badge">'._t($display_value).'</span> '._t(ucfirst($answer->text)).' </label></div>';
                 if($wrap){
                     $rdhtml .= $wrap['end'];
                 }

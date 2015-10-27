@@ -66,27 +66,33 @@ class EloquentResultRepository implements ResultContract {
 	}
         
         public function getResultBySection($section, $project, $resultable, $qnum, $anskey, $incident = ''){
-            $result_ByNum = Result::where('section_id', $section)->where('project_id', $project)->where('resultable_id', $resultable);
-            if(!empty($incident)){      
-                    $result_ByNum = $result_ByNum->where('incident_id', $incident)->first();
+            $result_ByNum = Result::where('project_id', $project)->where('section_id', $section)->where('resultable_id', $resultable);
+            if(!empty($incident)){      //dd($incident);
+                  $result =  $result_ByNum->where('incident_id', (int) $incident)->first();
             }else{
-                $result_ByNum = $result_ByNum->first();
+                $result = $result_ByNum->first();
             }
-            if (! is_null($result_ByNum)){
-                if(!is_null($result_ByNum->results)){
+            if (! is_null($result)){
+                if(!is_null($result->answers)){
+                    foreach($result->answers as $ans){
+                        if($ans->akey == $anskey){
+                            return $ans->value;
+                        }
+                    }
                     /**
                     if(property_exists($result_ByNum->results, $qnum)){
                         if(property_exists($result_ByNum->results->{$qnum}, $anskey)){
                         return $result_ByNum->results->{$qnum}->{$anskey};
                         }
                     }
-                     * 
-                     */
                     if(array_key_exists($qnum, $result_ByNum->results)){
                         if(array_key_exists($anskey, $result_ByNum->results[$qnum])){
                             return $result_ByNum->results[$qnum][$anskey];
                         }
                     }
+                    
+                     * 
+                     */
                 }
              
             }

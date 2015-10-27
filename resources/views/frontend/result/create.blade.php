@@ -35,7 +35,7 @@
                                 {!! Form::hidden('org_id', $project->organization->id) !!}
                                 {!! Form::hidden('validator_id', null,['class' => 'hidden-validator']) !!}
                                 {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
-                                {!! Form::select('qnum', $project->parent->questions->lists('qnum','id'), null, ['class'=>'form-control']) !!}
+                                {!! Form::select('qnum', $project->parent->questions->sortBy('qnum', SORT_NATURAL)->lists('qnum','id'), null, ['class'=>'form-control']) !!}
                             @endif
                             {!! Form::label('validator', 'Location Code', ['class'=>'control-label']) !!}
                             {!! Form::text('validator',null,['class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
@@ -83,7 +83,7 @@
                     </div>
                 @endif
                 @if(count($project->questions) > 0 )
-                    @foreach(Aio()->sortNatural($project->questions, 'qnum') as $question)
+                    @foreach($project->questions->sortBy('qnum', SORT_NATURAL) as $question)
                         @if(empty($question->related_data->q) && $question->related_data->type != 'parent')                            
                         
                             @if($section_key == $question->section)

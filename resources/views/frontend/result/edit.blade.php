@@ -36,9 +36,9 @@
                                 {!! Form::hidden('org_id', $project->organization->id) !!}
                                 {!! Form::hidden('validator_id', ($validated)? $validated['validator_key']:null,['class' => 'hidden-validator']) !!}
                                 {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
-                                {!! Form::select('qnum', $project->parent->questions->lists('qnum','id'), isset($code->section_id)?$code->section_id:null, ['class'=>'form-control']) !!}
+                                {!! Form::select('qnum', $project->parent->questions->sortBy('qnum', SORT_NATURAL)->lists('qnum','id'), isset($code->section_id)?$code->section_id:null, ['class'=>'form-control']) !!}
                                 {!! Form::label('incident_id', _('Incident Number'), ['class'=>'control-label']) !!}
-                                {!! Form::text('incident_id', isset($code->incident_id)?$code->incident_id:null,['class'=>'form-control', 'placeholder'=>'Incident ID', 'id'=>'Incident ID']) !!}
+                                {!! Form::text('incident_id', isset($code->incident_id)?$code->incident_id:null,['class'=>'form-control btn btn-primary disabled', 'placeholder'=>'Incident ID', 'id'=>'Incident ID']) !!}
                             @endif
                             {!! Form::label('validator', _t('Location Code'), ['class'=>'control-label']) !!}
                             {!! Form::text('validator',($validated)? $validated['validator']:null,['disabled', 'class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
@@ -96,7 +96,7 @@
                     </div>
                 @endif
                 @if(count($project->questions) > 0 )
-                    @foreach(Aio()->sortNatural($project->questions, 'qnum') as $question)
+                    @foreach($project->questions->sortBy('qnum', SORT_NATURAL) as $question)
                         @if(empty($question->related_data->q) && $question->related_data->type != 'parent')                            
                         
                             @if($section_key == $question->section)
@@ -217,7 +217,7 @@
                             <div class="col-xs-11">
                                 <div class="form-control-static">
                                 @if($question->qanswers->count() > 0 )
-                                    @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
+                                    @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
                                         <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
                                         {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 

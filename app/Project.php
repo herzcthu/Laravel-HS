@@ -124,7 +124,7 @@ class Project extends Model
   * @return string
   */
   public function getAddResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to add incident data</p>"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
+     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to add incident data</p>"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
   }
   /**
   * @return string
