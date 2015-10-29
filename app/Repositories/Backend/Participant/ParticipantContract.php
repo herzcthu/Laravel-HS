@@ -29,7 +29,7 @@ interface ParticipantContract {
 	 * @param $status
 	 * @return mixed
 	 */
-	public function searchParticipants($queue, $status = 1, $order_by = 'id', $sort = 'asc');
+	public function searchParticipants($queue, $order_by = 'id', $sort = 'asc');
 
 	/**
 	 * @param $per_page

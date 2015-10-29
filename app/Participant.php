@@ -80,6 +80,19 @@ class Participant extends Node {
 	 */
 	protected $dates = ['deleted_at'];
         
+        
+        /**
+        * Searchable rules.
+        *
+        * @var array
+        */
+        protected $searchable = [
+           'columns' => [
+               'name' => 2,
+               'participant_id' => 2,
+           ],
+        ];
+        
         public function pcode() {
             return $this->belongsTo('App\PLocation', 'pcode_id', 'primaryid');
         }
@@ -128,4 +141,22 @@ class Participant extends Node {
             
         });
     }      
+    
+      /**
+  * @return string
+  */
+  public function getAddButtonAttribute() {
+     return '<a href="'.route('admin.participants.create').'" class="btn btn-xs btn-primary"><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Create"></i></a>';
+  }  
+    /**
+  * @return string
+  */
+  public function getEditButtonAttribute() {
+     return '<a href="'.route('admin.participants.edit', $this->id).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+  }
+
+  public function getActionButtonsAttribute(){
+      return  $this->getAddButtonAttribute().' '.
+              $this->getEditButtonAttribute();
+  }
 }

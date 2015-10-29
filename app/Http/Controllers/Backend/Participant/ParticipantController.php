@@ -62,7 +62,7 @@ class ParticipantController extends Controller {
 	 */
 	public function index() {
 		return view('backend.participant.index')
-			->withParticipants($this->participants->getParticipantsPaginated(config('participant.users.default_per_page'), 1))
+			->withParticipants($this->participants->getParticipantsPaginated(config('aio.participant.default_per_page'), 1))
                         ->withRoles($this->roles->getAllRoles('id', 'asc', true));
 	}
 
@@ -146,7 +146,7 @@ class ParticipantController extends Controller {
         public function showImport() {
             return view('backend.participant.import')
 			->withRoles($this->roles->getAllRoles('id', 'asc', true))
-                        ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', true));
+                        ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', ['pcode','users','projects']));
         }
         
 	public function import(Request $request) {
@@ -254,10 +254,10 @@ class ParticipantController extends Controller {
                 $query = Input::get('q');
                 $order_by = ((null !== Input::get('field'))? Input::get('field'): 'id');
                 $sort = ((null !== Input::get('sort'))? Input::get('sort'): 'asc');
-                $participant = $this->participants->searchParticipants($query, true, $order_by, $sort);
+                $participant = $this->participants->searchParticipants($query, $order_by, $sort);
                 $total = $participant->count();
                 $pageName = 'page';
-                $per_page = config('participant.participants.default_per_page');
+                $per_page = config('aio.participant.default_per_page');
                 $page = null;
                 //Create custom pagination
                 $participants = new LengthAwarePaginator($participant, $total, $per_page, $page, [
@@ -265,7 +265,7 @@ class ParticipantController extends Controller {
                                     'pageName' => $pageName,
                                 ]);
                 if($participants->count() == 0){
-                    return redirect()->route('admin.participant.participants.index')->withFlashDanger('Your search term "'.$query.'" not found!');
+                    return redirect()->route('admin.participants.index')->withFlashDanger('Your search term "'.$query.'" not found!');
                 }
 		return view('backend.participant.index', compact('participants'))
                         ->withRoles($this->roles->getAllRoles('id', 'asc', true));

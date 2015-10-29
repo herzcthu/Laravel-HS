@@ -30,6 +30,7 @@ class RouteServiceProvider extends ServiceProvider {
                 $router->model('project', 'App\Project');
                 $router->model('projects', 'App\Project');
                 $router->model('questions', 'App\Question');
+                $router->model('organizations', 'App\Organization');
                 //$router->model('pcode', 'App\PLocation');
                 $router->bind('pcode', function($value, $route){
                     if($route->project->type == 'incident'){

@@ -111,8 +111,7 @@ class EloquentOrganizationRepository implements OrganizationContract {
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function update($id, $input, $roles, $permissions) {
-		$organization = $this->findOrThrowException($id);
+	public function update($organization, $input) {
 		//$this->checkOrganizationByEmail($input, $organization);
                 //dd(\Illuminate\Support\Facades\Input::file());
                 

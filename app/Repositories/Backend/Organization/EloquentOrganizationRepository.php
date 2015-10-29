@@ -138,23 +138,12 @@ class EloquentOrganizationRepository implements OrganizationContract {
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function update($id, $input, $roles, $permissions) {
-		$organization = $this->findOrThrowException($id);
+	public function update($organization, $input) {
 		//$this->checkOrganizationByEmail($input, $organization);
                 //dd(\Illuminate\Support\Facades\Input::file());
                 
                 
 		if ($organization->update($input)) {                      
-
-			//For whatever reason this just wont work in the above call, so a second is needed for now
-			$organization->status = isset($input['status']) ? 1 : 0;
-			$organization->confirmed = isset($input['confirmed']) ? 1 : 0;
-			$organization->save();
-
-			$this->checkOrganizationRolesCount($roles);
-			$this->flushRoles($roles, $organization);
-			$this->flushPermissions($permissions, $organization);
-
 			return true;
 		}
 
@@ -329,6 +318,7 @@ class EloquentOrganizationRepository implements OrganizationContract {
 	{
 		$organization = new Organization;
 		$organization->name = $input['name'];
+                $organization->short = $input['short'];
 		return $organization;
 	}
 }

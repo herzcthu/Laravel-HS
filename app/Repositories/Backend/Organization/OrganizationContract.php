@@ -57,7 +57,7 @@ interface OrganizationContract {
 	 * @param $roles
 	 * @return mixed
 	 */
-	public function update($id, $input, $roles, $permissions);
+	public function update($organization, $input);
 
 	/**
 	 * @param $id

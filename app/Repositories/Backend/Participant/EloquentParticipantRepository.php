@@ -110,10 +110,10 @@ class EloquentParticipantRepository implements ParticipantContract {
          * @param string $sort
          * @return object
          */
-	public function searchParticipants($queue, $status = 1, $order_by = 'id', $sort = 'asc') {
+	public function searchParticipants($queue, $order_by = 'name', $sort = 'asc') {
             $order_by = ((null !== Input::get('field'))? Input::get('field'):$order_by);
             $sort = ((null !== Input::get('sort'))? Input::get('sort'):$sort);
-            return Participant::where('status', $status)->orderBy($order_by, $sort)->search($queue)->get();
+            return Participant::search($queue)->orderBy($order_by, $sort)->get();
 	}
 
 	/**

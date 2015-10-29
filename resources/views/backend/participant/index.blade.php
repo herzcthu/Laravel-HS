@@ -19,13 +19,8 @@
 
 
 <div class='row' style='margin-bottom: 10px'>
-    
-<div class='col-xs-6 col-sm-6 col-md-6 form-inline'>
- {!! Form::open(['route'=>'admin.participants.import','files'=>true, 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'post']) !!}
- @include('includes.partials.import')
- {!! Form::close() !!}
-</div>
-<div class='col-xs-6 col-sm-6 col-md-6 form-inline'>
+ 
+<div class='col-xs-12 col-sm-12 col-md-12 form-inline'>
  {!! Form::open(['route' => 'admin.participants.bulk', 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'post']) !!}
  {!! Form::label('role', 'Change to - ', ['class' => 'control-label']) !!}
  {!! Form::select('role', isset($roles) ? $roles->lists('name','id'):['none' => 'None'],false, ['class' => 'form-control']) !!}

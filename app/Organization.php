@@ -39,4 +39,21 @@ class Organization extends Model
     return $query->whereHas($relation, $constraint)
                  ->with([$relation => $constraint]);
     }
+    /**
+  * @return string
+  */
+  public function getAddButtonAttribute() {
+     return '<a href="'.route('admin.access.organizations.create').'" class="btn btn-xs btn-primary"><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Create"></i></a>';
+  }  
+    /**
+  * @return string
+  */
+  public function getEditButtonAttribute() {
+     return '<a href="'.route('admin.access.organizations.edit', $this->id).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+  }
+  
+  public function getActionButtonsAttribute(){
+      return  $this->getAddButtonAttribute().' '.
+              $this->getEditButtonAttribute();
+  }
 }

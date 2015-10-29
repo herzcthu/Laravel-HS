@@ -33,6 +33,7 @@ return array(
         'role_for_participant_table' => 'roles_participants',
         'rolemodel' => 'App\ParticipantRole',
         'default_role' => '',
+        'default_per_page' => 30,
         ],
     'media' => [
         'media_table' => 'media',

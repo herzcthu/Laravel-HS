@@ -21,7 +21,7 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 });
  * 
  */
-
+/**
 $factory->define(App\Location::class, function(){
     $location = [
 			[
@@ -37,4 +37,11 @@ $factory->define(App\Location::class, function(){
 		];
                 \App\Location::buildTree($location);
     
+});
+ * 
+ */
+$factory->define(App\Project::class, function(){
+    return ['name' => $faker->name,
+            'short' => $faker->regexify('[A-Z]{3,5}'),
+        ]
 });

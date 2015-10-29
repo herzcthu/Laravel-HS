@@ -75,9 +75,11 @@ class OrganizationController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function edit($id)
+    public function edit($organization)
     {
         //
+        return view('backend.access.organizations.edit')
+                    ->withOrganization($organization);
     }
 
     /**
@@ -87,9 +89,10 @@ class OrganizationController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $organization)
     {
-        //
+        $this->organizations->update($organization, $request->all());
+		return redirect()->route('admin.access.organizations.index')->withFlashSuccess('The organization was successfully created.');
     }
 
     /**

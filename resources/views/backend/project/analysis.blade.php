@@ -51,7 +51,7 @@
                                     <td>
                                      @foreach($question->ans->groupBy('akey') as $k => $qa)
                                         @if($k == $qv->akey)
-                                        {{ ceil(($qa->count() / $locations->count()) * 100 )}}% ({{$qa->count()}})
+                                        {{ ceil(($qa->count() / $question->ans->count()) * 100 )}}% ({{$qa->count()}})
                                         @endif
                                      @endforeach
                                     </td>
