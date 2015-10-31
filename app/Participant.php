@@ -1,14 +1,15 @@
 <?php namespace App;
 
-use Baum\Node;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Services\Participant\Traits\ParticipantTrait;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Nicolaslopezj\Searchable\SearchableTrait;
 
 /**
 * Participant
 */
-class Participant extends Node {
+class Participant extends Model {
  use SoftDeletes, ParticipantTrait, SearchableTrait;
   /**
    * Table name.
@@ -17,60 +18,7 @@ class Participant extends Node {
    */
   protected $table = 'participants';
 
-  //////////////////////////////////////////////////////////////////////////////
-
-  //
-  // Below come the default values for Baum's own Nested Set implementation
-  // column names.
-  //
-  // You may uncomment and modify the following fields at your own will, provided
-  // they match *exactly* those provided in the migration.
-  //
-  // If you don't plan on modifying any of these you can safely remove them.
-  //
-
-  // /**
-  //  * Column name which stores reference to parent's node.
-  //  *
-  //  * @var string
-  //  */
-   protected $parentColumn = 'parent_id';
-
-  // /**
-  //  * Column name for the left index.
-  //  *
-  //  * @var string
-  //  */
-   protected $leftColumn = 'lft';
-
-  // /**
-  //  * Column name for the right index.
-  //  *
-  //  * @var string
-  //  */
-   protected $rightColumn = 'rgt';
-
-  // /**
-  //  * Column name for the depth field.
-  //  *
-  //  * @var string
-  //  */
-   protected $depthColumn = 'depth';
-
-  // /**
-  //  * Column to perform the default sorting
-  //  *
-  //  * @var string
-  //  */
-   protected $orderColumn = 'name';
-
-  // /**
-  // * With Baum, all NestedSet-related fields are guarded from mass-assignment
-  // * by default.
-  // *
-  // * @var array
-  // */
-   protected $guarded = array('id', 'parent_id', 'lft', 'rgt', 'depth');
+   protected $guarded = array('id', 'parent_id');
 
    protected $scoped = array('org_id');
         /**
@@ -92,6 +40,14 @@ class Participant extends Node {
                'participant_id' => 2,
            ],
         ];
+        
+        public function supervisor() {
+            return $this->belongsTo('App\Participant', 'parent_id');
+        }
+        
+        public function children(){
+            return $this->hasMany('App\Participant', 'parent_id');
+        }
         
         public function pcode() {
             return $this->belongsTo('App\PLocation', 'pcode_id', 'primaryid');

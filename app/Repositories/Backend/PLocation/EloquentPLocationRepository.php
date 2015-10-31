@@ -254,34 +254,6 @@ class EloquentPLocationRepository implements PLocationContract {
                 }
 	}
         
-        public function setPcode($location, $org, $level) {
-            $organization = $this->organizations->findOrThrowException($org);
-            $prole = $this->proles->findOrThrowException($level);
-            if(isset($location->pcode)){
-                $location->pcode = (string) $location->pcode;
-            }elseif(isset($location->no)){
-                $location->pcode = (string) $location->no;
-            }elseif(isset($location->custom_location_code)){
-                $location->pcode = (string) $location->custom_location_code;
-            }else{
-                throw new GeneralException('No valid location code found! Check your upload file!');
-            }
-                if(!empty($location->pcode)){
-                    $trees = $this->makeTreeFromInput($location, $location->pcode, $org);
-
-                    if(isset($location->pcode)){
-                        $trees->pcode = (string) $location->pcode;
-                    }
-                    if(isset($location->uec_code)){
-                        $trees->uec_code = (string) $location->uec_code;
-                    }
-                    $trees->proles()->associate($prole);
-                    $trees->organization()->associate($organization);
-                    $trees->save();
-                }else{
-                    throw new GeneralException('Location Code invalid!');
-                }
-        }
         /**
 	 * @param $per_page
 	 * @param string $order_by
@@ -571,6 +543,34 @@ class EloquentPLocationRepository implements PLocationContract {
             return Location::makeTree($array);
         }
 
+        public function setPcode($location, $org, $level) {
+            $organization = $this->organizations->findOrThrowException($org);
+            $prole = $this->proles->findOrThrowException($level);
+            if(isset($location->pcode)){
+                $location->pcode = (string) $location->pcode;
+            }elseif(isset($location->no)){
+                $location->pcode = (string) $location->no;
+            }elseif(isset($location->custom_location_code)){
+                $location->pcode = (string) $location->custom_location_code;
+            }else{
+                throw new GeneralException('No valid location code found! Check your upload file!');
+            }
+                if(!empty($location->pcode)){
+                    $trees = $this->makeTreeFromInput($location, $location->pcode, $org);
+
+                    if(isset($location->pcode)){
+                        $trees->pcode = (string) $location->pcode;
+                    }
+                    if(isset($location->uec_code)){
+                        $trees->uec_code = (string) $location->uec_code;
+                    }
+                    $trees->proles()->associate($prole);
+                    $trees->organization()->associate($organization);
+                    $trees->save();
+                }else{
+                    throw new GeneralException('Location Code invalid!');
+                }
+        }
         private function makeTreeFromInput($location, $pcode, $org_id) {
             $trees = PLocation::firstOrNew(['primaryid' => $pcode.'-'.$org_id]);//dd($location);
             $trees->primaryid = $pcode.'-'.$org_id;
@@ -603,12 +603,13 @@ class EloquentPLocationRepository implements PLocationContract {
                 }else{
 
                 }
+                //dd($location);
                 if(isset($location->village_tract)){
                     $trees->village_tract = $location->village_tract;
                 }elseif(isset($location->village_tract_burmese)){
                     $trees->village_tract = $location->village_tract_burmese;
-                }elseif(isset($location->village_tracttown)){
-                    $trees->village_tract = $location->village_tracttown;
+                }elseif(isset($location->village_tractward_burmese)){
+                    $trees->village_tract = $location->village_tractward_burmese;
                 }
                 else{
 
@@ -625,6 +626,7 @@ class EloquentPLocationRepository implements PLocationContract {
                 return $trees;
         }
         public function cliImport($file, $org, $level) {
+            set_time_limit(0);
             $excel = Excel::filter('chunk')->load($file, 'UTF-8')->chunk(100, function($locations) use ($file, $org, $level){
                             // Loop through all rows
                             //dd($location);

@@ -34,12 +34,9 @@
             <th><input type='checkbox' id='checkall' class='checkall checkbox'></th>
             <th>ID</th>
             <th>Name</th>
-            <th>E-mail</th>
-            <th>Responsible Region</th>
+            <th>Phones</th>
             <th>Base Location</th>
             <th>Roles</th>
-            <th class="visible-lg">Created</th>
-            <th class="visible-lg">Last Updated</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -55,28 +52,20 @@
                         {!! $participant->name !!} 
                         @endif
                     </td>
-                    <td>{!! link_to("mailto:".$participant->email, $participant->email) !!}</td>
                     <td>
-                        @if($participant->role->level == 4)
-                            {!! $participant->pcode->state !!}
-                        @elseif($participant->role->level == 3)
-                            {!! $participant->pcode->district !!}
-                        @elseif($participant->role->level == 2)
-                            {!! $participant->pcode->township !!}
-                        @elseif($participant->role->level == 1)
-                            {!! $participant->pcode->village_tract !!}
-                        @else
-                            {!! $participant->pcode->village !!}
+                        @if($participant->phones)
+                        M: {!! $participant->phones->mobile !!} <br>
+                        E: {!! $participant->phones->emergency !!}
                         @endif
                     </td>
                     <td>{{ $participant->base }}</td>
                     <td>
-                        {!! $participant->role->name !!}
+                        @if(!is_null($participant->role))
+                            {!! $participant->role->name !!}
+                        @endif
                     </td>
                     
-                    <td class="visible-lg">{!! $participant->created_at->diffForHumans() !!}</td>
-                    <td class="visible-lg">{!! $participant->updated_at->diffForHumans() !!}</td>
-                    <td>{!! $participant->action_buttons !!}</td>
+                    <td>{!! $participant->edit_button !!}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -36,7 +36,7 @@ class ParticipantController extends Controller {
 	 */
 	protected $permissions;
         
-        Protected $plocation;
+        Protected $plocations;
 
 	/**
 	 * @param ParticipantContract $users
@@ -54,7 +54,7 @@ class ParticipantController extends Controller {
 		$this->roles = $roles;
                 $this->locations = $locations;
                 $this->organizations = $organizations;
-                $this->plocation = $plocation;
+                $this->plocations = $plocation;
 	}
 
 	/**
@@ -121,11 +121,9 @@ class ParticipantController extends Controller {
                     return json_encode($sections['mediagrid']);
 			//return Response::json(view('', compact('posts'))->render());
                 } else {
-		return view('backend.participant.edit')
-			->withParticipant($participant)
-			->withRoles($this->roles->getAllRoles('id', 'asc', true))
-                        ->withLocations($this->locations)
-                        ->withPLocation($this->plocation);
+                    return view('backend.participant.edit')
+                            ->withParticipant($participant)
+                            ->withRoles($this->roles->getAllRoles('id', 'asc', true));
                 }
 	}
 
@@ -136,9 +134,8 @@ class ParticipantController extends Controller {
 	 */
 	public function update($id, UpdateParticipantRequest $request) {            
 		$this->participants->update($id,
-			$request->except('role', 'locations'),
-			$request->only('role'),
-			$request->only('locations')
+			$request->except('phone'),
+                        $request->only('phone')
 		);
 		return redirect()->route('admin.participants.index')->withFlashSuccess('The user was successfully updated.');
 	}

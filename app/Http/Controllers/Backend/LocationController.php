@@ -78,7 +78,7 @@ class LocationController extends Controller
     {
         return view('backend.location.create')
             ->withLocations($this->locations->getAllLocations('name'))
-            ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', true));
+            ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', ['pcode', 'projects']));
     }
 
     /**
@@ -184,7 +184,7 @@ class LocationController extends Controller
     public function showImport(){
         
         return view('backend.location.import')
-			->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', true))
+			->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', ['pcode','projects']))
                         ->withProles($this->proles->getAllRoles('name', 'asc'));
     }
 

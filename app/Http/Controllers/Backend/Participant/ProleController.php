@@ -9,7 +9,7 @@ use App\Http\Requests\Backend\Participant\Role\UpdateRoleRequest;
  * Class RoleController
  * @package App\Http\Controllers\Participant
  */
-class RoleController extends Controller {
+class ProleController extends Controller {
 
 	/**
 	 * @var RoleRepositoryContract

@@ -55,47 +55,30 @@
                 {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'E-mail Address']) !!}
             </div>
         </div><!--form control-->
-
-        @if (count($roles) > 0)
         <div class="form-group">
-            <label class="col-lg-2 control-label">Role</label>
+            <label class="col-lg-2 control-label">Gender</label>
             <div class="col-lg-10">
-                <select name="role" class="form-control" id="prole">
-                    @foreach($roles as $role)
-                        @if($participant->role->name === $role->name)
-                        <option value="{{ $role->id }}" data-role="{{ $role->level }}" selected="1">{{ $role->name }} ({!! ucfirst($role->level) !!})</option>
-                        @else
-                            <option value="{{ $role->id }}" data-role="{{ $role->level }}">{{ $role->name }} ({!! ucfirst($role->level) !!}) </option>
-                        @endif    
-                    @endforeach
-                </select>
-                
+                {!! Form::select('gender',['male'=>'Male','female'=>'Female','unspecified'=>'Unspecified'], null, ['class' => 'form-control', 'placeholder' => 'Male/Female']) !!}
             </div>
         </div><!--form control-->
-        @endif
-        
-        @if ($p_location)
         <div class="form-group">
-            <label class="col-lg-2 control-label">{!! ucfirst($participant->role->level) !!}</label>
+            <label class="col-lg-2 control-label">Mobile Phone</label>
             <div class="col-lg-10">
-                @if($participant->role->level== 'village')
-                    {!! Form::select("locations[$participant->role->level]",$locations->getVillagesScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
-                @elseif($participant->role->level=='village_tract')
-                    {!! Form::select("locations[$participant->role->level]",$locations->getVTracksScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
-                @elseif($participant->role->level=='township')
-                    {!! Form::select("locations[$participant->role->level]",$locations->getTownshipsScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
-                @elseif($participant->role->level=='district')
-                    {!! Form::select("locations[$participant->role->level]",$locations->getDistrictsScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
-                @elseif($participant->role->level=='state')
-                    {!! Form::select("locations[$participant->role->level]",$locations->getStatesScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
-                @else
-                    {!! Form::select("locations[$participant->role->level]",$locations->getCountryScope(config('aio.country'),true)->lists('name','id'),$participant->pcode->location_id , ['class' => 'form-control', 'id' => 'plocation']) !!}
-                @endif
-             
-                
+                {!! Form::text('phone[mobile]', (isset($participant->phones->mobile)? $participant->phones->mobile:null), ['class' => 'form-control', 'placeholder' => 'Mobile']) !!}
             </div>
         </div><!--form control-->
-        @endif
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Emergency Phone</label>
+            <div class="col-lg-10">
+                {!! Form::text('phone[emergency]', (isset($participant->phones->emergency)? $participant->phones->emergency:null), ['class' => 'form-control', 'placeholder' => 'Emergency Phone']) !!}
+            </div>
+        </div><!--form control-->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Address</label>
+            <div class="col-lg-10">
+                {!! Form::textarea('address', null, ['class' => 'form-control', 'placeholder' => 'Address']) !!}
+            </div>
+        </div><!--form control-->
         
         <div class="form-group" id="ajax_insert">
             

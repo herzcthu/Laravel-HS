@@ -21,15 +21,6 @@ class CreateParticipantsTable extends Migration {
             $table->integer('parent_id')
                   ->nullable()
                   ->default(NULL);
-            $table->integer('lft')
-                  ->nullable()
-                  ->default(NULL);
-            $table->integer('rgt')
-                  ->nullable()
-                  ->default(NULL);
-            $table->integer('depth')
-                  ->nullable()
-                  ->default(NULL);
             $table->string('avatar', 255)->nullable();
             $table->string('name', 255)->nullable()->index();
             $table->string('participant_id', 255)->index();
