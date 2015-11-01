@@ -57,13 +57,13 @@
                             {{-- We don't need to modify the value, let's see if the property exists with the column key first --}}
                             @if($record->{$key})
                                 {{-- Great, the key exists on the record, we'll output it here --}}
-                                {!! _t($record->{$key})  !!}
+                                {!! (!empty($record->{$key}))? _t($record->{$key}):$record->{$key}  !!}
                             @else
                                 {{-- Looks like the column key isn't a valid key, we'll try outputting with the column name --}}
                                 @if(is_array($name))
-                                {!! _t($record->{$name['name']})  !!}
+                                {!! (!empty($record->{$name['name']}))? _t($record->{$name['name']}):$record->{$name['name']}  !!}
                                 @else
-                                {!! _t($record->{$name})  !!}
+                                {!! (!empty($record->{$name}))? _t($record->{$name}):$record->{$name}  !!}
                                 @endif
                                 
                             @endif
