@@ -184,7 +184,7 @@
                     <option value="none" data-project="">None </option>
                     @foreach($projects as $pj)
                         @if($pj->id != $project->id)
-                        <option value="{{ $pj->id }}" data-project="" @if($project->parent->id == $pj->id) selected="selected" @endif>{{ $pj->name }} </option>
+                        <option value="{{ $pj->id }}" data-project="" @if(isset($project->parent) && $project->parent->id == $pj->id) selected="selected" @endif>{{ $pj->name }} </option>
                         @endif
                     @endforeach
                 </select>

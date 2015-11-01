@@ -574,7 +574,9 @@ class AjaxController extends Controller
                 //dd($village_tractMembers->count());
                 foreach ($locatedMembers as $key => $sM){
                     $sM_id = str_replace($pcode->pcode, '', $sM->participant_id);
-                    //if($sM->name != 'No Name'){
+                    if(!is_null($sM->supervisor)){
+                        $response[$sM->supervisor->role->name] = $sM->supervisor->name;
+                    }
                     $response[$sM->role->name.' '.$sM_id ] = $sM->name;
                     //}
                     $response[$sM->role->name.' '.$sM_id.' ID'] = $sM->participant_id;

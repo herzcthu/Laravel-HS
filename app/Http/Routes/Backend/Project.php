@@ -45,8 +45,7 @@
                         'prefix' => 'project/{project}',
                         ], function () {
                             Route::get('edit', ['as' => 'admin.project.edit', 'uses' => 'ProjectController@edit']);
-                            Route::get('destroy', ['as' => 'admin.project.destroy', 'uses' => 'ProjectController@destroy']);
-                            Route::get('delete', ['as' => 'admin.project.delete-permanently', 'uses' => 'ProjectController@delete']);
+                            Route::delete('delete', ['as' => 'admin.project.delete-permanently', 'uses' => 'ProjectController@destroy']);
                             Route::get('restore', ['as' => 'admin.project.restore', 'uses' => 'ProjectController@restore']); 
                             Route::get('analysis', ['as' => 'admin.project.analysis', 'uses' => 'ProjectController@analysis']); 
                             Route::get('export', ['as' => 'admin.project.export', 'uses' => 'ProjectController@export']);

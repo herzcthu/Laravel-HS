@@ -64,4 +64,24 @@ class Question extends Model
   public function setRelatedDataAttribute(Array $val) {
       $this->attributes['related_data'] = json_encode($val);
   }  
+  
+  /**
+  * @return string
+  */
+  public function getEditButtonAttribute() {
+     return '<a href="'.route('admin.project.questions.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+  }
+  
+  /**
+  * @return string
+  */
+  public function getDeleteButtonAttribute() {
+    return '<a href="'.route('admin.project.questions.destroy', [$this->project->id, $this->id]).'" data-method="delete" class="btn btn-xs btn-danger"><i class="fa fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i></a>';
+  }
+  
+  public function getActionButtonsAttribute() {
+      return $this->getEditButtonAttribute().' '.
+      $this->getDeleteButtonAttribute();
+  }
+  
 }

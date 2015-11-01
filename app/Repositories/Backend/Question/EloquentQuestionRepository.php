@@ -188,11 +188,10 @@ class EloquentQuestionRepository implements QuestionContract {
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function destroy($id) {
-		if (auth()->id() == $id)
-			throw new GeneralException("You can not delete yourself.");
-
-		$question = $this->findOrThrowException($id);
+	public function destroy($project, $question) {
+		$question->qanswers()->delete();
+                $question->ans()->delete();
+                $question->children()->delete();
 		if ($question->delete())
 			return true;
 
@@ -204,8 +203,8 @@ class EloquentQuestionRepository implements QuestionContract {
 	 * @return boolean|null
 	 * @throws GeneralException
 	 */
-	public function delete($id) {
-		$question = $this->findOrThrowException($id, true);
+	public function delete($project, $question) {
+		//$question = $this->findOrThrowException($id, true);
 
 		//Detach all organizations & permissions
 		$question->detachOrganizations($question->organizations);

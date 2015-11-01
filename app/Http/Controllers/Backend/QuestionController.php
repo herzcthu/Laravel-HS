@@ -105,10 +105,10 @@ class QuestionController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function edit($id)
+    public function edit($project, $question)
     {
         
-        $question = $this->questions->findOrThrowException($id, true); //dd((array) $question->answers);
+        //$question = $this->questions->findOrThrowException($id, true); //dd((array) $question->answers);
         $answers = count((array) $question->answers) - 1; 
         javascript()->put([
 			'index' => $answers
@@ -146,7 +146,7 @@ class QuestionController extends Controller
                         $request->only('project_id')
                         
 		);
-		return redirect()->route('admin.project.questions.editall',[$request->get('project_id')])->withFlashSuccess('The question was successfully updated.');
+		return redirect()->route('admin.project.questions.editall',[$project->id])->withFlashSuccess('The question was successfully updated.');
     }
 
     /**
@@ -155,8 +155,9 @@ class QuestionController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($project, $question)
     {
-        //
+        $this->questions->destroy($project, $question);
+        return redirect()->route('admin.project.questions.editall',[$project->id])->withFlashSuccess('The question was successfully deleted.');
     }
 }

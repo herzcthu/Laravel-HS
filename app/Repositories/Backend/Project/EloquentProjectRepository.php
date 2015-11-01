@@ -173,9 +173,7 @@ class EloquentProjectRepository implements ProjectContract {
                         $org_id = $organization['organization'];
                     }
                     $this->flushOrganization($org_id, $project);
-		if ($project->save()) {  
-                    
-//                    /$project->save();
+		if ($project->save()) { 
                     return true;
 		}
 
@@ -205,14 +203,16 @@ class EloquentProjectRepository implements ProjectContract {
 	 * @return boolean|null
 	 * @throws GeneralException
 	 */
-	public function delete($id) {
-		$project = $this->findOrThrowException($id, true);
-
+	public function delete($project) {
+		if(!$project->questions->isEmpty()){
+                    throw new GeneralException("Project is not empty. You can not delete this project.");
+                }
+                
 		//Disassociate organization
-		$project->organization()->disassociate();
+		$project->organization()->dissociate();
 
 		try {
-			$project->forceDelete();
+			$project->delete();
 		} catch (\Exception $e) {
 			throw new GeneralException($e->getMessage());
 		}
@@ -326,21 +326,6 @@ class EloquentProjectRepository implements ProjectContract {
 		}
 	}
 
-	/**
-	 * @param $input
-	 * @param $project
-	 * @throws GeneralException
-	 */
-	private function checkProjectByEmail($input, $project)
-	{
-		//Figure out if email is not the same
-		if ($project->email != $input['email'])
-		{
-			//Check to see if email exists
-			if (Project::where('email', '=', $input['email'])->first())
-				throw new GeneralException('That email address belongs to a different project.');
-		}
-	}
 
 	/**
 	 * @param $organizations
@@ -353,29 +338,7 @@ class EloquentProjectRepository implements ProjectContract {
                 $project->organization()->associate($organization);
 	}
 
-	/**
-	 * @param $permissions
-	 * @param $project
-	 */
-	private function flushPermissions($permissions, $project)
-	{
-		//Flush permissions out, then add array of new ones if any
-		$project->detachPermissions($project->permissions);
-		if (count($permissions['permission_project']) > 0)
-			$project->attachPermissions($permissions['permission_project']);
-	}
-
-	/**
-	 * @param $organizations
-	 * @throws GeneralException
-	 */
-	private function checkProjectOrganizationsCount($organizations)
-	{
-		//Project Updated, Update Organizations
-		//Validate that there's at least one organization chosen
-		if (count($organizations['assignees_organizations']) == 0)
-			throw new GeneralException('You must choose at least one organization.');
-	}
+	
 
 	/**
 	 * @param $input

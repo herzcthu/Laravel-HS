@@ -65,13 +65,13 @@ interface QuestionContract {
 	 * @param $id
 	 * @return mixed
 	 */
-	public function destroy($id);
+	public function destroy($project, $question);
 
 	/**
 	 * @param $id
 	 * @return mixed
 	 */
-	public function delete($id);
+	public function delete($project, $question);
 
 	/**
 	 * @param $id

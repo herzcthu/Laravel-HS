@@ -42,18 +42,6 @@
                         Route::post('bulk', ['as' => 'admin.project.questions.bulk', 'uses' => 'QuestionController@bulk']);
                         Route::get('edit', ['as' => 'admin.project.questions.editall', 'uses' => 'QuestionController@editall']);
                     });
-                    Route::group([
-                        'prefix' => 'question/{id}', 
-                        'where' => ['id' => '[0-9]+'],
-                        'middleware' => 'access.routeNeedsPermission',
-                        'permission' => ['manage_question'],
-                        'redirect'   => '/',
-                        'with'       => ['flash_danger', 'You do not have access to do that.']
-                        ], function () {
-                            Route::get('edit', ['as' => 'admin.project.question.edit', 'uses' => 'QuestionController@edit']); 
-                            Route::get('delete', ['as' => 'admin.project.question.delete-permanently', 'uses' => 'QuestionController@delete']);
-                            Route::get('restore', ['as' => 'admin.project.question.restore', 'uses' => 'QuestionController@restore']); 
-                    });
                     
                     /* Question Management */
                     Route::group([

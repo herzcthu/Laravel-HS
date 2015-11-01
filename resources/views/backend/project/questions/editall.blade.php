@@ -59,7 +59,7 @@
                             <div class="form-group {!! Aio()->section($section->column) !!}">
                                 <div class="row">
                                     <div class="col-lg-1 pull-right">
-                                    {!! link_to_route('admin.project.question.edit', 'Edit', [$question->id]) !!}
+                                    {!! $question->action_buttons !!}
                                     </div>
                                 </div>
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))

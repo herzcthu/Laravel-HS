@@ -76,8 +76,9 @@ class Project extends Model
   * @return string
   */
   public function getDeleteButtonAttribute() {
-    return '<a href="'.route('admin.project.destroy', $this->id).'" data-method="delete" class="btn btn-xs btn-danger"><i class="fa fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i></a>';
+    return '<a href="'.route('admin.project.delete-permanently', $this->id).'" data-method="delete" class="btn btn-xs btn-danger"><i class="fa fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i></a>';
   }
+  
   
   /**
   * @return string
