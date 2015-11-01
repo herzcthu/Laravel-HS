@@ -101,20 +101,9 @@
             <label class="col-lg-2 control-label">Organizations</label>
             <div class="col-lg-3">
                 @if (count($organizations) > 0)
-                    @foreach($organizations as $organization)
-                        {!! $organization->name !!}
-                        <div class="sw-green create-permissions-switch">
-                            <div class="onoffswitch">
-                                <input type="checkbox" value="{{$organization->id}}" name="users_organizations[]" class="toggleBtn onoffswitch-checkbox" id="organization-{{$organization->id}}">
-                                <label for="organization-{{$organization->id}}" class="onoffswitch-label">
-                                    <div class="onoffswitch-inner"></div>
-                                    <div class="onoffswitch-switch"></div>
-                                </label>
-                            </div>
-                        </div><!--green checkbox-->
+                    {!! Form::select('users_organization', aio()->addNone($organizations->lists('id','name')->toArray(), true), (isset($user->organization->id)? $user->organization->id:null), ['class' => 'form-control']) !!}
+                            
                         <div class="clearfix"></div>
-
-                    @endforeach
                 @else
                     No Organizations to set
                 @endif

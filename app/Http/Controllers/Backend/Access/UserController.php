@@ -83,8 +83,8 @@ class UserController extends Controller {
 	 */
 	public function store(CreateUserRequest $request) {
 		$this->users->create(
-			$request->except('assignees_roles', 'permission_user', 'users_organization'),
-			$request->only('assignees_roles'),
+			$request->except('user_role', 'permission_user', 'users_organization'),
+			$request->only('user_role'),
 			$request->only('permission_user'),
                         $request->only('users_organization')
 		);

@@ -119,20 +119,23 @@ class EloquentUserRepository implements UserContract {
 	 */
 	public function create($input, $roles, $permissions, $organizations) {
 		$user = $this->createUserStub($input);
-                $organization = $this->organization->findOrThrowException($organizations['users_organizations']);
+                if(!empty($organizations['users_organization']) && $organizations['users_organization'] != 'none'){
+                    $organization = $this->organization->findOrThrowException($organizations['users_organization']);
+                    $user->organization()->associate($organization);
+                }
                 
-                $role = $this->role->findOrThrowException($roles['users_roles']);
+                $rolecheck = $this->checkUserRoleLevel($roles, $user);
                 
 		if ($user->save()) {
 			
-			//Attach new roles
-			$user->attachRoles($roles['assignees_roles']);
+			$this->checkUserRolesCount($roles);
+                        if($rolecheck){
+                            $this->flushRoles($roles, $user);
+                        }
+                        $this->flushPermissions($permissions, $user);
 
-			//Attach other permissions
-			$user->attachPermissions($permissions['permission_user']);
-                        
-                        //Attach other permissions
-			$user->attachOrganizations($organizations['users_organizations']);
+                        $user->save();
+			
 
 			//Send confirmation email if requested
 			if (isset($input['confirmation_email']) && $user->confirmed == 0)
