@@ -65,6 +65,16 @@ class EloquentResultRepository implements ResultContract {
 		throw new GeneralException('That result does not exist.');
 	}
         
+        /**
+         * 
+         * @param integer $section (Section in form)
+         * @param object $project (Project object)
+         * @param integer/string $resultable (resultable either location or participant)
+         * @param string $qnum (Question Number)
+         * @param string $anskey (Answer Key)
+         * @param integer $incident (incident number)
+         * @return integer/string
+         */
         public function getResultBySection($section, $project, $resultable, $qnum, $anskey, $incident = ''){
             $result_ByNum = Result::where('project_id', $project)->where('section_id', $section)->where('resultable_id', $resultable);
             if(!empty($incident)){      //dd($incident);
@@ -198,8 +208,9 @@ class EloquentResultRepository implements ResultContract {
                             }else{
                                 $answerVal = $aval;
                             }
+                            
                             $answerR = Answers::firstOrNew(['qid' => $q->id, 'akey' => $answerkey, 'status_id' => $result->id]);
-                            if(!empty($answerVal)){
+                            if(isset($answerVal)){
                                 $answerR->value = $answerVal;
                                 $result->answers()->save($answerR);
                             }
@@ -242,9 +253,7 @@ class EloquentResultRepository implements ResultContract {
                 $display['qnum'] = isset($input['display']['qnum'])? 1 : 0;
                 $display['result'] = isset($input['display']['result'])? 1 : 0;
                 $result->display = $display;
-                //$result->save();
-                //$toUpdate = $result->whereQnum($input['qnum'])->whereProjectId($project['project_id'])->first();
-                //dd($toUpdate);
+                
 		if ($result->whereQnum($input['qnum'])->whereProjectId($project['project_id'])->first()->update($input)) { 
                     Answers::where('status_id', $result->id)->delete();
                     foreach($input['answer'] as $qnum => $answers){
@@ -372,22 +381,7 @@ class EloquentResultRepository implements ResultContract {
 		}
 	}
 
-	/**
-	 * @param $input
-	 * @param $result
-	 * @throws GeneralException
-	 */
-	private function checkResultByEmail($input, $result)
-	{
-		//Figure out if email is not the same
-		if ($result->email != $input['email'])
-		{
-			//Check to see if email exists
-			if (Result::where('email', '=', $input['email'])->first())
-				throw new GeneralException('That email address belongs to a different result.');
-		}
-	}
-
+	
 	/**
 	 * @param $organizations
 	 * @param $result
@@ -444,18 +438,28 @@ class EloquentResultRepository implements ResultContract {
             $section_qcount = $project->questions->where('section', $section)->count();
             
             $formulas = $project->sections[$section]->formula; 
-            
+            $anscount = count(array_filter(array_values(array_dot($answers))));// dd($anscount);
             foreach($answers as $qnum => $answer){
                 //get only first item in array because question with logical check will include only one answer
                 $var[$qnum] = array_values($answer)[0];
+                
+                $q = $this->questions->getQuestionByQnum($qnum, $project->id);
+                
+                foreach($answer as $akey => $aval){
+                    if($akey != 'radio'){
+                        $qanswer = $q->qanswers->where('akey', $akey)->first();
+                        if(in_array($qanswer->type, ['checkbox', 'text']) && $anscount > 0){
+                            $atleast_one = true;
+                        }
+                    }
+                    
+                }
+                
             }
-            
-            
-            $anscount = count(array_filter(array_values(array_dot($answers))));// dd($anscount);
             
             if($anscount === 0 ){ 
                 return 'missing';
-            }elseif ($anscount != $section_qcount) {
+            }elseif ($anscount != $section_qcount && $atleast_one === false) {
                 return 'incomplete';
             }elseif($anscount == $section_qcount){
                 if(!empty($formulas)){
@@ -487,7 +491,7 @@ class EloquentResultRepository implements ResultContract {
                     return 'complete';
                 }
             }else{
-                
+                return 'complete';
             }
             
            throw new GeneralException('Something wrong with status checking!');

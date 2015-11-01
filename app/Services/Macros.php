@@ -79,6 +79,7 @@ class Macros extends FormBuilder {
             }else{
                 $value = null;
             }
+            
             $cssId = $question->qnum.'_a'.$answer_key;
             
             if(property_exists($answer, "css")) {
@@ -222,7 +223,7 @@ class Macros extends FormBuilder {
                     $cbhtml .= $wrap['start'];
                 }
                 $cbhtml .= '<div class="checkbox"><label>';
-                $cbhtml .= $this->{$type}($inputname, $default, $value, $options).'<span class="badge">'._t($display_value).'</span> '._t(ucfirst($answer->text)).' </label></div>';
+                $cbhtml .= $this->{$type}($inputname, $default, $cbvalue, $options).'<span class="badge">'._t($display_value).'</span> '._t(ucfirst($answer->text)).' </label></div>';
                 if($wrap){
                     $cbhtml .= $wrap['end'];
                 }
