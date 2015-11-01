@@ -257,6 +257,11 @@ class AjaxController extends Controller
     public function getAllStatus($project, Request $request){
         $located = PLocation::where('org_id', $project->organization->id )->with('participants')->with('results')->with('answers');
         
+        if($request->get('code')){
+            $code = $request->get('code');
+            $located->where('pcode',$code);
+            $filter = true;
+        }
         
         if($request->get('region')){
             $state = $request->get('region');
