@@ -328,7 +328,15 @@ class AjaxController extends Controller
                 ->editColumn('observers', function ($model) {
                     $p = '';
                     foreach($model->participants as $participant){
-                        $p .= $participant->name.'('.$participant->participant_id.') <br>';
+                        $p .= '<div class="col-xs-12"><div class="col-xs-6">'.$participant->name.'</div>';
+                        $p .= '<div class="col-xs-6">';
+                        if(isset($participant->phones->mobile)){
+                        $p .=  ' M:'.$participant->phones->mobile.'<br>';                            
+                        }
+                        if(isset($participant->phones->emergency) && $participant->phones->emergency){
+                        $p .=  ' E:'.$participant->phones->emergency.'<br>';                            
+                        }
+                        $p .= '</div></div>';
                     }
                     return $p;
                 })
