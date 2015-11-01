@@ -291,10 +291,10 @@
                 if (e.shiftKey && e.which == 16) {
                     $(this).val(val.replace(/\#/,''));
                   }
-                  console.log(e);
+                  //console.log(e);
               $('#validator').removeClass('alert-danger');
               var value = $(this).val();
-              if( value.length > 5 && value.length < 9){ 
+              if( value.length > 4 && value.length < 7){ 
                   var str = ems.url;
                   //set replacement as global variable
                   replacement = value;
