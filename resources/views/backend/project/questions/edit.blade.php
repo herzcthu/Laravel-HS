@@ -184,13 +184,14 @@
                                                                 'checkbox' => 'Checkbox',
                                                                 'select' => 'Select',
                                                                 'textarea' => 'Textarea',
-                                                                'question' => 'Question',
+                                                                'question' => 'Question (Not work)',
                                                                 'number' => 'Number', 
                                                                 'datetime' => 'Datetime', 
                                                                 'date' => 'Date', 
                                                                 'time' => 'Time', 
                                                                 'week' => 'Week', 
-                                                                'month' => 'Month'], (isset($answer->type)? $answer->type:null), ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
+                                                                'month' => 'Month',
+                                                                'year' => 'Year'], (isset($answer->type)? $answer->type:null), ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                         </div>
                         <div class="col-xs-1">
                             {!! Form::text("answers[$key][value]", (isset($answer->value)? $answer->value:null), ['class' => 'form-control', 'placeholder' => 'Value']) !!}
@@ -227,13 +228,14 @@
                                                             'checkbox' => 'Checkbox',
                                                             'select' => 'Select',
                                                             'textarea' => 'Textarea',
-                                                            'question' => 'Question',
+                                                            'question' => 'Question (Not work)',
                                                             'number' => 'Number', 
                                                             'datetime' => 'Datetime', 
                                                             'date' => 'Date', 
                                                             'time' => 'Time', 
                                                             'week' => 'Week', 
-                                                            'month' => 'Month'], null, ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
+                                                            'month' => 'Month',
+                                                            'year' => 'Year'], null, ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                     </div>
                     <div class="col-xs-1">
                         {!! Form::text('answers[_QN_a0][value]', null, ['class' => 'form-control', 'placeholder' => 'Value']) !!}

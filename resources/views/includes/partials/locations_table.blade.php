@@ -2,11 +2,11 @@
     $plocations->columns([
     'pcode' => 'Location Code',
     'uec_code' => 'UEC Code',
-    'village' => 'Village',
-    'village_tract' => 'Village Track',
-    'township' => ['name'=>'Township', 'html' => "<select id='township_filter' class='form-control form-search'>".Aio()->createSelectBoxFromArray($alltownships)."</select>"],
-    'district' => ['name'=>'District', 'html' => "<select id='district_filter' class='form-control form-search'>".Aio()->createSelectBoxFromArray($alldistricts)."</select>"],
-    'state' => ['name'=>'State', 'html' => "<select id='state_filter' class='form-control form-search'>".Aio()->createSelectBoxFromArray($allstates)."</select>"]
+    'village' => _t('Village'),
+    'village_tract' => _t('Village Tract'),
+    'township' => _t('Township'),
+    'district' => _t('District'),
+    'state' => _t('State')
     ]
     )
     

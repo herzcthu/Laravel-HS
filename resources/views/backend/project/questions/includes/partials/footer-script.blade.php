@@ -34,13 +34,14 @@
                                                                     'checkbox' => 'Checkbox',
                                                                     'select' => 'Select',
                                                                     'textarea' => 'Textarea',
-                                                                    'question' => 'Question',
+                                                                    'question' => 'Question (Not work)',
                                                                     'number' => 'Number', 
                                                                     'datetime' => 'Datetime', 
                                                                     'date' => 'Date', 
                                                                     'time' => 'Time', 
                                                                     'week' => 'Week', 
-                                                                    'month' => 'Month'], null, ['id' => 'input_type_INDEX', 'class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
+                                                                    'month' => 'Month',
+                                                                'year' => 'Year'], null, ['id' => 'input_type_INDEX', 'class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                     </div>
                     <div class="col-xs-1">
                         {!! Form::text('answers[_QN_aINDEX][value]', null, ['id' => 'ans_value_INDEX', 'class' => 'form-control', 'placeholder' => 'Value']) !!}

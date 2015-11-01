@@ -33,7 +33,8 @@
 		"yajra/laravel-datatables-oracle": "~5.0",
 		"mormat/php-formula-interpreter": "^1.0",
 		"mbostock/d3": "^3.5",
-		"stevebauman/translation": "^1.3"
+		"stevebauman/translation": "^1.3",
+		"eternicode/bootstrap-datepicker": "^1.5"
 	},
 	"require-dev": {
 	"fzaninotto/faker": "~1.4",

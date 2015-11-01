@@ -6,6 +6,10 @@
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
 @stop
 
+@section ('after-scripts-end')
+    {!! HTML::style('css/plugin/jquery.onoff.css') !!}
+@stop
+
 @section('page-header')
     <h1>
         Question Management

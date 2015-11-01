@@ -180,7 +180,7 @@ class Macros extends FormBuilder {
                 return $selecthtml;
             }
             if(in_array($type,['text','textarea'])){
-                
+                $options['class'] = $options['class'].' '.$type;
                 $texthtml = "<div class='form-group'>";
                 if($wrap){
                     $texthtml .= $wrap['start'];
@@ -188,6 +188,22 @@ class Macros extends FormBuilder {
                 $texthtml .= "<label for='$answer->text' class='col-xs-2 text-right'>"._t(ucfirst($answer->text))." </label>";
                 $texthtml .= "<div class='col-xs-10'>";
                 $texthtml .= $this->{$type}($inputname, $value, $options);
+                $texthtml .= "</div>";
+                if($wrap){
+                    $texthtml .= $wrap['end'];
+                }
+                $texthtml .= "</div>";
+                return $texthtml;
+            }
+            if(in_array($type, ['date', 'datetime', 'time', 'week', 'month', 'year', 'number'])){
+                $options['class'] = $options['class'].' '.$type;
+                $texthtml = "<div class='form-group'>";
+                if($wrap){
+                    $texthtml .= $wrap['start'];
+                }
+                $texthtml .= "<label for='$answer->text' class='col-xs-2 text-right'>"._t(ucfirst($answer->text))." </label>";
+                $texthtml .= "<div class='col-xs-10'>";
+                $texthtml .= $this->input($type,$inputname, $value, $options);
                 $texthtml .= "</div>";
                 if($wrap){
                     $texthtml .= $wrap['end'];

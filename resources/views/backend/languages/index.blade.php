@@ -138,11 +138,12 @@
 											});
 										});
                                                                                 
-                                                                                $('#datatable-allfeatures').dataTable({
+                                                                                var language = $('#datatable-allfeatures').dataTable({
                                                                                     "scrollX":true,
                                                                                     "aoColumnDefs": [
-                                                                                        { 'bSortable': false, 'aTargets': [ 0 ] }
-                                                                                    ]});
+                                                                                          { 'bSortable': false, 'aTargets': [ 0 ] }
+                                                                                       ]
+                                                                                    });
                                                                             });
 
 
