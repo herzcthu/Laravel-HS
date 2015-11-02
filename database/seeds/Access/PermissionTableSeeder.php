@@ -176,7 +176,7 @@ class PermissionTableSeeder extends Seeder {
                                 $accessResult->id,
 			]
 		);
-                
+                /**
                 $user = $role_model::find(2);
 		$user->permissions()->sync(
 			[
@@ -185,7 +185,7 @@ class PermissionTableSeeder extends Seeder {
                                 $accessResult->id,
 			]
 		);
-                /**
+                
                 $org_manager = $role_model::find(3);
 		$org_manager->permissions()->sync(
 			[
