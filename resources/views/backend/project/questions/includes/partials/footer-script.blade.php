@@ -110,10 +110,12 @@
             
         });
     });
+    /**
     $(document).ready(function() {
                                $(document).dynamicForm('set', '#duplicated', '#formTemplate')
                                        .dynamicForm('init');
-                           });    
+                           }); 
+                           **/
 }(jQuery)); 
 </script>
 @stop

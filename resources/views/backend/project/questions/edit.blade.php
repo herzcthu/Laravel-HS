@@ -215,15 +215,15 @@
                         </div>
                         @endforeach
                     @else
-                    <div id="answer_0" class="form-group">
+                    <div id="answer_1" class="form-group">
                     <div class="col-xs-1 form-control-static">
-                        _QN_a0
+                        _QN_a1
                     </div>
                     <div class="col-xs-2">
-                        {!! Form::text('answers[_QN_a0][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
+                        {!! Form::text('answers[_QN_a1][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                     </div>
                     <div class="col-xs-2">
-                        {!! Form::select('answers[_QN_a0][type]',['text' => 'Text', 
+                        {!! Form::select('answers[_QN_a1][type]',['text' => 'Text', 
                                                             'radio' => 'Radio', 
                                                             'checkbox' => 'Checkbox',
                                                             'select' => 'Select',
@@ -238,13 +238,13 @@
                                                             'year' => 'Year'], null, ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                     </div>
                     <div class="col-xs-1">
-                        {!! Form::text('answers[_QN_a0][value]', null, ['class' => 'form-control', 'placeholder' => 'Value']) !!}
+                        {!! Form::text('answers[_QN_a1][value]', null, ['class' => 'form-control', 'placeholder' => 'Value']) !!}
                     </div>
                     <div class="col-xs-2">
-                        {!! Form::text('answers[_QN_a0][css]', null, ['class' => 'form-control', 'placeholder' => 'validate']) !!}
+                        {!! Form::text('answers[_QN_a1][css]', null, ['class' => 'form-control', 'placeholder' => 'validate']) !!}
                     </div>    
                     <div class="col-xs-2">
-                        {!! Form::text('answers[_QN_a0][require]', null, ['class' => 'form-control', 'placeholder' => 'Require']) !!}
+                        {!! Form::text('answers[_QN_a1][require]', null, ['class' => 'form-control', 'placeholder' => 'Require']) !!}
                     </div>
                     <div class="col-xs-2">
                         <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>                    

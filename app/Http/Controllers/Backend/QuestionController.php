@@ -61,7 +61,7 @@ class QuestionController extends Controller
     {
         //dd($project_id);
         javascript()->put([
-			'index' => 0
+			'index' => 1
 		]);
         //$project_id = Input::get('p');
         //$current_project = $this->project->findOrThrowException($project_id, true);
@@ -109,7 +109,10 @@ class QuestionController extends Controller
     {
         
         //$question = $this->questions->findOrThrowException($id, true); //dd((array) $question->answers);
-        $answers = count((array) $question->answers) - 1; 
+        $answers = count((array) $question->answers);
+        if(empty($answers)){
+            $answers = 1;
+        }
         javascript()->put([
 			'index' => $answers
 		]);
