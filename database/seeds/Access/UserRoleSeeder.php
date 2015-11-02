@@ -13,7 +13,7 @@ class UserRoleSeeder extends Seeder {
 
                 $role_model = config('access.role');
                 $role_model = new $role_model;
-		$role1 = $role_model::find(1);
+		$role1 = $role_model::first();
 		//Attach admin role to admin user
 		$user_model = config('auth.model');
 		$user_model = new $user_model;//dd($role1);
