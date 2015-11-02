@@ -23,7 +23,7 @@ class UserTableSeeder extends Seeder {
 				'confirmed' => true,
 				'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
-			],
+			],/**
 			[       //user ID 2
 				'name' => 'Default User',
                                 'avatar' => '/img/frontend/user.png',
@@ -64,6 +64,8 @@ class UserTableSeeder extends Seeder {
 				'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
 			],
+                         * 
+                         */
 		];
 
 		DB::table(config('auth.table'))->insert($users);

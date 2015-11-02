@@ -30,7 +30,7 @@ class CreateParticipantsTable extends Migration {
                   ->index();
             $table->date('dob')->nullable();
             $table->string('gender')->nullable()->default('Unspecified');
-            $table->json('phones')->nullable()->index();
+            $table->json('phones')->nullable();
             $table->string('base')->nullable();
             $table->text('address');
             $table->string('pcode_id')->nullable();
