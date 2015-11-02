@@ -310,7 +310,7 @@ class AjaxController extends Controller
 
                             $query->OfwithAndWhereHas('results', function($query) use ($section, $status){
                                     $query->where('information', $status)->where('section_id', (int)$section);
-                            });
+                            })->with('results');
                         }
 
                         $filter = true;
