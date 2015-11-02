@@ -102,51 +102,52 @@
 
                                     <label class="col-xs-1 control-label">&nbsp;</label>
                                     <div class="col-xs-11">
-                                        @if(count($question->answers) > 0 )
+                                        @if($question->qanswers->count() > 0 )
+                                        <?php $key = 0; ?>
                                             @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6">
                                                     @endif    
-                                                    @if($key >= 0 && $key < ceil((count($question->answers) / 2)))
+                                                    @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ceil((count($question->answers) / 2)))
+                                                    @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
                                                     <div class="col-xs-6">
                                                     @endif
-                                                    @if($key >= ceil((count($question->answers) / 2)) && $key < count($question->answers))
+                                                    @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == (count($question->answers) - 1) )
+                                                    @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
                                                     @endif
                                                 @elseif($question->answer_view == 'three-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-4">
                                                     @endif    
-                                                    @if($key >= 0 && $key < ceil((count($question->answers) / 3)))
+                                                    @if($key >= 0 && $key < ceil(($question->qanswers->count() / 3)))
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ceil((count($question->answers) / 3)))
+                                                    @if($key == ceil(($question->qanswers->count() / 3)))
                                                     </div>
                                                     <div class="col-xs-4">
                                                     @endif
-                                                    @if($key >= ceil((count($question->answers) / 3)) && $key < ceil((count($question->answers) / 3) * 2))
+                                                    @if($key >= ceil(($question->qanswers->count() / 3)) && $key < ceil(($question->qanswers->count() / 3) * 2))
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ceil((count($question->answers) / 3) * 2))
+                                                    @if($key == ceil(($question->qanswers->count() / 3) * 2))
                                                     </div>
                                                     <div class="col-xs-4">
                                                     @endif
-                                                    @if($key >= ceil((count($question->answers) / 3) * 2) && $key < count($question->answers))
+                                                    @if($key >= ceil(($question->qanswers->count() / 3) * 2) && $key < $question->qanswers->count())
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == (count($question->answers) - 1) )
+                                                    @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
                                                     @endif    
                                                 @elseif($question->answer_view == 'horizontal')
-                                                <div class="col-xs-{!! Aio()->getColNum(count($question->answers)) !!}">
+                                                <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
                                                 {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
                                                 </div>
                                                 @else
@@ -201,10 +202,10 @@
                             <label class="col-xs-1 control-label">&nbsp;</label>
                             <div class="col-xs-11">
                                 <div class="form-control-static">
-                                @if(count($question->answers) > 0 )
+                                @if($question->qanswers->count() > 0 )
                                     @foreach($question->answers as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
-                                        <div class="col-xs-{!! Aio()->getColNum(count($question->answers)) !!}">
+                                        <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
                                         {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
                                         </div>
                                         @else

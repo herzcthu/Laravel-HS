@@ -106,6 +106,7 @@
                                     <label class="col-lg-1 control-label">&nbsp;</label>
                                     <div class="col-lg-11">
                                         @if($question->qanswers->count() > 0 )
+                                        <?php $key = 0; ?>
                                             @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
