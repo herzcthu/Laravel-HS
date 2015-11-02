@@ -133,11 +133,15 @@ class ResultController extends Controller
 			$project,
                         $section_id
 		);
+        return redirect()->back()->withFlashSuccess('The results was successfully created.');
+        /**
         if($project->type == 'incident'){
-        return redirect()->route('data.project.results.index', $project->id)->withFlashSuccess('The results was successfully created.');
+            return redirect()->route('data.project.results.index', $project->id)->withFlashSuccess('The results was successfully created.');
         }else{
-        return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
+            return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
         }
+         * 
+         */
     }
 
     /**
