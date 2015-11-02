@@ -128,20 +128,19 @@ class ResultController extends Controller
         if($section_id == 'incident'){
             $section_id = $request->get('qnum');
         }
-        $this->results->create(
+        $result = $this->results->create(
 			$request->except('project_id'),
 			$project,
                         $section_id
 		);
-        return redirect()->back()->withFlashSuccess('The results was successfully created.');
-        /**
+        
+        
         if($project->type == 'incident'){
-            return redirect()->route('data.project.results.index', $project->id)->withFlashSuccess('The results was successfully created.');
+            return redirect()->route('data.project.results.edit', [$project->id, $result->id])->withFlashSuccess('The results was successfully created.');
         }else{
-            return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
+            return redirect()->back()->withFlashSuccess('The results was successfully created.');
+            //return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
         }
-         * 
-         */
     }
 
     /**

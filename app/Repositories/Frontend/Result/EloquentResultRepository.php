@@ -241,7 +241,7 @@ class EloquentResultRepository implements ResultContract {
 
 
                     }                   
-			return true;
+			return $result;
 		}
 
 		throw new GeneralException('There was a problem creating this result. Please try again.');
