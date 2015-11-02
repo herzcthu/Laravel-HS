@@ -185,7 +185,7 @@ class PermissionTableSeeder extends Seeder {
                                 $accessResult->id,
 			]
 		);
-                
+                /**
                 $org_manager = $role_model::find(3);
 		$org_manager->permissions()->sync(
 			[
@@ -241,7 +241,7 @@ class PermissionTableSeeder extends Seeder {
                                 $accessResult->id,
 			]
 		);
-                /**
+                 
 		$permission_model = config('access.permission');
 		$userOnlyPermission = new $permission_model;
 		$userOnlyPermission->name = 'user_only_permission';

@@ -22,7 +22,6 @@ class RoleTableSeeder extends Seeder {
 		$admin->save();
 
 		//id = 2
-		$role_model = config('access.role');
 		$user = new $role_model;
 		$user->name = 'User';
                 $user->level = '99';
@@ -31,7 +30,6 @@ class RoleTableSeeder extends Seeder {
 		$user->save();
                 
                 //id = 3
-                $role_model = config('access.role');
 		$orgmanager = new $role_model;
 		$orgmanager->name = 'Organizations Manager';
                 $orgmanager->level = '1';
@@ -40,7 +38,6 @@ class RoleTableSeeder extends Seeder {
 		$orgmanager->save();
                 
                 //id = 4
-                $role_model = config('access.role');
 		$projectmanager = new $role_model;
 		$projectmanager->name = 'Projects Manager';
                 $projectmanager->level = '2';
@@ -49,7 +46,6 @@ class RoleTableSeeder extends Seeder {
 		$projectmanager->save();
                 
                 //id = 5
-                $role_model = config('access.role');
 		$dataclerk = new $role_model;
 		$dataclerk->name = 'Data Clerk';
                 $dataclerk->level = '10';
