@@ -124,7 +124,7 @@ class ResultController extends Controller
      * @return Response
      */
     public function store($project, $section_id = false, CreateResultRequest $request)
-    {
+    { //dd($request->all());
         if($section_id == 'incident'){
             $section_id = $request->get('qnum');
         }

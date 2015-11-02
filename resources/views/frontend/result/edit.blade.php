@@ -117,7 +117,7 @@
                                     <div class="col-xs-11">
                                         @if($question->qanswers->count() > 0 )
                                             <?php $key = 0; ?>
-                                            @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $answer)
+                                            @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6">

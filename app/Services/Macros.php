@@ -49,11 +49,10 @@ class Macros extends FormBuilder {
                 dd($answer);
             }
             
-            
             $name = $answer->text;
             $display_value = $answer->value;
             $type = $answer->type;
-            $akey = isset($answer->akey) ? $answer->akey:''; 
+            $akey = isset($answer->akey) ? $answer->akey:$answer_key;
             $qnum = $question->qnum;
             if(in_array($type, ['radio'])){
                 $default = isset($answer->akey) ? $answer->akey:null;
@@ -79,8 +78,9 @@ class Macros extends FormBuilder {
             }else{
                 $value = null;
             }
-            
-            $cssId = $question->qnum.'_a'.$answer_key;
+            //dd($answer_key);
+            //$cssId = $question->qnum.'_a'.$answer_key;dd($cssId);
+            $cssId = $answer_key;
             
             if(property_exists($answer, "css")) {
                $css = $answer->css;

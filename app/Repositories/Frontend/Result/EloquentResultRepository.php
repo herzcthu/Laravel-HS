@@ -165,16 +165,39 @@ class EloquentResultRepository implements ResultContract {
                     $incident = \App\Result::where('project_id', $project->id)->where('section_id', $section)->orderBy('incident_id', 'desc')->first();
                     if(!is_null($incident)){
                     $incident_id = $incident->incident_id + 1;
-                    }else{$incident_id = 0;}
-                }else{$incident_id = 0;}
-                
+                    }else{
+                        $incident_id = 1;
+                    }
+                    
+                }else{
+                    $incident_id = null;
+                }
                 if($project->validate == 'person'){
                     $resultable = $this->participant->getParticipantByCode($validate, $project->organization->id);
                     $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 'incident_id' => $incident_id,'resultable_id' => $resultable->id, 'resultable_type' => 'App\Participant']);
                     //$pcode = $person->pcode;
                 }else{
-                    $resultable = $this->pcode->findOrThrowException($validate); //dd($resultable->primaryid);
+                    $validator = $validate.'-'.$project->organization->id;
+                    try{
+                        $resultable2 = $this->pcode->findOrThrowException($validator);
+                        
+                    }catch(GeneralException $e){
+                        unset($e);
+                    }
+                    try{
+                        $resultable1 = $this->pcode->findOrThrowException($validate);
+                        
+                    }catch(GeneralException $e){
+                        unset($e);
+                    }
+                    if(isset($resultable1)){
+                        $resultable = $resultable1;
+                    }
+                    if(isset($resultable2)){
+                        $resultable = $resultable2;
+                    }
                     $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 'incident_id' => $incident_id,'resultable_id' => $resultable->primaryid, 'resultable_type' => 'App\PLocation']);
+                      
                     //$person = $pcode->participants->first();
                     $result->resultable_id = $resultable->primaryid;
                 }
@@ -191,11 +214,11 @@ class EloquentResultRepository implements ResultContract {
                 if(isset($resultable)){
                     $result->resultable()->associate($resultable);
                 }
+                
                 if ($result->save()) {
                     Answers::where('status_id', $result->id)->delete();
                     foreach($input['answer'] as $qnum => $answers){
                         $q = $this->questions->getQuestionByQnum($qnum, $project->id);
-                        
                         foreach($answers as $akey => $aval){
                             if($akey == 'radio'){
                                 $answerkey = $aval;
@@ -231,7 +254,7 @@ class EloquentResultRepository implements ResultContract {
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function update($id, $input, $project) {
+	public function update($id, $input, $project) {dd($input);
 		$result = $this->findOrThrowException($id, true); //print_r($input); print_r($result);die();
 		$related_id = $input['related_data']['q'];
                 if(!empty($related_id)){

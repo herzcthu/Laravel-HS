@@ -103,7 +103,7 @@
                                     <label class="col-xs-1 control-label">&nbsp;</label>
                                     <div class="col-xs-11">
                                         @if(count($question->answers) > 0 )
-                                            @foreach($question->answers as $key => $answer)
+                                            @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6">
@@ -236,9 +236,9 @@
 @include('frontend.result.includes.partials.footer-script') 
 @push('scripts')
 <script type="text/javascript">
-    (function ($) {
+(function ($) {
     $(document).ready(function() {
-                function validate(url, replacement, output = false){
+            function validate(url, replacement, output = false){
                 $('#validated').html("");
                 $.ajax({
                     url : url,
@@ -248,6 +248,17 @@
                         $('#validated').html("<span class='text-danger'>Record not found!</span>");
                       }
                     },
+                }).done(function (data) {
+                    
+                        //console.log(data);
+                        //console.log(index);
+                        //console.log(location.name);
+                        //$('<option />', {
+                          //      value: location.id,
+                            //    text: location.name + '(' + location.pcode + ')'
+                            //}).appendTo('#'+level);
+                        //$('<p/>').text(file.original_filedir).appendTo('#medialist');
+                    //});
                 }).success(function(data, status, response){
                     $('#validator').removeClass('alert-danger');
                     
@@ -260,9 +271,9 @@
                             if(index == 'Location ID'){
                                 
                                 if(output){                            
-                                    $('#validator').val($('.hidden-validator').val());
+                                    $('#validator').val($('.hidden-validator').val() + {{'-'.$project->org_id}});
                                 }
-                                $('.hidden-validator').val($('#validator').val());
+                                $('.hidden-validator').val($('#validator').val() + {{'-'.$project->org_id}});
                             }
                        @elseif($project->validate == 'person')
                             if(index == 'Observer'){
@@ -280,6 +291,15 @@
                     console.log('Data could not be loaded.');
                 });
             }
+          var elements = document.querySelectorAll("[data-expression]");
+          $(elements).each(function( index ) {
+              $(this).each(function(i){
+                  
+                  eval($(this).data('expression'));
+                  
+              });
+            console.log( index );
+          });
           if( $('.hidden-validator').val() ) {                
                 var valid = $('.hidden-validator').val();
                 var urlstr = ems.url;
@@ -291,7 +311,7 @@
                 if (e.shiftKey && e.which == 16) {
                     $(this).val(val.replace(/\#/,''));
                   }
-                  //console.log(e);
+                  console.log(e);
               $('#validator').removeClass('alert-danger');
               var value = $(this).val();
               if( value.length > 4 && value.length < 7){ 
@@ -313,8 +333,8 @@
             e.preventDefault();
             }
           });
-          });
+        });
     //$('<input>').attr('type','hidden').appendTo('form');    
-}(jQuery)); 
+}(jQuery));
 </script>
 @endpush
