@@ -25,7 +25,7 @@
         <thead>
             <tr>
                 <th id="code"># <br>
-                    <input type="text" name="code" style="width:80px;" class="form-control" id="input-code">
+                    <input type="text" name="pcode" style="width:80px;" class="form-control" id="input-code">
                 </th>
                 <th id="state">{!! _t('Region') !!}
                     <br />
@@ -55,7 +55,7 @@
                     </select>
                 </th>
                 <th class="observers">{!! _t('Observers') !!}</th>
-                @foreach($sections as $k => $section)
+                @foreach($project->sections as $k => $section)
                 <th class="section{{ $k }}" title="{{ _t($section->text) }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
                     <i>{{ $k + 1}}</i>
                     <br />

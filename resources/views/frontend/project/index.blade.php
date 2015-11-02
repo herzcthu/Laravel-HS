@@ -4,14 +4,14 @@
 
 @section('page-header')
     <h1>
-        Project Management
-        <small>Active Projects</small>
+        {{ _t('Project Management') }}
+        <small>{{ _t('Projects List') }}</small>
     </h1>
 @endsection
 
 @section ('breadcrumbs')
-    <li><a href="{!!route('frontend.dashboard')!!}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-    <li class="active">{!! link_to_route('data.projects.index', 'Project Management') !!}</li>
+    <li><a href="{!!route('frontend.dashboard')!!}"><i class="fa fa-dashboard"></i> {{ _t('Dashboard') }}</a></li>
+    <li class="active">{!! link_to_route('data.projects.index', _t('Project Management')) !!}</li>
 @stop
 
 @section('content')
@@ -20,11 +20,11 @@
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>        
-            <th>Name</th> 
-            <th>Parent Project</th>
-            <th>Organizations</th>
-            <th class="visible-lg">Created</th>
-            <th class="visible-lg">Last Updated</th>
+            <th>{!! _t('Name') !!}</th> 
+            <th>{!! _t('Parent Project') !!}</th>
+            <th>{!! _t('Organizations') !!}</th>
+            <th class="visible-lg">{!! _t('Created') !!}</th>
+            <th class="visible-lg">{!! _t('Last Updated') !!}</th>
         </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@
                 <tr>
                                     
                     <td>
-                        {!! $project->name !!} <br>
+                        {!! _t($project->name) !!} <br>
                         @if($project->type == 'incident')
                         {!! $project->frontend_incident_action_buttons !!}
                         @else
@@ -41,13 +41,13 @@
                     </td>
                     <td>
                         @if ($project->parent)
-                            {!! $project->parent->name !!}
+                            {!! _t($project->parent->name) !!}
                         @endif
                     </td>
                     <td>
                         @if ($project->organization)
                             
-                                {!! $project->organization->name !!}<br/>
+                                {!! _t($project->organization->name) !!}<br/>
                             
                         @else
                             None
@@ -64,7 +64,7 @@
     </div>
 </div>
     <div class="pull-left">
-        {!! $projects->total() !!} project(s) total
+        {!! _t(':total project(s) total',['total' => $projects->total()]) !!}
     </div>
 
     <div class="pull-right">

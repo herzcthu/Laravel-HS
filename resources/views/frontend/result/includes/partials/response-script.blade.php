@@ -26,8 +26,9 @@
                 lengthMenu: [ 50, 100, 150, 200, 250 ],
                 processing: true,
                 serverSide: true,
-                searching: false,
+                searching: true,
                 pageLength: 100,
+                deferRender: true,
                 ajax: ajax,
                 columns: [
                     { data: 'group', name: 'group'},

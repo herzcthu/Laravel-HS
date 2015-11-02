@@ -461,19 +461,22 @@ class EloquentResultRepository implements ResultContract {
             $section_qcount = $project->questions->where('section', $section)->count();
             
             $formulas = $project->sections[$section]->formula; 
-            $anscount = count(array_filter(array_values(array_dot($answers))));// dd($anscount);
+            
+            $anscount = count(array_filter(array_values(array_dot($answers)), 'strlen'));// dd($anscount);
             foreach($answers as $qnum => $answer){
                 //get only first item in array because question with logical check will include only one answer
                 $var[$qnum] = array_values($answer)[0];
                 
                 $q = $this->questions->getQuestionByQnum($qnum, $project->id);
-                
+                $ac = 0;
                 foreach($answer as $akey => $aval){
                     if($akey != 'radio'){
                         $qanswer = $q->qanswers->where('akey', $akey)->first();
                         if(in_array($qanswer->type, ['checkbox', 'text']) && $anscount > 0){
-                            $atleast_one = true;
+                            $ac++;
                         }
+                    }else{
+                        $ac++;
                     }
                     
                 }
@@ -482,7 +485,7 @@ class EloquentResultRepository implements ResultContract {
             
             if($anscount === 0 ){ 
                 return 'missing';
-            }elseif ($anscount != $section_qcount && $atleast_one === false) {
+            }elseif ($anscount < $section_qcount) {
                 return 'incomplete';
             }elseif($anscount == $section_qcount){
                 if(!empty($formulas)){
@@ -513,8 +516,10 @@ class EloquentResultRepository implements ResultContract {
                 }else{
                     return 'complete';
                 }
-            }else{
+            }elseif($anscount > $section_qcount && $ac > 0){
                 return 'complete';
+            }else{
+                return 'unknown';
             }
             
            throw new GeneralException('Something wrong with status checking!');

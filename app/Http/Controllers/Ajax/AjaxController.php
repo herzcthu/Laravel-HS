@@ -257,48 +257,9 @@ class AjaxController extends Controller
     public function getAllStatus($project, Request $request){
         $located = PLocation::where('org_id', $project->organization->id )->with('participants')->with('results')->with('answers');
         
-        if($request->get('code')){
-            $code = $request->get('code');
-            $located->where('pcode',$code);
-            $filter = true;
-        }
         
-        if($request->get('region')){
-            $state = $request->get('region');
-            if($state != 'total'){
-            $located->where('state',$state);
-            }
-            $filter = true;
-        }
-        if($request->get('district')){
-            $district = $request->get('district');
-            $located->where('district',$district);
-            $filter = true;
-        }
-        if($request->get('station')){
-            $station = $request->get('station');
-            $located->where('village',$station);
-            $filter = true;
-        }
         
-        if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
-            $section = $request->get('section');
-            $status = $request->get('status');
-            if($status == 'missing'){
-                $located->whereDoesntHave('results', function($query) use ($section){
-                    $query->where('section_id', $section);
-                });
-            }else{
-                
-                $located->OfwithAndWhereHas('results', function($query) use ($section, $status){
-                        $query->where('information', $status)->where('section_id', (int)$section);
-                });
-            }
-            
-            $filter = true;
-        }
-        
-        $locations = $located->get();
+        //$locations = $located->get();
         /**
         if(isset($filter)){
             
@@ -312,8 +273,50 @@ class AjaxController extends Controller
          * 
          */
         
-        $datatable = Datatables::of($locations)
-                ->editColumn('code', function ($model) use ($project){
+        $datatable = Datatables::of($located)
+                ->filter(function($query) use ($request){
+                    if($request->get('pcode')){
+                        $code = $request->get('pcode');
+                        $query->where('pcode',$code);
+                        $filter = true;
+                    }
+
+                    if($request->get('region')){
+                        $state = $request->get('region');
+                        if($state != 'total'){
+                        $query->where('state',$state);
+                        }
+                        $filter = true;
+                    }
+                    if($request->get('district')){
+                        $district = $request->get('district');
+                        $query->where('district',$district);
+                        $filter = true;
+                    }
+                    if($request->get('station')){
+                        $station = $request->get('station');
+                        $query->where('village',$station);
+                        $filter = true;
+                    }
+
+                    if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
+                        $section = $request->get('section');
+                        $status = $request->get('status');
+                        if($status == 'missing'){
+                            $query->whereDoesntHave('results', function($query) use ($section){
+                                $query->where('section_id', $section);
+                            });
+                        }else{
+
+                            $query->OfwithAndWhereHas('results', function($query) use ($section, $status){
+                                    $query->where('information', $status)->where('section_id', (int)$section);
+                            });
+                        }
+
+                        $filter = true;
+                    }
+                })
+                ->editColumn('pcode', function ($model) use ($project){
                     //if($model->results){
                     return $model->pcode."<a href='".route('data.project.results.edit', [$project->id, $model->primaryid])."' title='Edit'> <i class='fa fa-edit'></i></a>";
                     //}
