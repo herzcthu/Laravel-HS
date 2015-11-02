@@ -21,7 +21,18 @@
 <script type="text/javascript">
 (function ($) {
     $(document).ready(function() {
-        
+        //reset input values
+        $('.reset').on('click',function(){
+            $(this).parents('.quest').find(':input').each(function() {console.log(this)
+                if(this.type == 'button'){
+                } else if(this.type == 'checkbox' || this.type == 'radio'){
+                    this.checked = false;
+                } else {
+                     this.value = '';
+                }
+
+            });
+        });
           var elements = document.querySelectorAll("[data-expression]");
           $(elements).each(function( index ) {
               $(this).each(function(i){

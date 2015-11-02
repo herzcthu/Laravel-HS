@@ -21,6 +21,18 @@
 <script type="text/javascript">
 (function ($) {
     $(document).ready(function() {
+        //reset input values
+        $('.reset').on('click',function(){alert('clicked');
+            $(this).parent().find('input').each(function() {
+                if(this.type == 'button'){
+                } else if(this.type == 'checkbox' || this.type == 'radio'){
+                    this.checked = false;
+                } else {
+                     this.value = '';
+                }
+
+            });
+        });
             function validate(url, replacement, output = false){
                 $('#validated').html("");
                 $.ajax({
@@ -90,6 +102,13 @@
                 var vurl = urlstr.replace("%7Bpcode%7D", valid );
                 validate(vurl, valid, true);
             }
+          $('#check').on('click',function(e){
+              var str = ems.url;
+                  //set replacement as global variable
+                  replacement = $('#validator').val();
+                  var url = str.replace("%7Bpcode%7D", replacement );
+                  validate(url, replacement);
+          });
           $('#validator').on('keyup',function(e){
                 if (e.shiftKey && e.which == 16) {
                     $(this).val(val.replace(/\#/,''));

@@ -64,7 +64,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="panel-title">
-                         {!! $section->text !!}
+                        {!! $section->text !!}
                     </div>
                     
                 @if(!empty($section->desc))
@@ -91,7 +91,7 @@
                         
                             @if($section_key == $question->section)
 
-                            <div class="form-group {!! aio()->section($section->column) !!}">
+                            <div class="form-group quest {!! aio()->section($section->column) !!}">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
@@ -103,7 +103,7 @@
                                 </div>
                                 @endif                            
                                     
-                                    <label class="col-lg-1 control-label">&nbsp;</label>
+                                    <label class="col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
                                     <div class="col-lg-11">
                                         @if($question->qanswers->count() > 0 )
                                         <?php $key = 0; ?>
@@ -169,6 +169,7 @@
                 @if($project->type == 'checklist')
                     <div class="row">
                         <div class="col-xs-1 pull-right">
+                        <input type="reset" class="btn btn-warning" value="Reset All" />
                         <input type="submit" class="btn btn-success" value="Save" />
                         </div>
                     </div>
@@ -182,8 +183,9 @@
             @endforeach
             @if($project->type == 'incident')
                 
-                    <div class="pull-right">
-                    <input type="submit" class="btn btn-success" value="Save" />
+                    <div class="pull-right">                        
+                        <input type="reset" class="btn btn-warning" value="Reset All" />
+                        <input type="submit" class="btn btn-success" value="Save" />
                     </div>
                 {!! Form::close() !!}
             @endif

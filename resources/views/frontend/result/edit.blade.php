@@ -20,6 +20,17 @@
 @stop
 
 @section('content')
+
+        <div class="row">
+            <div class="col-xs-12">
+                @if($project->type == 'checklist')
+                    <a href="{{route('data.project.status.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to status list.') }}</a>
+                @endif
+                @if($project->type == 'incident')
+                    <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to incident list.') }}</a>
+                @endif
+            </div>
+        </div>
             <div class="panel panel-default">
                             <div class="panel-heading">
                                 <div class="panel-title">
@@ -74,7 +85,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="panel-title" id="{{$section_key}}">
-                         {!! _t($section->text) !!}
+                         {!! _t($section->text) !!} 
                     </div>
                     
                 @if(!empty($section->desc))
@@ -101,7 +112,7 @@
                         
                             @if($section_key == $question->section)
 
-                            <div class="form-group {!! aio()->section($section->column) !!}">
+                            <div class="form-group quest {!! aio()->section($section->column) !!}">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
@@ -113,7 +124,7 @@
                                 </div>
                                 @endif                            
 
-                                    <label class="col-xs-1 control-label">&nbsp;</label>
+                                    <label class="col-xs-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
                                     <div class="col-xs-11">
                                         @if($question->qanswers->count() > 0 )
                                             <?php $key = 0; ?>
@@ -179,8 +190,11 @@
                 @endif
                 @if($project->type == 'checklist')
                     <div class="row">
+                        <div class="col-xs-1 pull-left">                                        
+                            <input type="reset" class="btn btn-warning" value="Reset All" />                
+                        </div>
                         <div class="col-xs-1 pull-right">
-                        <input type="submit" class="btn btn-success" value="Save" />
+                            <input type="submit" class="btn btn-success" value="Save" />
                         </div>
                     </div>
                     {!! Form::close() !!}
@@ -192,10 +206,12 @@
             </div><!-- panel end -->    
             @endforeach
             @if($project->type == 'incident')
-                
-                    <div class="pull-right">
-                    <input type="submit" class="btn btn-success" value="Save" />
-                    </div>
+            <div class="pull-left">                                        
+                <input type="reset" class="btn btn-warning" value="Reset All" />                
+            </div>
+            <div class="pull-right">
+                <input type="submit" class="btn btn-success" value="Save" />
+            </div>
                 {!! Form::close() !!}
             @endif
         @else
@@ -239,9 +255,6 @@
             </div>
             {!! Form::close() !!}
         @endif
-        <div class="pull-left">
-            <a href="{{route('frontend.dashboard')}}" class="btn btn-danger">Cancel</a>
-        </div>
 
         
         <div class="clearfix"></div>
