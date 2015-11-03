@@ -176,8 +176,8 @@ class PermissionTableSeeder extends Seeder {
                                 $accessResult->id,
 			]
 		);
-                /**
-                $user = $role_model::find(2);
+                
+                $user = $role_model::where('level', 99)->first();
 		$user->permissions()->sync(
 			[
 				$uploadMedia->id,
@@ -186,7 +186,7 @@ class PermissionTableSeeder extends Seeder {
 			]
 		);
                 
-                $org_manager = $role_model::find(3);
+                $org_manager = $role_model::where('level', 1)->first();
 		$org_manager->permissions()->sync(
 			[
 				$viewBackend->id,
@@ -208,7 +208,7 @@ class PermissionTableSeeder extends Seeder {
 			]
 		);
                 
-                $project_manager = $role_model::find(4);
+                $project_manager = $role_model::where('level', 2)->first();
 		$project_manager->permissions()->sync(
 			[
 				$viewBackend->id,
@@ -228,7 +228,7 @@ class PermissionTableSeeder extends Seeder {
 			]
 		);
                 
-                $data_clerk = $role_model::find(5);
+                $data_clerk = $role_model::where('level', 10)->first();
 		$data_clerk->permissions()->sync(
 			[
 				$uploadMedia->id,
@@ -251,6 +251,7 @@ class PermissionTableSeeder extends Seeder {
 		$userOnlyPermission->updated_at = Carbon::now();
 		$userOnlyPermission->save();
 
+                /**
 		$user_model = config('auth.model');
 		$user_model = new $user_model;
 		$user = $user_model::find(2);
