@@ -460,7 +460,16 @@ class EloquentParticipantRepository implements ParticipantContract {
 	private function createParticipantStub($input, $pcode_id, $org)
 	{   
 		$attributes['participant_id'] = (array_key_exists('participant_id', $input)? $input['participant_id']:null);
-                $participant = Participant::firstOrNew(['participant_id' => $attributes['participant_id'], 'pcode_id' => $pcode_id, 'org_id' => $org]);
+                if(array_key_exists('nrc_id', $input)){
+                    if($input['nrc_id']){
+                        $nrc_id = $input['nrc_id'];
+                    }else{
+                        $nrc_id = null;
+                    }
+                }else{
+                    $nrc_id = null;
+                }
+                $participant = Participant::firstOrNew(['participant_id' => $attributes['participant_id'], 'pcode_id' => $pcode_id, 'org_id' => $org, 'nrc_id' => $nrc_id]);
                 
 		$participant->name = (array_key_exists('name', $input)? $input['name']:'No Name');
                 $participant->avatar = (array_key_exists('avatar', $input)? $input['avatar']:'');
