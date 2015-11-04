@@ -249,7 +249,11 @@ class AjaxController extends Controller
                 })
                 ->editColumn('cq', function ($model) use ($project){
                     $q = \App\Question::find($model->section_id);
-                    return $q->question;
+                    if(!is_null($q)){
+                        return $q->question;
+                    }else{
+                        return 'none';
+                    }
                 })
                 ->make(true);
     }

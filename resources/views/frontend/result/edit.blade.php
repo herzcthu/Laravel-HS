@@ -46,8 +46,12 @@
                                 {!! Form::hidden('project_id', $project->id) !!}
                                 {!! Form::hidden('org_id', $project->organization->id) !!}
                                 {!! Form::hidden('validator_id', ($validated)? $validated['validator_key']:null,['class' => 'hidden-validator']) !!}
+                                @if(isset($project->parent))
                                 {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
                                 {!! Form::select('qnum', $project->parent->questions->sortBy('qnum', SORT_NATURAL)->lists('qnum','id'), isset($code->section_id)?$code->section_id:null, ['class'=>'form-control']) !!}
+                                @else
+                                {!! Form::hidden('qnum', null) !!}
+                                @endif
                                 {!! Form::label('incident_id', _('Incident Number'), ['class'=>'control-label']) !!}
                                 {!! Form::text('incident_id', isset($code->incident_id)?$code->incident_id:null,['class'=>'form-control btn btn-primary disabled', 'placeholder'=>'Incident ID', 'id'=>'Incident ID']) !!}
                             @endif

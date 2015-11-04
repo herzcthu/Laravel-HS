@@ -164,6 +164,7 @@ class EloquentProjectRepository implements ProjectContract {
 		//$project = $this->findOrThrowException($id);
             //dd($organization);
                 $project = $this->createProjectStub($input, $organization['organization']);
+                $project->parent()->dissociate();
 		if(!empty($parent_project) && $parent_project['project'] != 'none'){                    
                            $parent = $this->findOrThrowException($parent_project['project']);
                            

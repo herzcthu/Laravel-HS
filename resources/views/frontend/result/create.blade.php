@@ -44,8 +44,13 @@
                                 {!! Form::hidden('project_id', $project->id) !!}
                                 {!! Form::hidden('org_id', $project->organization->id) !!}
                                 {!! Form::hidden('validator_id', null,['class' => 'hidden-validator']) !!}
+                                @if(isset($project->parent))
                                 {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
+                                
                                 {!! Form::select('qnum', $project->parent->questions->sortBy('qnum', SORT_NATURAL)->lists('qnum','id'), null, ['class'=>'form-control']) !!}
+                                @else
+                                {!! Form::hidden('qnum', null) !!}
+                                @endif
                             @endif
                             {!! Form::label('validator', 'Location Code', ['class'=>'control-label']) !!}
                             {!! Form::text('validator',null,['class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
