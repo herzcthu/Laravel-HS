@@ -23,7 +23,7 @@ class DashboardController extends Controller {
                 //dd($user->organization->projects);
                 return redirect(route('data.projects.index'));
             }elseif($user->organization && $user->organization->projects->count() == 1 && $user->role->name == 'Data Clerk'){
-                return redirect(route('data.project.results.index', [$user->organization->projects->first()->id]));
+                return redirect(route('data.project.status.index', [$user->organization->projects->first()->id]));
             } else {
                 return view('frontend.user.dashboard')
 			->withUser($user);
