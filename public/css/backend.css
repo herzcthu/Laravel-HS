@@ -9687,7 +9687,7 @@ table.text-center, table.text-center td, table.text-center th {
   .table-responsive > .table tr th, .table-responsive > .table tr td {
     white-space: normal !important; } }
 
-.text, .textarea {
+*, .text, .textarea {
   font-family: Zawgyi-One !important; }
 
 .skin-blue .main-header .navbar {
