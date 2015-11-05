@@ -3146,6 +3146,9 @@ table.text-center, table.text-center td, table.text-center th {
 .text, .textarea {
   font-family: Zawgyi-One !important; }
 
+.unicode {
+  font-family: "Pyidaungsu Zawdecode", Myanmar3, Tharlon, Padauk; }
+
 .skin-blue .main-header .navbar {
   background-color: #3c8dbc; }
 

@@ -164,10 +164,18 @@
                     pages: 5 // number of pages to cache
                 } ),
                 deferRender: true,
+                "columnDefs": [
+                    { "orderable": false, "targets": 0 },
+                    { "orderable": false, "targets": 1 },
+                    { "orderable": false, "targets": 2 },
+                    { "orderable": false, className: "unicode", "targets": 3 },
+                    { "orderable": false, className: "unicode", "targets": [ 4 ], "width": "300px" },
+                    { "orderable": false, "targets": 5 }
+                  ],
                 columns: [  
                     { data: 'pcode', name: 'pcode' },
                     { data: 'state', name: 'region' },
-                    { data: 'district', name: 'district' },
+                    { data: 'township', name: 'township' },
                     { data: 'village', name: 'station' },
                     { data: 'observers', name: 'observers'},
                     @foreach($project->sections as $k => $section)

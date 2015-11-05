@@ -209,9 +209,9 @@ class AjaxController extends Controller
             
             $result = Result::where('project_id', $project->id)->OfWithPcode('state', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
         
-        }elseif($request->get('district')){
-            $search_key = $request->get('district');
-            $result = Result::where('project_id', $project->id)->OfWithPcode('district', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
+        }elseif($request->get('township')){
+            $search_key = $request->get('township');
+            $result = Result::where('project_id', $project->id)->OfWithPcode('township', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
         
         }elseif($request->get('station')){
             $search_key = $request->get('station');

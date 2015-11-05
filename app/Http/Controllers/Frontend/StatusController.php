@@ -45,7 +45,8 @@ class StatusController extends Controller
     public function index($project, Request $request)
     {
                 
-        $alocations = PLocation::where('org_id', $project->organization->id );
+        $alocations = PLocation::where('org_id', $project->organization->id )->get();
+        //dd($alocations->lists('state', 'state'));
         
         return view('frontend.result.status-locations')
                         ->withProject($project)

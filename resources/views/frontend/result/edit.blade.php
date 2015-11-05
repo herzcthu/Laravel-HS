@@ -22,7 +22,7 @@
 @section('content')
 
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-1 col-lg-12">
                 @if($project->type == 'checklist')
                     <a href="{{route('data.project.status.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to status list.') }}</a>
                 @endif
@@ -68,7 +68,7 @@
                         </div>
                         <div id="validated" class="col-xs-5">
                             @if($validated)
-                            <dl class="dl-horizontal">
+                            <dl class="dl-horizontal unicode">
                                 @foreach($validated as $index => $value)
                                 @if(!in_array($index, ['validator','validator_key']))
                                 <dt>{{ ($index)? _t($index):'' }}</dt><dd>{{ ($value)? _t($value):'' }}</dd>
@@ -105,7 +105,7 @@
                     {!! Form::hidden('org_id', $project->organization->id) !!}
                     {!! Form::hidden('validator_id', ($validated)? $validated['validator_key']:null,['class' => 'hidden-validator']) !!}
                     <div class="row">
-                        <div class="col-xs-1 pull-right">
+                        <div class="col-xs-1 col-lg-1 pull-right">
                         <input type="submit" class="btn btn-success" value="Save" />
                         </div>
                     </div>
@@ -118,31 +118,31 @@
 
                             <div class="form-group quest {!! aio()->section($section->column) !!}">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
-                                <label class="col-xs-1 control-label">{!! $question->qnum !!}</label>
+                                <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
                                 @if((isset($question->display->question) && $question->display->question == 0) || empty($question->display))
-                                <div class="col-xs-11">
+                                <div class="col-xs-1 col-lg-11">
                                     <div class="form-control-static">
                                     {!! _t($question->question) !!}
                                     </div>
                                 </div>
                                 @endif                            
 
-                                    <label class="col-xs-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
-                                    <div class="col-xs-11">
+                                    <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
+                                    <div class="col-xs-1 col-lg-11">
                                         @if($question->qanswers->count() > 0 )
                                             <?php $key = 0; ?>
                                             @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
-                                                    <div class="col-xs-6">
+                                                    <div class="col-xs-6 col-lg-6">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
-                                                    <div class="col-xs-6">
+                                                    <div class="col-xs-6 col-lg-6">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
@@ -152,21 +152,21 @@
                                                     @endif
                                                 @elseif($question->answer_view == 'three-column')
                                                     @if($key == 0)
-                                                    <div class="col-xs-4">
+                                                    <div class="col-xs-4 col-lg-4">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 3)))
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3)))
                                                     </div>
-                                                    <div class="col-xs-4">
+                                                    <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3)) && $key < ceil(($question->qanswers->count() / 3) * 2))
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3) * 2))
                                                     </div>
-                                                    <div class="col-xs-4">
+                                                    <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3) * 2) && $key < $question->qanswers->count())
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
@@ -194,10 +194,10 @@
                 @endif
                 @if($project->type == 'checklist')
                     <div class="row">
-                        <div class="col-xs-1 pull-left">                                        
+                        <div class="col-xs-1 col-lg-1 pull-left">                                        
                             <input type="reset" class="btn btn-warning" value="Reset All" />                
                         </div>
-                        <div class="col-xs-1 pull-right">
+                        <div class="col-xs-1 col-lg-1 pull-right">
                             <input type="submit" class="btn btn-success" value="Save" />
                         </div>
                     </div>
@@ -226,15 +226,15 @@
                     @if(empty($question->related_data->q) && $question->related_data->type != 'parent') 
                     <div class="form-group">
 
-                        <label class="col-xs-1 control-label">{!! $question->qnum !!}</label>
-                        <div class="col-xs-11">
+                        <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
+                        <div class="col-xs-1 col-lg-11">
                             <div class="form-control-static">
                             {!! _t($question->question) !!}
                             </div>
                         </div>
 
-                            <label class="col-xs-1 control-label">&nbsp;</label>
-                            <div class="col-xs-11">
+                            <label class="col-xs-1 col-lg-1 control-label">&nbsp;</label>
+                            <div class="col-xs-1 col-lg-11">
                                 <div class="form-control-static">
                                 @if($question->qanswers->count() > 0 )
                                     @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $key => $answer)
