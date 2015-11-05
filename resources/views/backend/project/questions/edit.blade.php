@@ -203,7 +203,7 @@
                             {!! Form::text("answers[$key][require]", (isset($answer->require)? $answer->require:null), ['class' => 'form-control', 'placeholder' => 'Require']) !!}
                         </div>
                             
-                            @if(preg_replace('/(.*)a([0-9]{1,})$/','$2',$key) > 0 )
+                            @if(preg_replace('/(.*)a([0-9]{1,})$/','$2',$key) > 1 )
                             <div class="col-xs-2">
                                 <button type="button" class="btn btn-warning removeButton"><i class="fa fa-minus"></i></button>                    
                             </div>

@@ -355,14 +355,34 @@ class ResultController extends Controller
                 foreach ($locatedMembers as $key => $sM){
                     $sM_id = str_replace($pcode->pcode, '', $sM->participant_id);
                     if(!is_null($sM->supervisor)){
-                        $response[$sM->supervisor->role->name] = $sM->supervisor->name;
+                        //$response[$sM->supervisor->role->name] = $sM->supervisor->name;
                     }
-                    $response[$sM->role->name.' '.$sM_id ] = $sM->name;
+                    //$response[$sM->role->name.' '.$sM_id ] = $sM->name;
                     //}
-                    $response[$sM->role->name.' '.$sM_id.' ID'] = $sM->participant_id;
+                    //$response[$sM->role->name.' '.$sM_id.' ID'] = $sM->participant_id;
                 }
             }
         }
+        if(!is_null($pcode->participants)){
+            $first = $pcode->participants->first();
+            
+            if(!is_null($first->supervisor)){
+                if(!empty($first->supervisor->name)){
+                $response[$first->supervisor->role->name] = $first->supervisor->name;  
+                }
+            }
+            
+            foreach($pcode->participants as $participant){
+                $response[$participant->role->name.' '.str_replace($pcode->pcode, '', $participant->participant_id)] = $participant->name;
+                $response[$participant->role->name.' '.str_replace($pcode->pcode, '', $participant->participant_id).' ID'] = $participant->participant_id;
+                foreach($participant->phones as $pk => $phone){
+                    if(!empty($phone)){
+                    $response[$participant->role->name.' '.str_replace($pcode->pcode, '', $participant->participant_id).' '.$pk] = $phone;
+                    }
+                }
+            }
+        }
+        
         /**
         $observers = $pcode->participants;
         foreach ($observers as $obk => $obv){
