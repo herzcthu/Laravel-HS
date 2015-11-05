@@ -137,6 +137,9 @@
                     if($('#region').val() != ''){
                         other += '&region=' + $('#region').val();
                     }
+                    if($('#township').val() != ''){
+                        other += '&township=' + $('#township').val();
+                    }
                     window.location.href = url + "?section={{$k}}&status=" + $(this).val() + other;
                 });
             @endforeach
@@ -144,7 +147,11 @@
                 window.location.href = url + "?region=" + $(this).val();
             });
             $('#township').on('change', function(e){
-                window.location.href = url + "?township=" + $(this).val();
+                var other1 = '';
+                    if($('#region').val() != ''){
+                        other1 += '&region=' + $('#region').val();
+                    }
+                window.location.href = url + "?township=" + $(this).val() + other1;
             });
             $('#station').on('change', function(e){
                 window.location.href = url + "?station=" + $(this).val();
