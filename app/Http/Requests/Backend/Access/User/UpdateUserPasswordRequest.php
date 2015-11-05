@@ -23,7 +23,7 @@ class UpdateUserPasswordRequest extends Request {
 	{
 		return [
 			'password'				=>	'required|alpha_num|min:6|confirmed',
-			'password_confirmation'	=>	'required|alpha_num|min:6'
+			'password_confirmation'	=>	'required|case_diff|numbers|letters|symbols|min:6'
 		];
 	}
 }

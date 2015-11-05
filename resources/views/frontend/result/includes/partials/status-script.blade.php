@@ -133,14 +133,18 @@
         var url = [location.protocol, '//', location.host, location.pathname].join('');
             @foreach($project->sections as $k => $section)
                 $('#section{{$k}}').on('change', function(e){
-                    window.location.href = url + "?section={{$k}}&status=" + $(this).val();
+                    var other = '';
+                    if($('#region').val() != ''){
+                        other += '&region=' + $('#region').val();
+                    }
+                    window.location.href = url + "?section={{$k}}&status=" + $(this).val() + other;
                 });
             @endforeach
             $('#region').on('change', function(e){
                 window.location.href = url + "?region=" + $(this).val();
             });
-            $('#district').on('change', function(e){
-                window.location.href = url + "?district=" + $(this).val();
+            $('#township').on('change', function(e){
+                window.location.href = url + "?township=" + $(this).val();
             });
             $('#station').on('change', function(e){
                 window.location.href = url + "?station=" + $(this).val();

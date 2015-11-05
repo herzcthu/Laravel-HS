@@ -51,7 +51,8 @@ class StatusController extends Controller
         return view('frontend.result.status-locations')
                         ->withProject($project)
                         //->withLocations($locations)
-                        ->withAllLoc($alocations);
+                        ->withAllLoc($alocations)
+                        ->withRequest($request);
     }
     
     /**

@@ -214,6 +214,10 @@ return [
          * https://github.com/Maatwebsite/Laravel-Excel
          */
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        /**
+         * https://github.com/schuppo/PasswordStrengthPackage
+         */
+        Schuppo\PasswordStrength\PasswordStrengthServiceProvider::class,
         
         /**
          * https://github.com/felixkiss/uniquewith-validator
@@ -234,6 +238,7 @@ return [
          * https://github.com/yajra/laravel-datatables/wiki/Installation
          */
         yajra\Datatables\DatatablesServiceProvider::class,
+        
         
         /**
          * My own providers

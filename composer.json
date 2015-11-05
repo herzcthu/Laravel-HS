@@ -34,7 +34,8 @@
 		"mormat/php-formula-interpreter": "^1.0",
 		"mbostock/d3": "^3.5",
 		"stevebauman/translation": "^1.3",
-		"eternicode/bootstrap-datepicker": "^1.5"
+		"eternicode/bootstrap-datepicker": "^1.5",
+		"schuppo/password-strength": "^1.3"
 	},
 	"require-dev": {
 	"fzaninotto/faker": "~1.4",

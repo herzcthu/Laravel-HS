@@ -50,7 +50,7 @@
           @include('frontend.includes.footer')
         </div><!-- ./wrapper -->
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <!--script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script-->
         <script>window.jQuery || document.write('<script src="{{asset('js/vendor/jquery-2.1.4.min.js')}}"><\/script>')</script>        
         {!! HTML::script('js/vendor/jquery-ui/jquery-ui.min.js') !!}
         <script type="text/javascript">

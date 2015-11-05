@@ -48,23 +48,16 @@
                         @endforeach
                     </select>
                 </th>
-                <th id="districtcol">{!! _t('District') !!}
+                <th id="townshipcol">{!! _t('Township') !!}
                     <br />
-                    <select id="district" name="district" class="dropdown" style="width:35px;">
+                    <select id="township" name="township" class="dropdown" style="width:35px;">
                         <option value="">-</option>
-                        @foreach(array_unique($all_loc->lists('district')->toArray()) as $district)
-                        <option value="{{ $district }}">{!! _t(ucfirst($district)) !!}</option>
+                        @foreach(array_unique($all_loc->lists('township')->toArray()) as $township)
+                        <option value="{{ $township }}">{!! _t(ucfirst($township)) !!}</option>
                         @endforeach
                     </select>
                 </th>
                 <th id="village">{!! _t('Station') !!}
-                    <br />
-                    <select id="station" name="station" class="dropdown" style="width:35px;">
-                        <option value="">-</option>
-                        @foreach(array_unique($all_loc->lists('village')->toArray()) as $village)
-                        <option value="{{ $village }}">{!! _t(ucfirst($village)) !!}</option>
-                        @endforeach
-                    </select>
                 </th>
                 <!--th class="observers">{!! _t('Observers') !!}</th-->
                 @foreach($project->questions as $k => $question)

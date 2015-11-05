@@ -24,7 +24,7 @@ class RegisterRequest extends Request {
 		return [
 			'name' 		=> 'required|max:255',
 			'email' 	=> 'required|email|max:255|unique:users',
-			'password'  => 'required|confirmed|min:6',
+			'password'  => 'required|case_diff|numbers|letters|symbols|confirmed|min:6', //case_diff|numbers|letters|symbols
 		];
 	}
         
