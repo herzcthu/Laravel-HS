@@ -68,7 +68,7 @@
                         </div>
                         <div id="validated" class="col-xs-5">
                             @if($validated)
-                            <dl class="dl-horizontal unicode">
+                            <dl class="dl-horizontal">
                                 @foreach($validated as $index => $value)
                                 @if(!in_array($index, ['validator','validator_key']))
                                 <dt>{{ ($index)? _t($index):'' }}</dt><dd>{{ ($value)? _t($value):'' }}</dd>

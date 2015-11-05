@@ -63,7 +63,7 @@
                                 @endforeach
                             @endif    
                         </div>
-                        <div id="validated" class="col-xs-5 col-lg-5 unicode">
+                        <div id="validated" class="col-xs-5 col-lg-5">
                             
                         </div>
                     </div>                    

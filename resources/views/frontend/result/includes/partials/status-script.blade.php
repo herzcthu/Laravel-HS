@@ -179,8 +179,8 @@
                     { "orderable": false, "targets": 0 },
                     { "orderable": false, "targets": 1 },
                     { "orderable": false, "targets": 2 },
-                    { "orderable": false, className: "unicode", "targets": 3 },
-                    { "orderable": false, className: "unicode", "targets": [ 4 ], "width": "300px" },
+                    { "orderable": false, "targets": 3 },
+                    { "orderable": false, "targets": [ 4 ], "width": "300px" },
                     { "orderable": false, "targets": 5 }
                   ],
                 columns: [  
