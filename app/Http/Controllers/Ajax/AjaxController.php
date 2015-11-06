@@ -302,6 +302,14 @@ class AjaxController extends Controller
                         $query->where('village',$station);
                         $filter = true;
                     }
+                    if($request->get('phone')){
+                        $phone = $request->get('phone');
+                        $query->OfWithAndWhereHas('participants',function($query) use ($phone){
+                            $query->where('phones', 'like','%'.$phone.'%');
+                        });
+                        $filter = true;
+                    }
+                    
 
                     if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
                         $section = $request->get('section');

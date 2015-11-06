@@ -90,6 +90,28 @@
                 <div class="panel-heading">
                     <div class="panel-title" id="{{$section_key}}">
                          {!! _t($section->text) !!} 
+                         <span class="pull-right">
+                            @if(isset($result[$section_key]))
+                                @if($result[$section_key] == 'complete')
+                                <a data-toggle="collapse" data-target="#collapse{{$section_key}}" 
+                                   href="#collapse{{$section_key}}">
+                                  +
+                                </a>
+                                @else
+                                <a data-toggle="collapse" data-target="#collapse{{$section_key}}" 
+                                   href="#collapse{{$section_key}}">
+                                  +
+                                </a>
+                                @endif
+                                <span class="text-warning">{!! ucfirst($result[$section_key]) !!}</span>
+                            @else
+                                <a data-toggle="collapse" data-target="#collapse{{$section_key}}" 
+                                   href="#collapse{{$section_key}}">
+                                  +
+                                </a>
+                            <span class="text-danger">Missing</span>
+                            @endif 
+                         </span>
                     </div>
                     
                 @if(!empty($section->desc))
@@ -98,6 +120,13 @@
                 
                 @endif
                 </div>
+                <div id="collapse{{$section_key}}" class="panel-collapse collapse @if(isset($result[$section_key]))
+                                                    @if($result[$section_key] != 'complete') 
+                                                    in
+                                                    @endif
+                                                  @else
+                                                  in
+                                                  @endif">
                 <div class="panel-body">
                 @if($project->type == 'checklist')
                     {!! Form::open(['route' => ['data.project.results.section.store', $project->id, $section_key], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
@@ -204,6 +233,7 @@
                     {!! Form::close() !!}
                 @endif
                 </div>
+                </div>    
                 <div class="panel-footer">
                     {!! $section->text !!} (Section End)
                 </div>

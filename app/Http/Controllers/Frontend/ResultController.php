@@ -174,6 +174,7 @@ class ResultController extends Controller
             $validated = $this->formValidatePcode($project, $code, $request);
             $validated['validator'] = $code->pcode;
             $validated['validator_key'] = $code->pcode.'-'.$project->organization->id;
+            
         }
         if($code instanceof Participant){
             $validated = $this->formValidatePerson($project, $code, $request);
@@ -189,12 +190,14 @@ class ResultController extends Controller
 			'url' => $route,
                         //'org' => 
 		]); //dd($code);
+        $result = \App\Result::where('project_id', $project->id)->where('resultable_id',$validated['validator_key'])->lists('information','section_id');
         return view('frontend.result.edit')
 			->withUser($user)
                         ->withProject($project)
                         ->withValidated($validated)
                         ->withCode($code)
-                        ->withResults($this->results);
+                        ->withResults($this->results)
+                        ->withResult($result);
     }
 
     /**

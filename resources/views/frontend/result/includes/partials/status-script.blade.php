@@ -162,6 +162,12 @@
                     window.location.href = url + "?pcode=" + $(this).val();
                 }
             });
+            $('#phone').keyup(function(e) { 
+                if(e.which == 13) {
+                    var code = $('#phone').val();
+                    window.location.href = url + "?phone=" + $(this).val();
+                }
+            });
         var ajaxurl =  window.location.href;  
         ajax = ajaxurl.replace('data', 'ajax');
             $('#results-table').DataTable({
