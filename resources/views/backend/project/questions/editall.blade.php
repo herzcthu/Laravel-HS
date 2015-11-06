@@ -147,7 +147,10 @@
                         <label class="col-lg-1 control-label">{!! $question->qnum !!}</label>
                         <div class="col-lg-11">
                             <div class="form-control-static">
-                            {!! $question->question !!} {!! link_to_route('admin.project.question.edit', 'Edit', [$question->id]) !!}
+                            {!! $question->question !!} 
+                                    <div class="col-lg-1 pull-right">
+                                    {!! $question->action_buttons !!}
+                                    </div>
                             </div>
                         </div>
 
