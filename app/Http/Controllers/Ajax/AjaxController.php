@@ -195,8 +195,10 @@ class AjaxController extends Controller
     }
     
     public function getAllResults($project, Request $request) {
-        //$project = $project->with('results')->with('answersR');
+        $result = Result::with('resultable')->with('answers')->with('answers.question.qanswers');
         
+        
+        /**
         $start = $request->get('start');
         $length = $request->get('length');
         if($request->get('code')){
@@ -241,8 +243,50 @@ class AjaxController extends Controller
         
         }
         
+         * 
+         */
         return Datatables::of($result)
-                ->editColumn('code', function ($model) use ($project){
+                ->filter(function($query) use ($request, $project){
+                    if($request->get('pcode')){
+                        $code = $request->get('pcode');
+                        $query->OfWithPcode('pcode', $code);
+                    }
+                    if($request->get('region')){
+                        $region = $request->get('region');
+                        $query->OfWithPcode('state', $region);
+                    }
+                    if($request->get('district')){
+                        $district = $request->get('district');
+                        $query->OfWithPcode('district', $district);
+                    }
+                    if($request->get('township')){
+                        $township = $request->get('township');
+                        $query->OfWithPcode('township', $township);
+                    }
+                    if($request->get('vtract')){
+                        $village_tract = $request->get('village_tract');
+                        $query->OfWithPcode('village_tract', $village_tract);
+                    }
+                    if($request->get('village')){
+                        $village = $request->get('village');
+                        $query->OfWithPcode('village', $village);
+                    }
+                    if( $request->get('question') && $request->get('answer') ){
+                        $question = $request->get('question');
+                        $answer = $request->get('answer');
+                        $query->ofWithAndWhereHas('answers', function($q) use ($question, $answer){
+                            $q->where('qid', $question)->where('akey', $search_key);
+                        });
+                    }
+                    if($request->get('phone')){
+                        $phone = $request->get('phone');
+                        if($project->validate == 'pcode'){
+                        $query->OfWithParticipant($phone);
+                        }
+                    }
+                    $query->where('project_id', $project->id)->orderBy('resultable_id', 'asc');
+                })
+                ->editColumn('pcode', function ($model) use ($project){
                 if($model->resultable_type == 'App\\PLocation'){
                     return $model->resultable->pcode."<a href='".route('data.project.results.edit', [$project->id, $model->id])."' title='Edit'> <i class='fa fa-edit'></i></a>";
                     }
@@ -254,6 +298,24 @@ class AjaxController extends Controller
                     }else{
                         return 'none';
                     }
+                })
+                ->editColumn('observers', function ($model) use ($project) {
+                    $p = '<table class="table">';
+                    if($project->validate == 'pcode'){
+                        foreach($model->resultable->participants as $participant){
+                            $p .= '<tr><td>'.$participant->name.'</td>';
+                            $p .= '<td>';
+                            if(isset($participant->phones->mobile)){
+                            $p .=  ' M:'.$participant->phones->mobile.'<br>';                            
+                            }
+                            if(isset($participant->phones->emergency) && $participant->phones->emergency){
+                            $p .=  ' E:'.$participant->phones->emergency.'<br>';                            
+                            }
+                            $p .= '</td></tr>';
+                        }
+                    $p .= '</table>';    
+                    }
+                    return $p;
                 })
                 ->make(true);
     }
@@ -308,8 +370,7 @@ class AjaxController extends Controller
                             $query->where('phones', 'like','%'.$phone.'%');
                         });
                         $filter = true;
-                    }
-                    
+                    }                    
 
                     if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
                         $section = $request->get('section');
@@ -337,26 +398,29 @@ class AjaxController extends Controller
                     $state = (!is_null($model->state))? $model->state:'';
                     return _t($state);
                 })
-                ->editColumn('district', function ($model) use ($project){
-                    $district = (!is_null($model->district))? $model->district:'';
-                    return _t($district);
+                ->editColumn('township', function ($model) use ($project){
+                    $township = (!is_null($model->township))? $model->township:'';
+                    return _t($township);
                 })
                 ->editColumn('village', function ($model) use ($project){
                     $village = (!is_null($model->village))? $model->village:'';
                     return _t($village);
                 })
-                ->editColumn('observers', function ($model) {
-                    $p = '';
-                    foreach($model->participants as $participant){
-                        $p .= '<div class="col-xs-12"><div class="col-xs-6">'.$participant->name.'</div>';
-                        $p .= '<div class="col-xs-6">';
-                        if(isset($participant->phones->mobile)){
-                        $p .=  ' M:'.$participant->phones->mobile.'<br>';                            
+                ->editColumn('observers', function ($model) use ($project) {
+                    $p = '<table class="table">';
+                    if($project->validate == 'pcode'){
+                        foreach($model->participants as $participant){
+                            $p .= '<tr><td>'.$participant->name.'</td>';
+                            $p .= '<td>';
+                            if(isset($participant->phones->mobile)){
+                            $p .=  ' M:'.$participant->phones->mobile.'<br>';                            
+                            }
+                            if(isset($participant->phones->emergency) && $participant->phones->emergency){
+                            $p .=  ' E:'.$participant->phones->emergency.'<br>';                            
+                            }
+                            $p .= '</td></tr>';
                         }
-                        if(isset($participant->phones->emergency) && $participant->phones->emergency){
-                        $p .=  ' E:'.$participant->phones->emergency.'<br>';                            
-                        }
-                        $p .= '</div></div>';
+                    $p .= '</table>';    
                     }
                     return $p;
                 })

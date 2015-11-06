@@ -63,6 +63,17 @@ class Result extends Model
                 ->where($column,'=',$value);
         });
   }
+  
+  public function scopeOfWithParticipant($query, $phone){
+        
+            return $query->whereExists(function($query) use ($phone){
+            $prefix = DB::getTablePrefix();
+            $this_table = $prefix . $this->table; 
+            $query->select(DB::raw('*')) ->from($prefix.'participants') ->whereRaw('pcode_id = '.$this_table.'.resultable_id')
+                ->where('phones','like','%'.$phone.'%');
+        });
+        
+  }
     
   public function scopeCreatedAt($query){
       return $query->where(function($query) {

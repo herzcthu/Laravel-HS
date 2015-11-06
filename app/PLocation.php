@@ -16,6 +16,8 @@ class PLocation extends Model
     protected $guarded = ['id'];
     
     protected $primaryKey = 'primaryid';
+    
+    protected $with = ['participants']; 
 
 
    

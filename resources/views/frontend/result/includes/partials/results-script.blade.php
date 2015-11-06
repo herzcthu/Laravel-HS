@@ -21,9 +21,14 @@
         var ajaxurl;
             @foreach($project->questions as $k => $question)
                 $("#question-{!! $question->id !!}").on('change', function(e){
-                    window.location.href = url + "?question={{$question->id}}&answer=" + $(this).val();
-                    //ajaxurl = url + "?question={{$question->id}}&answer=" + $(this).val();
-                    //e.preventDefault();
+                    var other = '';
+                    if($('#region').val() != ''){
+                        other += '&region=' + $('#region').val();
+                    }
+                    if($('#township').val() != ''){
+                        other += '&township=' + $('#township').val();
+                    }
+                    window.location.href = url + "?question={{$question->id}}&answer=" + $(this).val() + other;
                 });
             @endforeach
             $('#region').on('change', function(e){
@@ -31,8 +36,12 @@
                 //ajaxurl = url + "?region=" + $(this).val();
                 //e.preventDefault();
             });
-            $('#district').on('change', function(e){
-                window.location.href = url + "?district=" + $(this).val();
+            $('#township').on('change', function(e){
+                var other1 = '';
+                    if($('#region').val() != ''){
+                        other1 += '&region=' + $('#region').val();
+                    }
+                window.location.href = url + "?township=" + $(this).val() + other1;
                 //ajaxurl = url + "?district=" + $(this).val();
             });
             $('#station').on('change', function(e){
@@ -42,8 +51,14 @@
             $('#input-code').keyup(function(e) { 
                 if(e.which == 13) {
                     var code = $('#input-code').val();
-                    window.location.href = url + "?code=" + $(this).val();
+                    window.location.href = url + "?pcode=" + code;
                     //ajaxurl = url + "?code=" + $(this).val();
+                }
+            });
+            $('#phone').keyup(function(e) { 
+                if(e.which == 13) {
+                    var code = $('#phone').val();
+                    window.location.href = url + "?phone=" + $(this).val();
                 }
             });
         if(typeof ajaxurl == "undefined"){
@@ -52,48 +67,49 @@
         ajax = ajaxurl.replace('data', 'ajax');
             $('#results-table').DataTable({
                 lengthMenu: [ 50, 100, 150, 200, 250 ],
-                scrollX: true,
+                //scrollX: true,
                 processing: true,
                 serverSide: true,
                 searching: false,
                 pageLength: 50,
                 ajax: ajax,
                 columns: [
-                    { data: 'code', name: 'code' },
-                    { data: 'incident_id', name: 'incident'},
-                    { data: 'cq', name:'cq'},
+                    { data: 'pcode', name: 'pcode',"orderable": false },
+                    { data: 'incident_id', name: 'incident',"orderable": false},
+                    { data: 'cq', name:'cq',"orderable": false},
                     { data: function(row, type, val, meta){ //console.log(row.resultable.state);
                         if(row.resultable_type == 'App\\PLocation'){
                                 return row.resultable.state;
                         }else{
                             return '';
                         }
-                    }, name: 'state' },
+                    }, name: 'state',"orderable": false },
                     { data: function(row, type, val, meta){ //console.log(row.resultable.district);
                         if(row.resultable_type == 'App\\PLocation'){
-                                return row.resultable.district;
+                                return row.resultable.township;
                         }else{
                             return '';
                         }
-                    }, name: 'district' },
+                    }, name: 'township',"orderable": false },
                     { data: function(row, type, val, meta){ //console.log(row.resultable.village);
                         if(row.resultable_type == 'App\\PLocation'){
                                 return row.resultable.village;
                         }else{
                             return '';
                         }
-                    }, name: 'village' },
+                    }, name: 'village',"orderable": false },
+                    { data: 'observers', name: 'observers',"orderable": false},
                     @foreach($project->questions as $k => $question)
                     { data: function(row, type, val, meta){ //console.log(row.resultable.village);
                             var ans = '';
                         $.each(row.answers, function(i,v){ 
                             if(v.qid == '{{ $question->id }}'){
-                                console.log(v.question.answers[v.akey].text);
+                                //console.log(v.question.answers[v.akey].text);
                                 ans = v.question.answers[v.akey].text;
                             }
                         });
                         return ans;
-                    }, name: '{{ $question->qnum }}' },
+                    }, name: '{{ $question->qnum }}',"orderable": false },
                     
                     @endforeach
                     

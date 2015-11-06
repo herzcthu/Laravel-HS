@@ -21,6 +21,8 @@ class Participant extends Model {
    protected $guarded = array('id', 'parent_id');
 
    protected $scoped = array('org_id');
+   
+   //protected $with = ['results']; 
         /**
 	 * For soft deletes
 	 *

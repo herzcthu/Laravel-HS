@@ -90,7 +90,8 @@ class ResultController extends Controller
                         ->withProject($project)
                         ->withSections($sections)
                         //->withLocations($locations)
-                        ->withAllLoc($alocations);
+                        ->withAllLoc($alocations)
+                        ->withRequest($request);
     }
 
     /**
