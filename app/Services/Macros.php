@@ -183,7 +183,7 @@ class Macros extends FormBuilder {
             }
             if(in_array($type,['text','textarea'])){
                 $options['class'] = $options['class'].' '.$type;
-                $texthtml = "<div class='form-group'>";
+                $texthtml = "<div class='form-group' style='min-height:35px'>";
                 if($wrap){
                     $texthtml .= $wrap['start'];
                 }

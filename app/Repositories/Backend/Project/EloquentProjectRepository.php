@@ -234,12 +234,18 @@ class EloquentProjectRepository implements ProjectContract {
 	}
         
         public function export($project) {
+            set_time_limit(0);
             $locations = PLocation::where('org_id', $project->org_id)->with('results')->with('answers')->get();
             foreach($locations as $k => $location){
                 $array[$k]['state'] = $location->state;
                 $array[$k]['district'] = $location->district;
                 $array[$k]['township'] = $location->township;
                 $array[$k]['pcode'] = $location->pcode;
+                foreach ($project->sections as $sk => $section){
+                    $array[$k][$section->text] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->information:'missing';
+                    $array[$k][$section->text.' Time'] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->updated_at:'';
+                    $array[$k][$section->text.' Data Clerk'] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->user->name:'';
+                }
                 foreach ($project->questions as $question){
                     $radios = QAnswers::where('qid', $question->id)->where('type', 'radio')->get();
                     $text = QAnswers::where('qid', $question->id)->where('type', 'text')->get();
