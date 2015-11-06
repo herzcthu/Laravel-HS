@@ -32,6 +32,7 @@
                     Route::match(['patch','put'],'{project}/questions/{questions}', ['as' => 'admin.project.questions.update', 'uses' => 'QuestionController@update']);
                     Route::delete('{project}/questions/{questions}', ['as' => 'admin.project.questions.destroy', 'uses' => 'QuestionController@destroy']);
                     Route::get('{project}/questions/{questions}/edit', ['as' => 'admin.project.questions.edit', 'uses' => 'QuestionController@edit']);
+                    Route::get('{project}/questions/{questions}/edit', ['as' => 'admin.project.question.edit', 'uses' => 'QuestionController@edit']);
                     //Route::resource('project.questions', 'QuestionController', ['except' => ['show','edit']]); 
                 }); 
                 
