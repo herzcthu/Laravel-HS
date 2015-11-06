@@ -69,7 +69,7 @@ class Question extends Model
   * @return string
   */
   public function getEditButtonAttribute() {
-     return '<a href="'.route('admin.project.questions.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+     return '<a href="'.route('admin.project.question.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
   }
   
   /**
