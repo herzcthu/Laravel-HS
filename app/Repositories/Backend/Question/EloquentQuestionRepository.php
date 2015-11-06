@@ -131,6 +131,7 @@ class EloquentQuestionRepository implements QuestionContract {
                         $qanswer->text = $av['text'];
                         $qanswer->value = $av['value'];
                         $qanswer->require = $av['require'];
+                        $qanswer->css = $av['css'];
                         $question->qanswers()->save($qanswer);
                     }
 			return true;
@@ -174,6 +175,7 @@ class EloquentQuestionRepository implements QuestionContract {
                         $qanswer->text = $av['text'];
                         $qanswer->value = $av['value'];
                         $qanswer->require = $av['require'];
+                        $qanswer->css = $av['css'];
                         $question->qanswers()->save($qanswer);
                     }
                     return true;

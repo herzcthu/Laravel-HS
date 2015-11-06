@@ -27,8 +27,20 @@
                 if(this.type == 'button'){
                 } else if(this.type == 'checkbox' || this.type == 'radio'){
                     this.checked = false;
+                    $(this).removeAttr("disabled");
                 } else {
                      this.value = '';
+                }
+
+            });
+        });
+        $('.none').on('click',function(){
+            $(this).parents('.quest').find(':input').each(function() {//console.log(this)
+                if(this.type == 'checkbox' && !$(this).hasClass('none')){
+                    this.checked = false;
+                    $(this).attr("disabled", "disabled");
+                } else {
+                     return;
                 }
 
             });

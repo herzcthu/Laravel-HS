@@ -219,8 +219,11 @@
                                     //if(typeof results[{{$k}}] == "undefined"){
                                     //    return;
                                     //}
+                                    @if(isset($section->report))
+                                        status{{$k}} += results.results.Note.Note_a1;
+                                    @else
                                         status{{$k}} += '<img src="{{ asset('img/') }}/' + results.information + '.png" title="'+ results.information +'" class="status-icon">';
-                                    
+                                    @endif
                                 });
                             }else{
                                     if(typeof status{{$k}} == "undefined"){

@@ -53,6 +53,7 @@ class Macros extends FormBuilder {
             $display_value = $answer->value;
             $type = $answer->type;
             $akey = isset($answer->akey) ? $answer->akey:$answer_key;
+            $css = $answer->css;
             $qnum = $question->qnum;
             if(in_array($type, ['radio'])){
                 $default = isset($answer->akey) ? $answer->akey:null;
@@ -81,13 +82,14 @@ class Macros extends FormBuilder {
             //dd($answer_key);
             $cssId = $question->qnum.'_a'.$answer_key;//dd($cssId);
             //$cssId = $answer_key;
-            
+            /**
             if(property_exists($answer, "css")) {
-               $css = $answer->css;
+               $css = $answer->css;dd($css);
             } else {
                $css = ''; 
             }
-            $class_array[] = $css;
+             * 
+             */
             if(!empty($answer->require)){
                 $pattern = preg_quote('+-*/<>=() ');
                 $formula_str = $answer->require;
@@ -157,14 +159,13 @@ class Macros extends FormBuilder {
             }
             
             if(array_key_exists('class', $options)){
-                $class_array = explode(' ', $options['class']);
                 if($type == 'radio' || $type == 'checkbox'){
-                   $key = array_search('form-control', $class_array);
-                   $class_array[$key] = '';
+                    //remove form-control class if input is radio or checkbox. add space on both end.
+                   $css .= ' '.str_replace('form-control', '', $options['class']).' ';
                 }
                 
             }
-            $options['class'] = implode(' ', $class_array);
+            $options['class'] = $css;
             $options['id'] = $cssId; //dd($options);
             if($type == 'select') {
                 $default_array = explode('|', $default);
