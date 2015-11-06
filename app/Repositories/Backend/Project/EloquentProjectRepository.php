@@ -235,33 +235,55 @@ class EloquentProjectRepository implements ProjectContract {
         
         public function export($project) {
             set_time_limit(0);
-            $locations = PLocation::where('org_id', $project->org_id)->with('results')->with('answers')->get();
-            foreach($locations as $k => $location){
-                $array[$k]['state'] = $location->state;
-                $array[$k]['district'] = $location->district;
-                $array[$k]['township'] = $location->township;
-                $array[$k]['pcode'] = $location->pcode;
-                foreach ($project->sections as $sk => $section){
-                    $array[$k][$section->text] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->information:'missing';
-                    $array[$k][$section->text.' Time'] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->updated_at:'';
-                    $array[$k][$section->text.' Data Clerk'] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->user->name:'';
-                }
-                foreach ($project->questions as $question){
-                    $radios = QAnswers::where('qid', $question->id)->where('type', 'radio')->get();
-                    $text = QAnswers::where('qid', $question->id)->where('type', 'text')->get();
-                    $checkbox = QAnswers::where('qid', $question->id)->where('type', 'checkbox')->get();
-                    //dd($location->answers->where('qid', $question->id)->first());
-                    if(!$radios->isEmpty()){
-                        $array[$k][$question->qnum] = (null !== $location->answers->where('qid', $question->id)->first())? $location->answers->where('qid', $question->id)->first()->value:'';
-                    }
-                    if(!$text->isEmpty()){
-                        foreach($text as $t){
-                            $array[$k][$t->akey] = (null !== $location->answers->where('qid', $question->id)->where('akey', $t->akey)->first())? $location->answers->where('qid', $question->id)->where('akey', $t->akey)->first()->value:'';
+            if($project->type == 'checklist'){
+                $locations = PLocation::where('org_id', $project->org_id)->with('results')->with('answers')->get();
+                foreach($locations as $k => $location){
+                    $array[$k]['state'] = $location->state;
+                    $array[$k]['district'] = $location->district;
+                    $array[$k]['township'] = $location->township;
+                    $array[$k]['pcode'] = $location->pcode;
+                    foreach ($project->sections as $sk => $section){
+                        if(null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()){
+                            $information = $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->information;
+                            switch ($information) {
+                                case 'complete':
+                                    $array[$k][$section->text] = 1;
+                                    break;
+                                case 'incomplete':
+                                    $array[$k][$section->text] = 2;
+                                    break;
+                                case 'error':
+                                    $array[$k][$section->text] = 3;
+                                    break;
+                                default:
+                                    $array[$k][$section->text] = "0";
+                                    break;
+                            }
+
+                        }else{
+                            $array[$k][$section->text] = "0";
                         }
+                        //$array[$k][$section->text] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->information:'missing';
+                        $array[$k][$section->text.' Time'] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->updated_at:'';
+                        $array[$k][$section->text.' Data Clerk'] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->user->name:'';
                     }
-                    if(!$checkbox->isEmpty()){
-                        foreach($checkbox as $c){
-                            $array[$k][$c->akey] = (null !== $location->answers->where('qid', $question->id)->where('akey', $c->akey)->first())? $location->answers->where('qid', $question->id)->where('akey', $c->akey)->first()->value:'';
+                    foreach ($project->questions as $question){
+                        $radios = QAnswers::where('qid', $question->id)->where('type', 'radio')->get();
+                        $text = QAnswers::where('qid', $question->id)->where('type', 'text')->get();
+                        $checkbox = QAnswers::where('qid', $question->id)->where('type', 'checkbox')->get();
+                        //dd($location->answers->where('qid', $question->id)->first());
+                        if(!$radios->isEmpty()){
+                            $array[$k][$question->qnum] = (null !== $location->answers->where('qid', $question->id)->first())? $location->answers->where('qid', $question->id)->first()->value:'';
+                        }
+                        if(!$text->isEmpty()){
+                            foreach($text as $t){
+                                $array[$k][$t->akey] = (null !== $location->answers->where('qid', $question->id)->where('akey', $t->akey)->first())? $location->answers->where('qid', $question->id)->where('akey', $t->akey)->first()->value:'';
+                            }
+                        }
+                        if(!$checkbox->isEmpty()){
+                            foreach($checkbox as $c){
+                                $array[$k][$c->akey] = (null !== $location->answers->where('qid', $question->id)->where('akey', $c->akey)->first())? $location->answers->where('qid', $question->id)->where('akey', $c->akey)->first()->value:'';
+                            }
                         }
                     }
                 }
