@@ -220,7 +220,7 @@
                                     //    return;
                                     //}
                                     @if(isset($section->report))
-                                        status{{$k}} += results.results.Note.Note_a1;
+                                        status{{$k}} += '<img src="{{ asset('img/') }}/' + results.information + '.png" title="'+ results.results.Note.Note_a1 +'" class="status-icon">';
                                     @else
                                         status{{$k}} += '<img src="{{ asset('img/') }}/' + results.information + '.png" title="'+ results.information +'" class="status-icon">';
                                     @endif

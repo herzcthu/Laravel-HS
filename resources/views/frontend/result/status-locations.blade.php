@@ -40,7 +40,13 @@
                     <br />
                     <select id="township" name="township" class="dropdown form-control" style="max-width:135px;">
                         <option value="">-</option>
-                        @foreach(array_unique($all_loc->lists('township')->toArray()) as $township)
+                        <?php if($request->get('region')){
+                                $townships = array_unique($all_loc->where('state', $request->get('region'))->lists('township')->toArray());
+                            } else {
+                                $townships = array_unique($all_loc->lists('township')->toArray());
+                            }
+                        ?>
+                        @foreach($townships as $township)
                         <option value="{{ $township }}" @if($township == $request->get('township')) selected @endif>{!! _t(ucfirst($township)) !!}</option>
                         @endforeach
                     </select>
