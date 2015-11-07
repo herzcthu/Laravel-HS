@@ -24,8 +24,8 @@ class CreateUserRequest extends Request {
 		return [
 			'name'					=>  'required',
 			'email'					=>	'required|email|unique:users',
-			'password'				=>	'required|alpha_num|min:6|confirmed',
-			'password_confirmation'	=>	'required|alpha_num|min:6',
+			'password'				=>	'required|case_diff|numbers|letters|symbols|min:8|confirmed',
+			'password_confirmation'	=>	'required|case_diff|numbers|letters|symbols|min:8',
 		];
 	}
 }

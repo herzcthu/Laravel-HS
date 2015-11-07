@@ -269,7 +269,7 @@ class EloquentProjectRepository implements ProjectContract {
                     }
                     foreach ($project->questions as $question){
                         $radios = QAnswers::where('qid', $question->id)->where('type', 'radio')->get();
-                        $text = QAnswers::where('qid', $question->id)->where('type', 'text')->get();
+                        $text = QAnswers::where('qid', $question->id)->whereIn('type', ['text','textarea','number','time'])->get();
                         $checkbox = QAnswers::where('qid', $question->id)->where('type', 'checkbox')->get();
                         //dd($location->answers->where('qid', $question->id)->first());
                         if(!$radios->isEmpty()){
@@ -326,7 +326,7 @@ class EloquentProjectRepository implements ProjectContract {
                     
                     foreach ($project->questions as $question){
                         $radios = QAnswers::where('qid', $question->id)->where('type', 'radio')->get();
-                        $text = QAnswers::where('qid', $question->id)->where('type', 'text')->get();
+                        $text = QAnswers::where('qid', $question->id)->whereIn('type', ['text','textarea','number','time'])->get();
                         $checkbox = QAnswers::where('qid', $question->id)->where('type', 'checkbox')->get();
                         //dd($incident->answers->where('qid', $question->id)->first());
                         if(!$radios->isEmpty()){

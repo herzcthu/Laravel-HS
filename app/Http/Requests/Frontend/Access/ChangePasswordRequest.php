@@ -23,7 +23,7 @@ class ChangePasswordRequest extends Request {
 	{
 		return [
 			'old_password'	=>  'required',
-			'password'		=>	'required|alpha_num|min:6|confirmed',
+			'password'		=>	'required|case_diff|numbers|letters|symbols|min:8|confirmed',
 		];
 	}
 }

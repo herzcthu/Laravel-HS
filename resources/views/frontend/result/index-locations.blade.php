@@ -75,6 +75,7 @@
                     <i>{{ $question->qnum }}</i>
                     <br />
                     <select id="question-{{ $question->id }}" name="{{ $question->id }}" class="dropdown form-control" style="max-width:135px;">
+                        <option value="">-</option>
                         @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $ans)
                         <option value="{{ $ans->akey }}" @if($request->get('answer') == $ans->akey) selected @endif>{{ $ans->text }} </option>
                         @endforeach

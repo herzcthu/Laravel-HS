@@ -22,8 +22,8 @@ class UpdateUserPasswordRequest extends Request {
 	public function rules()
 	{
 		return [
-			'password'				=>	'required|case_diff|numbers|letters|symbols|min:6|confirmed',
-			'password_confirmation'	=>	'required|case_diff|numbers|letters|symbols|min:6'
+			'password'				=>	'required|case_diff|numbers|letters|symbols|min:8|confirmed',
+			'password_confirmation'	=>	'required|case_diff|numbers|letters|symbols|min:8'
 		];
 	}
 }
