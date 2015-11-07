@@ -83,14 +83,14 @@ class AjaxController extends Controller
                             $original = $translate;
                         }
                         //return $original; die();
-                        $original->translated()->delete();
+                        //$original->translated()->delete();
                         foreach($translation as $lang => $string){
                             $locale = \App\Locale::where('code', $lang)->first();
                             $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $original->id]);
                             $child->translation = $string;
-                            $child->original()->dissociate();
-                            $child->original()->associate($original);
+                            $child->original()->dissociate();                            
                             $child->locale->dissociate();
+                            $child->original()->associate($original);
                             $child->locale()->associate($locale);
                             $child->save();
                         }
