@@ -74,9 +74,9 @@
                 <th class="{{ $question->qnum }}" id="{{ $question->qnum }}" title="{{ $question->question }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
                     <i>{{ $question->qnum }}</i>
                     <br />
-                    <select id="question-{{ $question->id }}" name="{{ $question->id }}" class="dropdown form-control" style="width:35px;">
-                        @foreach($question->qanswers as $ans)
-                        <option value="{{ $ans->akey }}">{{ $ans->text }} </option>
+                    <select id="question-{{ $question->id }}" name="{{ $question->id }}" class="dropdown form-control" style="max-width:135px;">
+                        @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $ans)
+                        <option value="{{ $ans->akey }}" @if($request->get('answer') == $ans->akey) selected @endif>{{ $ans->text }} </option>
                         @endforeach
                     </select>
                 </th>

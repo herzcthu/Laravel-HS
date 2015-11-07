@@ -109,7 +109,7 @@
                       </li>
                     </ul>
                   </li> 
-                  <li class="dropdown user reg-menu">  
+                  <li class="hidden dropdown user reg-menu">  
                     <!-- Menu Toggle Button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                       <!-- The login image in the navbar-->

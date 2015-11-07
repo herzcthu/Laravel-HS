@@ -108,7 +108,7 @@
                         $.each(row.answers, function(i,v){ 
                             if(v.qid == '{{ $question->id }}'){
                                 //console.log(v.question.answers[v.akey].text);
-                                ans += v.question.answers[v.akey].text + "\n";
+                                ans += v.question.answers[v.akey].text + "<br>\n";
                             }
                         });
                         return ans;

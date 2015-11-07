@@ -80,7 +80,7 @@ class Macros extends FormBuilder {
                 $value = null;
             }
             //dd($answer_key);
-            $cssId = $question->qnum.'_a'.$answer_key;//dd($cssId);
+            $cssId = $akey;//dd($cssId);
             //$cssId = $answer_key;
             /**
             if(property_exists($answer, "css")) {
