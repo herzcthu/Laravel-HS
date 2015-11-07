@@ -47,7 +47,7 @@
                                 @if(isset($project->parent))
                                 {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
                                 
-                                {!! Form::select('qnum', $project->parent->questions->sortBy('qnum', SORT_NATURAL)->lists('qnum','id'), null, ['class'=>'form-control']) !!}
+                                {!! Form::select('qnum', $project->parent->questions->sortBy('sort', SORT_NATURAL)->lists('qnum','id'), null, ['class'=>'form-control']) !!}
                                 @else
                                 {!! Form::hidden('qnum', null) !!}
                                 @endif
@@ -99,7 +99,7 @@
                     </div>
                 @endif
                 @if(count($project->questions) > 0 )
-                    @foreach($project->questions->sortBy('qnum', SORT_NATURAL) as $question)
+                    @foreach($project->questions->sortBy('sort', SORT_NATURAL) as $question)
                         @if(empty($question->related_data->q) && $question->related_data->type != 'parent')                            
                         
                             @if($section_key == $question->section)
