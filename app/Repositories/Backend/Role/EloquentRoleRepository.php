@@ -65,6 +65,7 @@ class EloquentRoleRepository implements RoleRepositoryContract {
 
 		$role = new Role;
 		$role->name = $input['name'];
+                $role->level = $input['level'];
 
 		if ($role->save()) {
 			//Attach permissions
@@ -96,6 +97,7 @@ class EloquentRoleRepository implements RoleRepositoryContract {
 			throw new GeneralException('You must select at least one permission for this role.');
 
 		$role->name = $input['name'];
+                $role->level = $input['level'];
 
 		if ($role->save()) {
 			$role->savePermissions($permissions['role_permissions']);

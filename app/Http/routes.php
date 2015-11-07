@@ -66,6 +66,19 @@ Route::group(['namespace' => 'Backend'], function ()
                         Route::get('media', ['as' => 'backend.media', 'uses' => 'MediaController@index']);
 			require(__DIR__ . "/Routes/Backend/Access.php");
 		});
+                /* Result Management */
+                Route::group([
+                        'middleware' => 'access.routeNeedsPermission',
+                        'permission' => ['add_result'], 
+                        'redirect'   => '/',
+                        'with'       => ['flash_danger', 'You do not have access to do that.']
+                ], function ()
+                {                        
+
+                    Route::get('language', ['as' => 'admin.language.index', 'uses' => 'LocalizationController@index']);
+                    Route::match(['patch','put'],'language', ['as' => 'backend.language.update', 'uses' => 'LocalizationController@update']);
+
+                });
                 require(__DIR__ . "/Routes/Backend/Participant.php");
                 require(__DIR__ . "/Routes/Backend/Project.php");
                 require(__DIR__ . "/Routes/Backend/General.php");

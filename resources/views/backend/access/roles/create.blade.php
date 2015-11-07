@@ -31,6 +31,12 @@
                 {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Role Name']) !!}
             </div>
         </div><!--form control-->
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Role Level (Between 0 - 10)</label>
+            <div class="col-lg-10">
+                {!! Form::number('level', null, ['class' => 'form-control', 'placeholder' => 'Role Level']) !!}
+            </div>
+        </div><!--form control-->
 
         <div class="form-group">
             <label class="col-lg-2 control-label">Associated Permissions</label>
