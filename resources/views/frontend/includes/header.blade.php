@@ -89,7 +89,7 @@
                       <!-- hidden-xs hides the loginname on small devices so only the image appears. -->
                       <span class="hidden-xs">{{ _t('Login') }}</span>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu" style="margin-right: 10px;">
                       <!-- The login image in the menu -->
                       <li class="login-header">                        
                         <p> 
