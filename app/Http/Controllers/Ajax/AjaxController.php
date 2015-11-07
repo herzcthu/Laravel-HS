@@ -45,17 +45,67 @@ class AjaxController extends Controller
         $this->results = $results;
     }
     
+    public function sortQuestions($project, Request $request) {
+        
+
+        if ($request->has('listid')) {
+                $i = 1;
+                foreach ($request->get('listid') as $qid) {
+                    $search['id'] = $qid;
+                    $data['sort'] = $i;
+                    $question = \App\Question::updateOrCreate($search, $data);
+                    $i++;
+                }
+                
+                return response()->json(array('success' => $question));
+        } else {
+                return response()->json(array('success' => false));
+        }
+
+		
+
+
+		
+    }
+    
     public function updateTranslation(Request $request) {
-        $lang_id = $request->get('lang_id');
+        $lang_id = $request->get('lang_id');//return $lang_id; die();
             
-		foreach($lang_id as $id => $translation){
-                    $translate = Translation::find($id);
+		foreach($lang_id as $id => $translation){//return $id; die();
+                    $translate = Translation::find($id);//return $translate;die();
+                    if(!is_null($translate)){
+                        //this is original or translated
+                        if(!is_null($translate->translation_id)){
+                            //this is translated
+                            $original = $translate->original;
+                        }else{
+                            //this is original
+                            $original = $translate;
+                        }
+                        //return $original; die();
+                        $original->translated()->delete();
+                        foreach($translation as $lang => $string){
+                            $locale = \App\Locale::where('code', $lang)->first();
+                            $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $original->id]);
+                            $child->translation = $string;
+                            $child->original()->dissociate();
+                            $child->original()->associate($original);
+                            $child->locale->dissociate();
+                            $child->locale()->associate($locale);
+                            $child->save();
+                        }
+                    }else{
+                        $json['message'] = 'Something wrong!';
+                    }
+                    
+                    /**
                     if(is_array($translation)){
                         foreach($translation as $lang => $translation){
                             $locale = \App\Locale::where('code', $lang)->first();
                             $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $translate->id]);
                             $child->translation = $translation;
-                            $child->parent()->associate($locale);
+                            $child->original()->dissociate();
+                            $child->original()->associate($locale);
                             $child->locale()->associate($locale);
                             $child->save();
                         }
@@ -64,6 +114,8 @@ class AjaxController extends Controller
 			$translate->translation = $translation;
 			$translate->update();
                     }
+                     * 
+                     */
 		}
 		$json['status'] = true;
 		$json['message'] = 'Translation updated!';

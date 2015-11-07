@@ -59,7 +59,7 @@ interface ResultContract {
 	 * @param $roles
 	 * @return mixed
 	 */
-	public function update($id, $input, $project_id);
+	public function update($id, $input, $project_id, $section);
 
 	/**
 	 * @param $id

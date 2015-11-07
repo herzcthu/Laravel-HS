@@ -141,6 +141,34 @@ class LocationController extends Controller
     {
         //
     }
+    
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function deleteAll(Request $request)
+    {
+        if(access()->user()->role->level < 2){
+            if($request->get('org_id')){
+               $organization = $this->organizations->findOrThrowException($request->get('org_id'));
+            }
+        }else{
+            return redirect()->back()->withFlashDanger('You are not allowed to do that.');
+        }
+        \DB::table('answers')->delete();
+        \DB::table('results')->delete();
+        \DB::table('translations')->delete();
+        \DB::table('participants')->delete();
+        \DB::table('pcode')->delete();
+        //\App\Participant::where('org_id', $organization->id)->forceDelete();
+        //\App\PLocation::where('org_id', $organization->id)->delete();
+        //$organization->pcode()->delete();
+        
+        return redirect()->back()->withFlashSuccess('All data was successfully deleted.');
+        
+    }
     /**
      * 
      * 

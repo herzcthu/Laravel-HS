@@ -63,6 +63,7 @@
 		], function ()
 		{
                     Route::get('locations/search', ['as' => 'admin.locations.search', 'uses' => 'LocationController@search']);
+                    Route::get('locations/deleteall', ['as' => 'admin.locations.deleteall', 'uses' => 'LocationController@deleteAll']);
                     Route::get('locations', ['as' => 'admin.locations.index', 'uses' => 'LocationController@index']);
                 });
                 

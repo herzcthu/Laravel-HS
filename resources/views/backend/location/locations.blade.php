@@ -21,34 +21,40 @@
 
 @section('content')
 <div class="row">
-            <div class='col-xs-12 col-sm-12 col-md-12'>
-        {!! Form::open(['route' => 'admin.locations.search', 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'get']) !!}
-        <div class="form-inline col-xs-2">
-            <div class="input-group hidden">
-                <div class="form-inline">
-                    <label class="control-label pull-left" for="search_by"> Search By -&nbsp;</label>
+    <div class='col-xs-12 col-sm-12 col-md-12'>
+        {!! Form::open(['route' => 'admin.locations.search', 'class' => 'form-horizontal col-xs-4', 'role' => 'form', 'method' => 'get']) !!}
+        <div class="form-inline">
+            <div class="form-group">
                 {!! Form::select('search_by', ['village' => 'Village', 
                                             'township' => 'Township', 
                                             'district' => 'District', 
                                             'state' => 'State'], 
                                             Input::get('search_by')? Input::get('search_by'):'village', 
-                                            ['class' => 'form-control disable', 'disable']) !!}
-                </div>
-            </div>
-            <div class="input-group">
+                                            ['class' => 'hidden form-control col-xs-2 disable', 'disable']) !!}
+            
                 
-                <input name="q" class="form-control" placeholder="{!! Input::get('q')? Input::get('q'):'Search' !!}" type="text">
-                <span class="input-group-btn">
+                <input name="q" class="form-control col-xs-2 " placeholder="{!! Input::get('q')? Input::get('q'):'Search' !!}" type="text">
+                
                     <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-                </span>
             </div>
         
         </div>
         {!! Form::close() !!}
-        <div class="button">
+        {!! Form::open(['route' => 'admin.locations.deleteall', 'name'=>'delete_all' ,'class' => 'form-horizontal col-xs-4', 'role' => 'form', 'method' => 'get']) !!}
+        <div class="form-inline">
+            <div class="form-group">
+                @if(access()->user()->role->level < 2)
+                <button type="submit" id="search-btn" class="btn btn-flat btn-danger"><i class="fa fa-remove" data-toggle="tooltip" data-placement="top" title="Delete"></i> Delete All</button>
+                @endif                      
+            </div>
+        
+        </div>
+        {!! Form::close() !!}
+        
+        <div class="button col-xs-4">
         <a href="{{route('admin.locations.import')}}" class="btn btn-primary">Import</a>
         </div>
-        </div>
+    </div>
 </div>
 
 
@@ -66,6 +72,18 @@
 </div>
 {!! Form::close() !!}
 -->
-               
+@push('scripts')
+<script type="text/javascript">
+(function ($) {
+/*
+     Generic are you sure dialog
+     */
+    $('form[name=delete_all]').submit(function(){
+        return confirm("Are you sure you want to delete all?\nThis will reset all data except projects for the whole database.\nIncluding answers, status and translations.");
+    });    
+    
+}(jQuery));
+</script>
+@endpush
 @include('includes.partials.locations_table')    
 @stop

@@ -106,7 +106,9 @@
                                                 {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
                                                 </div>
                                                 @else
+                                                <div class="col-xs-12">
                                                 {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                                </div>
                                                 @endif
                                             @endforeach                        
                                         @endif

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddCssColumn extends Migration
+class AddSortColumnInQuestions extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,8 @@ class AddCssColumn extends Migration
      */
     public function up()
     {
-        Schema::table('qanswers', function(Blueprint $table){
-            //$table->string('css')->after('require');
+        Schema::table('questions', function(Blueprint $table){
+            $table->string('sort')->after('qnum');
         });
     }
 

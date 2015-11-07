@@ -123,6 +123,8 @@ class EloquentQuestionRepository implements QuestionContract {
 		$question->project()->associate($project);
                 
                 if ($question->save()) {
+                    $question->sort = $question->id;
+                    $question->update();
                     \App\QAnswers::where('qid', $question->id)->delete();
                     foreach($input['answers'] as $k => $av){
                         $qanswer = \App\QAnswers::firstOrNew(['qid' => $question->id, 'akey' => $k]);

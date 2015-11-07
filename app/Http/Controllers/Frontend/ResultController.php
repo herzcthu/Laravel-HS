@@ -208,9 +208,25 @@ class ResultController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function update(Request $request, $id)
-    {
-        //
+    public function update($result, $project, $section_id = false, CreateResultRequest $request)
+    { //dd($request->all());
+        if($section_id == 'incident'){
+            $section_id = $request->get('qnum');
+        }
+        $result = $this->results->update(
+                        $result,
+			$request->except('project_id'),
+			$project,
+                        $section_id
+		);
+        
+        
+        if($project->type == 'incident'){
+            return redirect()->route('data.project.results.edit', [$project->id, $result->id])->withFlashSuccess('The results was successfully created.');
+        }else{
+            return redirect()->back()->withFlashSuccess('The results was successfully created.');
+            //return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
+        }
     }
 
     /**

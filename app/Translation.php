@@ -37,7 +37,7 @@ class Translation extends Model
     /**
      * {@inheritdoc}
      */
-    public function parent()
+    public function original()
     {
         return $this->belongsTo(self::class, 'translation_id');
     }
@@ -45,7 +45,7 @@ class Translation extends Model
     /**
      * {@inheritdoc}
      */
-    public function children()
+    public function translated()
     {
         return $this->hasMany(self::class, 'translation_id');
     }

@@ -288,6 +288,69 @@ class EloquentProjectRepository implements ProjectContract {
                     }
                 }
             }
+            if($project->type == 'incident'){
+                $results = \App\Result::where('project_id', $project->id)->get();
+                foreach($results as $ik => $incident){
+                    if($project->validate == 'pcode'){
+                    $array[$ik]['pcode'] = $incident->resultable->pcode;
+                    $array[$ik]['state'] = $incident->resultable->state;
+                    $array[$ik]['township'] = $incident->resultable->township;
+                    $array[$ik]['village_tract'] = $incident->resultable->village_tract;
+                    $array[$ik]['village'] = $incident->resultable->village;
+                    $array[$ik]['incident'] = $incident->incident_id;
+                    foreach ($project->sections as $sk => $section){
+                        if(null !== $results->where('project_id', $project->id)->where('section_id', $sk)->first()){
+                            $information = $results->where('project_id', $project->id)->where('section_id', $sk)->first()->information;
+                            switch ($information) {
+                                case 'complete':
+                                    $array[$ik][$section->text] = 1;
+                                    break;
+                                case 'incomplete':
+                                    $array[$ik][$section->text] = 2;
+                                    break;
+                                case 'error':
+                                    $array[$ik][$section->text] = 3;
+                                    break;
+                                default:
+                                    $array[$ik][$section->text] = "0";
+                                    break;
+                            }
+
+                        }else{
+                            $array[$ik][$section->text] = "0";
+                        }
+                        //$array[$k][$section->text] = (null !== $location->results->where('project_id', $project->id)->where('section_id', $sk)->first())? $location->results->where('project_id', $project->id)->where('section_id', $sk)->first()->information:'missing';
+                        $array[$ik][$section->text.' Time'] = (null !== $results->where('project_id', $project->id)->where('section_id', $sk)->first())? $results->where('project_id', $project->id)->where('section_id', $sk)->first()->updated_at:'';
+                        $array[$ik][$section->text.' Data Clerk'] = (null !== $results->where('project_id', $project->id)->where('section_id', $sk)->first())? $results->where('project_id', $project->id)->where('section_id', $sk)->first()->user->name:'';
+                    }
+                    
+                    foreach ($project->questions as $question){
+                        $radios = QAnswers::where('qid', $question->id)->where('type', 'radio')->get();
+                        $text = QAnswers::where('qid', $question->id)->where('type', 'text')->get();
+                        $checkbox = QAnswers::where('qid', $question->id)->where('type', 'checkbox')->get();
+                        //dd($incident->answers->where('qid', $question->id)->first());
+                        if(!$radios->isEmpty()){
+                            $array[$ik][$question->qnum] = (null !== $incident->answers->where('qid', $question->id)->first())? $incident->answers->where('qid', $question->id)->first()->value:'';
+                        }
+                        if(!$text->isEmpty()){
+                            foreach($text as $t){
+                                $array[$ik][$t->akey] = (null !== $incident->answers->where('qid', $question->id)->where('akey', $t->akey)->first())? $incident->answers->where('qid', $question->id)->where('akey', $t->akey)->first()->value:'';
+                            }
+                        }
+                        if(!$checkbox->isEmpty()){
+                            foreach($checkbox as $c){
+                                $array[$ik][$c->akey] = (null !== $incident->answers->where('qid', $question->id)->where('akey', $c->akey)->first())? $incident->answers->where('qid', $question->id)->where('akey', $c->akey)->first()->value:'';
+                            }
+                        }
+                    }
+                    }else{
+                        /**
+                         * To Do: need to add export function when using participant validation code
+                         */
+                        throw new GeneralException('Not yet implemented.');
+                    }
+                }
+            }
             $filename = preg_filter('/[^\d\w\s\.]/', ' ', $project->name.Carbon::now());
             $file = Excel::create(str_slug($filename), function($excel) use($array) {
 

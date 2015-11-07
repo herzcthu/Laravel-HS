@@ -19,7 +19,19 @@ class PLocation extends Model
     
     protected $with = ['participants']; 
 
-
+    public static function boot()
+    {
+        parent::boot();
+        
+        // Attach event handler, on deleting of the plocation
+        PLocation::deleting(function($plocation)
+        {   
+            // Delete all tricks that belong to this plocation
+            foreach ($plocation->participants as $participant) {
+                $participant->forceDelete();
+            }
+        });
+    }
    
 
     /**

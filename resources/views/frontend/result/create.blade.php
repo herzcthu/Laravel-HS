@@ -117,10 +117,9 @@
                                 @endif                            
 
                                     <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
-                                    <div class="col-xs-1 col-lg-11">
+                                    <div class="col-lg-11">
                                         @if($question->qanswers->count() > 0 )
-                                        <?php $key = 0; ?>
-                                            @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
+                                            @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $key => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6 col-lg-6">
@@ -142,24 +141,24 @@
                                                     @if($key == 0)
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif    
-                                                    @if($key >= 0 && $key < ceil(($question->qanswers->count() / 3)))
+                                                    @if($key <= ceil(($question->qanswers->count() / 3))+1)
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ceil(($question->qanswers->count() / 3)))
+                                                    @if($key == ceil(($question->qanswers->count() / 3))+1)
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
-                                                    @if($key >= ceil(($question->qanswers->count() / 3)) && $key < ceil(($question->qanswers->count() / 3) * 2))
+                                                    @if($key > ceil(($question->qanswers->count() / 3)+1) && $key <= ceil(($question->qanswers->count() / 3) * 2)+1)
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ceil(($question->qanswers->count() / 3) * 2))
+                                                    @if($key == ceil(($question->qanswers->count() / 3) * 2)+1)
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
-                                                    @if($key >= ceil(($question->qanswers->count() / 3) * 2) && $key < $question->qanswers->count())
+                                                    @if($key > ceil(($question->qanswers->count() / 3) * 2)+1 && $key <= $question->qanswers->count())
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ($question->qanswers->count() - 1) )
+                                                    @if($key == ($question->qanswers->count()) )
                                                     </div>
                                                     @endif    
                                                 @elseif($question->answer_view == 'horizontal')
@@ -167,7 +166,9 @@
                                                 {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
                                                 </div>
                                                 @else
+                                                <div class="col-xs-12">
                                                 {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                                </div>
                                                 @endif
                                             @endforeach                        
                                         @endif
@@ -190,21 +191,23 @@
                     </div>
                     {!! Form::close() !!}
                 @endif
+                @if($project->type == 'incident')
+                <div class="pull-left">                                        
+                    <input type="reset" class="btn btn-warning" value="Reset All" />                
                 </div>
+                <div class="pull-right">
+                    <input type="submit" class="btn btn-success" value="Save" />
+                </div>
+                    {!! Form::close() !!}
+                @endif
+                </div>
+                </div>    
                 <div class="panel-footer">
                     {!! $section->text !!} (Section End)
                 </div>
             </div><!-- panel end -->    
             @endforeach
-            @if($project->type == 'incident')
-            <div class="pull-left">                                        
-                <input type="reset" class="btn btn-warning" value="Reset All" />                
-            </div>
-            <div class="pull-right">
-                <input type="submit" class="btn btn-success" value="Save" />
-            </div>
-                {!! Form::close() !!}
-            @endif
+            
         @else
         {!! Form::open(['route' => ['data.project.results.store', $project->id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
     
@@ -214,14 +217,14 @@
                     <div class="form-group">
 
                         <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
-                        <div class="col-xs-1 col-lg-11">
+                        <div class="col-xs-11 col-lg-11">
                             <div class="form-control-static">
                             {!! _t($question->question) !!}
                             </div>
                         </div>
 
                             <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
-                            <div class="col-xs-1 col-lg-11">
+                            <div class="col-xs-11 col-lg-11">
                                 <div class="form-control-static">
                                 @if($question->qanswers->count() > 0 )
                                     @foreach($question->answers as $key => $answer)
@@ -230,7 +233,9 @@
                                         {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
                                         </div>
                                         @else
+                                        <div class="col-xs-12">
                                         {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                        </div>
                                         @endif
                                     @endforeach                        
                                 @endif

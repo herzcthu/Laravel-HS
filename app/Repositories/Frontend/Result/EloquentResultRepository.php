@@ -161,21 +161,11 @@ class EloquentResultRepository implements ResultContract {
 	 */
 	public function create($input, $project, $section) {
                 $validate = $input['validator_id'];
-                if($project->type == 'incident'){
-                    $incident = \App\Result::where('project_id', $project->id)->where('section_id', $section)->orderBy('incident_id', 'desc')->first();
-                    if(!is_null($incident)){
-                    $incident_id = $incident->incident_id + 1;
-                    }else{
-                        $incident_id = 1;
-                    }
-                    
-                }else{
-                    $incident_id = null;
-                }
+                
                 if($project->validate == 'person'){
                     $resultable = $this->participant->getParticipantByCode($validate, $project->organization->id);
-                    $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 'incident_id' => $incident_id,'resultable_id' => $resultable->id, 'resultable_type' => 'App\Participant']);
-                    //$pcode = $person->pcode;
+                    $resultable_type = 'App\Participant';
+                    $resultable_id = $resultable->id;
                 }else{
                     $validator = $validate.'-'.$project->organization->id;
                     try{
@@ -196,14 +186,40 @@ class EloquentResultRepository implements ResultContract {
                     if(isset($resultable2)){
                         $resultable = $resultable2;
                     }
-                    $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 'incident_id' => $incident_id,'resultable_id' => $resultable->primaryid, 'resultable_type' => 'App\PLocation']);
+                    $resultable_type = 'App\PLocation';
                       
                     //$person = $pcode->participants->first();
-                    $result->resultable_id = $resultable->primaryid;
+                    $resultable_id = $resultable->primaryid;
                 }
+                if($project->type == 'incident'){
+                    
+                    if(array_key_exists('incident_id', $input)){
+                        $incident_id = $input['incident_id'];
+                    }else{ 
+                        $incident = \App\Result::where('project_id', $project->id)
+                            ->where('section_id', $section)
+                            ->where('resultable_id', $resultable_id)
+                            ->orderBy('incident_id', 'desc')->first();
+                        if(!is_null($incident)){
+                        $incident_id = $incident->incident_id + 1;
+                        }else{
+                            $incident_id = 1;
+                        }
+                    }
+                    
+                }else{
+                    $incident_id = null;
+                }
+                
+                
+                $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 
+                    'incident_id' => $incident_id,
+                    'resultable_id' => $resultable_id, 
+                    'resultable_type' => $resultable_type]);
                 if($incident_id){
                     $result->incident_id = $incident_id;
                 }
+                $result->resultable_id = $resultable_id;
                 $result->results = $input['answer'];
                 $result->section_id = $section;
                 $result->information = $this->updateStatus($project, $section, $input['answer']);
@@ -254,34 +270,77 @@ class EloquentResultRepository implements ResultContract {
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function update($id, $input, $project) {dd($input);
-		$result = $this->findOrThrowException($id, true); //print_r($input); print_r($result);die();
-		$related_id = $input['related_data']['q'];
-                if(!empty($related_id)){
-                    $this->flushParent($related_id, $result);
-                }
-                $result->section = $input['section'];
-                if($input['report'] == 'none' || empty($input['report'])) {
-                    $result->report = null;
-                } else {
-                    $result->report = $input['report'];
-                }
-                if(isset($input['incident_id'])){
-                    $result->incident_id = $input['incident_id'];
-                }
-                $result->answers = $input['answers'];
-                $result->related_data = $input['related_data'];
-                $result->answer_view = $input['answer_view'];
-                $result->sameanswer = isset($input['sameanswer']) ? 1 : 0;
-                $display['qnum'] = isset($input['display']['qnum'])? 1 : 0;
-                $display['result'] = isset($input['display']['result'])? 1 : 0;
-                $result->display = $display;
+	public function update($id, $input, $project, $section) {
+                $validate = $input['validator_id'];
                 
-		if ($result->whereQnum($input['qnum'])->whereProjectId($project['project_id'])->first()->update($input)) { 
+                if($project->validate == 'person'){
+                    $resultable = $this->participant->getParticipantByCode($validate, $project->organization->id);
+                    $resultable_type = 'App\Participant';
+                    $resultable_id = $resultable->id;
+                }else{
+                    $validator = $validate.'-'.$project->organization->id;
+                    try{
+                        $resultable2 = $this->pcode->findOrThrowException($validator);
+                        
+                    }catch(GeneralException $e){
+                        unset($e);
+                    }
+                    try{
+                        $resultable1 = $this->pcode->findOrThrowException($validate);
+                        
+                    }catch(GeneralException $e){
+                        unset($e);
+                    }
+                    if(isset($resultable1)){
+                        $resultable = $resultable1;
+                    }
+                    if(isset($resultable2)){
+                        $resultable = $resultable2;
+                    }
+                    $resultable_type = 'App\PLocation';
+                      
+                    //$person = $pcode->participants->first();
+                    $resultable_id = $resultable->primaryid;
+                }
+                if($project->type == 'incident'){
+                    $incident = \App\Result::where('project_id', $project->id)
+                            ->where('section_id', $section)
+                            ->where('resultable_id', $resultable_id)
+                            ->orderBy('incident_id', 'desc')->first();
+                    if(!is_null($incident)){
+                    $incident_id = $incident->incident_id + 1;
+                    }else{
+                        $incident_id = 1;
+                    }
+                    
+                }else{
+                    $incident_id = null;
+                }
+                
+                
+                $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 
+                    'incident_id' => $incident_id,
+                    'resultable_id' => $resultable_id, 
+                    'resultable_type' => $resultable_type]);
+                if($incident_id){
+                    $result->incident_id = $incident_id;
+                }
+                $result->resultable_id = $resultable_id;
+                $result->results = $input['answer'];
+                $result->section_id = $section;
+                $result->information = $this->updateStatus($project, $section, $input['answer']);
+                $current_user = auth()->user();
+                $result->user()->associate($current_user);
+                
+                $result->project()->associate($project);
+                if(isset($resultable)){
+                    $result->resultable()->associate($resultable);
+                }
+                
+                if ($result->save()) {
                     Answers::where('status_id', $result->id)->delete();
                     foreach($input['answer'] as $qnum => $answers){
                         $q = $this->questions->getQuestionByQnum($qnum, $project->id);
-                        
                         foreach($answers as $akey => $aval){
                             if($akey == 'radio'){
                                 $answerkey = $aval;
@@ -294,21 +353,20 @@ class EloquentResultRepository implements ResultContract {
                             }else{
                                 $answerVal = $aval;
                             }
+                            
                             $answerR = Answers::firstOrNew(['qid' => $q->id, 'akey' => $answerkey, 'status_id' => $result->id]);
-                            dd($answerVal);
-                            if(!empty($answerVal)){
-                                
+                            if(isset($answerVal)){
                                 $answerR->value = $answerVal;
                                 $result->answers()->save($answerR);
                             }
                         }
 
 
-                    }
-			return true;
+                    }                   
+			return $result;
 		}
 
-		throw new GeneralException('There was a problem updating this result. Please try again.');
+		throw new GeneralException('There was a problem creating this result. Please try again.');
 	}
 
 	

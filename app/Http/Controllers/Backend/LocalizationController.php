@@ -26,11 +26,16 @@ class LocalizationController extends Controller {
 	 */
 	public function index()
 	{
-		//
+		$search = Input::get('lang');
+                
 		//return print_r($this->translation->all());
 		//return dd($this->locale->translations());
 		$locale_list = $this->locale->all();
-		$translation_list = $this->translation->with('children')->get(); //dd($translation_list);
+                if($search){
+                    $translation_list = $this->translation->where('translation', 'like', '%'.$search.'%')->with('translated')->paginate('100');
+                }else{
+                    $translation_list = $this->translation->with('translated')->paginate('100'); 
+                }   //dd($translation_list);
 
 		$current_locale = Translation::getLocale();//dd($current_locale);
 		$default_locale = Translation::getAppLocale();
@@ -94,17 +99,22 @@ class LocalizationController extends Controller {
 	public function update()
 	{
 		//
+            /**
 		$lang_id = Input::get('lang_id');
-		foreach($lang_id as $id => $translation){
-			$locale_id = LocaleTranslation::where('translation_id', '=', $id)->pluck('id');
+		foreach($lang_id as $childid => $translation){
+			$locale_id = LocaleTranslation::where('translation_id', '=', $childid)->pluck('id');
 			$locale = LocaleTranslation::find($locale_id);
-			$locale->translation_id = $id;
+			
 			$locale->translation = $translation;
+                        $locale->parent()->dissociate();
+                        //$locale->parent()->associate()
 			$locale->update();
 		}
 		$json['status'] = true;
 		$json['message'] = 'Translation updated!';
 		return json_encode($json);
+             * 
+             */
 	}
 
 	/**

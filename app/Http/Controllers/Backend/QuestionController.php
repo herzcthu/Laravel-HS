@@ -131,6 +131,11 @@ class QuestionController extends Controller
      */
     public function editall($project)
     {
+        $route = route('ajax.project.questions.sort', [$project->id]);
+        javascript()->put([
+			'url' => $route,
+                        //'org' => 
+		]);
         return view('backend.project.questions.editall')
                         ->withProject($project);
     }

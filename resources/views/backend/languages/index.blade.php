@@ -46,8 +46,12 @@
 								</div>
 								<!-- /.box-header -->
 								<div class="box-body">
+                                                                    <form method="get" action="<?php $_PHP_SELF ?>"><input type="text" name="lang"></input>
+                                                                        <input type="submit" value="Search">
+                                                                    </form>
 							<table id="datatable-allfeatures" class="table table-bordered table-striped">
 								<thead>
+                                                                    <th>Action</th>
 								@foreach($locale_list as $lang)
 									@if($lang->code == $default_locale)
 										<th>{{ $lang->name }}</th>
@@ -56,7 +60,7 @@
                                                                         <th lang="{!! $lang->code !!}">{{ _t($lang->name) }}</th>
 									@endif
 								@endforeach
-								<th>Action</th>
+								
 								</thead>
 								<tbody>
 								
@@ -64,14 +68,15 @@
 								@foreach($translation_list as $translation)
                                                                 @if($translation->translation_id === null)
                                                                 <tr>
+                                                                    <td><a href="#" class="update">Update</a></td>
                                                                     @foreach($locale_list as $lang)
                                                                             @if($lang->code == $translation->locale->code)
                                                                                     <td>{{ $translation->translation }}<span class="alert success text-green pull-right"></span></td>
-                                                                            @elseif(!$translation->children->isEmpty())
-                                                                                @foreach($translation->children as $child)
+                                                                            @elseif(!$translation->translated->isEmpty())
+                                                                                @foreach($translation->translated as $child)
                                                                                     @if($lang->code == $child->locale->code)
                                                                                         <td lang="{!! $lang->code !!}">
-                                                                                        {!! Form::text("lang_id[$child->id]", $child->translation, ['class' => 'form-control']) !!}
+                                                                                        {!! Form::text("lang_id[$child->id][$lang->code]", $child->translation, ['class' => 'form-control']) !!}
                                                                                         </td>
                                                                                     @endif
                                                                                 @endforeach
@@ -79,31 +84,22 @@
                                                                             <td lang="{!! $lang->code !!}">{!! Form::text("lang_id[$translation->id][$lang->code]", null, ['class' => 'form-control']) !!}</td>
                                                                             @endif
                                                                     @endforeach
-                                                                    <td><a href="#" class="update">Update</a></td>
+                                                                    
                                                                 </tr>
                                                                 @endif
-                                                                {{--
-                                                                    @if($translation->translation_id === null)
-                                                                    <tr>
-                                                                            <td>{!! $translation->translation !!}<span class="alert success text-green pull-right"></span></td>
-                                                                        @if(!$translation->children->isEmpty())
-                                                                            @foreach($translation->children as $child)
-                                                                            <td lang="{!! $child->locale->code !!}">
-                                                                                {!! Form::text("lang_id[$child->translation_id]", $child->translation, ['class' => 'form-control']) !!}
-                                                                            </td>
-                                                                            @endforeach
-                                                                        @else
-                                                                            <td>{!! Form::text("lang_id[$child->translation_id]", null, ['class' => 'form-control']) !!}</td>
-                                                                        @endif    
-                                                                            <td><a href="#" class="update">Update</a></td>
-                                                                    </tr>
-
-                                                                    @endif
-                                                                    --}}
+                                                                
 								@endforeach
 
 								</tbody>
 							</table>
+                                                                    <div class="pull-left">
+                                                                        {!! $translation_list->total() !!} Translation (s) total
+                                                                    </div>
+
+                                                                    <div class="pull-right">
+                                                                        {!! $translation_list->render() !!}
+                                                                    </div>
+                                                                    <div class="clearfix"></div>
                                                                     @section('before-scripts-end')
                                                                     <script type="text/javascript">
                                                                         $.ajaxSetup({
@@ -140,6 +136,9 @@
                                                                                 
                                                                                 var language = $('#datatable-allfeatures').dataTable({
                                                                                     "scrollX":true,
+                                                                                    "bPaginate": false,
+                                                                                    "bInfo": false,
+                                                                                    bFilter: false,
                                                                                     "aoColumnDefs": [
                                                                                           { 'bSortable': false, 'aTargets': [ 0 ] }
                                                                                        ]
