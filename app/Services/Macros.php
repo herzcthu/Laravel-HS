@@ -45,9 +45,7 @@ class Macros extends FormBuilder {
         
         public function answerField($question, $answer, $qnumber, $answer_key, $results, $options=array(), $wrapper = array())
         {            
-            if(!isset($answer->text)){
-                dd($answer);
-            }
+            //dd($answer_key);
             
             $name = $answer->text;
             $display_value = $answer->value;

@@ -160,21 +160,21 @@
                                     <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
                                     <div class="col-xs-1 col-lg-11">
                                         @if($question->qanswers->count() > 0 )
-                                            
-                                            @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $key => $answer)
+                                           <?php $key = 0 ?> 
+                                            @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
@@ -183,36 +183,36 @@
                                                     @if($key == 0)
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif    
-                                                    @if($key <= ceil(($question->qanswers->count() / 3))+1)
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    @if($key < ceil(($question->qanswers->count() / 3)))
+                                                    {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ceil(($question->qanswers->count() / 3))+1)
+                                                    @if($key == ceil(($question->qanswers->count() / 3)))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
-                                                    @if($key > ceil(($question->qanswers->count() / 3)+1) && $key <= ceil(($question->qanswers->count() / 3) * 2)+1)
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    @if($key >= ceil(($question->qanswers->count() / 3)) && $key < ceil(($question->qanswers->count() / 3) * 2))
+                                                    {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)?$code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key == ceil(($question->qanswers->count() / 3) * 2)+1)
+                                                    @if($key == ceil(($question->qanswers->count() / 3) * 2))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
-                                                    {{-- //I think something is not right with this part --}}
-                                                    @if($key > ceil(($question->qanswers->count() / 3) * 2)+1 && $key <= $question->qanswers->count())
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    @if($key > ceil(($question->qanswers->count() / 3) * 2))
+                                                    {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
-                                                    @if($key  == ($question->qanswers->count()) )
+                                                    @if($key + 1  == ($question->qanswers->count()) )
                                                     </div>
                                                     @endif    
                                                 @elseif($question->answer_view == 'horizontal')
                                                 <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
-                                                {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"]) !!} 
+                                                {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"]) !!} 
                                                 </div>
                                                 @else
                                                 <div class="col-xs-12">
-                                                {!! Form::answerField($question, $answer, $question->qnum, $key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"]) !!} 
+                                                {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"]) !!} 
                                                 </div>
                                                 @endif
+                                                <?php $key++ ?>
                                             @endforeach                        
                                         @endif
                                     </div>
@@ -272,10 +272,10 @@
                                     @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
                                         <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
-                                        {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                        {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"]) !!} 
                                         </div>
                                         @else
-                                        {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                        {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"]) !!} 
                                         @endif
                                     @endforeach                        
                                 @endif
