@@ -25,7 +25,7 @@
         <thead>
             <tr>
                 <th id="code"># <br>
-                    <input type="text" name="pcode" style="width:80px;" class="form-control" id="input-code">
+                    <input type="text" name="pcode" style="width:80px;" class="form-control" id="input-code" @if($request->get('pcode')) value="{{$request->get('pcode')}}" @endif>
                 </th>
                 <th id="state">{!! _t('Region') !!}
                     <br />
@@ -54,13 +54,18 @@
                 <th id="village">{!! _t('Station') !!}
                 </th>
                 <th class="observers">{!! _t('Observers') !!}
-                    <input type="text" name="phone" style="width:80px;" class="form-control" id="phone"></th>
+                    <input type="text" name="phone" style="width:80px;" class="form-control" id="phone" @if($request->get('phone')) value="{{$request->get('phone')}}" @endif></th>
                 @foreach($project->sections as $k => $section)
                 <th class="section{{ $k }}" title="{{ _t($section->text) }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
                     <i>{{ $k + 1}}</i>
                     <br />
+                    @if(isset($section->report))
+                    {!! Form::select('status',[''=>'-','complete'=>'With Note','missing'=>'Missing'
+                    ],(($k == $request->get('section'))? $request->get('status'):null),['class'=>'dropdown form-control','id'=>"section$k"]) !!}
+                    @else
                     {!! Form::select('status',[''=>'-','complete'=>'Complete','incomplete'=>'Incomplete','error'=>'Error','missing'=>'Missing'
                     ],(($k == $request->get('section'))? $request->get('status'):null),['class'=>'dropdown form-control','id'=>"section$k"]) !!}
+                    @endif
                 </th>
                 @endforeach                
             </tr>            
