@@ -89,7 +89,7 @@ class AjaxController extends Controller
                             $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $original->id]);
                             $child->translation = $string;
                             $child->original()->dissociate();                            
-                            $child->locale->dissociate();
+                            $child->locale()->dissociate();
                             $child->original()->associate($original);
                             $child->locale()->associate($locale);
                             $child->save();
