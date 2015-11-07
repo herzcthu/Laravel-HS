@@ -120,13 +120,7 @@
                 
                 @endif
                 </div>
-                <div id="collapse{{$section_key}}" class="panel-collapse collapse @if(isset($result[$section_key]))
-                                                    @if($result[$section_key] != 'complete') 
-                                                    in
-                                                    @endif
-                                                  @else
-                                                  in
-                                                  @endif">
+                <div id="collapse{{$section_key}}" class="panel-collapse collapse in">
                 <div class="panel-body">
                 @if($project->type == 'checklist')
                     {!! Form::open(['route' => ['data.project.results.section.store', $project->id, $section_key], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
