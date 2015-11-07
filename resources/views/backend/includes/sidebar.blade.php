@@ -29,16 +29,31 @@
 
               <!-- Sidebar Menu -->
               <ul class="sidebar-menu">
-                <li class="header">General</li>
                 <!-- Optionally, you can add icons to the links -->
+                @permission('view_backend')
                 <li class="{{ Active::pattern('admin/dashboard') }}"><a href="{!!route('backend.dashboard')!!}"><span>{!! _t('Dashboard') !!}</span></a></li>
+                @endpermission
+                @if(!access()->user()->can('view_backend'))
+                <li class="{{ Active::pattern('dashboard') }}"><a href="{!!route('frontend.dashboard')!!}"><span>{!! _t('Dashboard') !!}</span></a></li>
+                @endif
+                @permission('editall_users')
                 <li class="{{ Active::pattern('admin/access/*') }}"><a href="{!! route('admin.access.users.index')!!}"><span>{!! _t('User Management') !!}</span></a></li>
+                @endpermission
+                @permission('manage_media')
                 <li class="{{ Active::pattern('admin/media/*') }}"><a href="{!! route('admin.media.index')!!}"><span>{!! _t('Media Library') !!}</span></a></li>
+                @endpermission
+                @permission('manage_location')
                 <li class="{{ Active::pattern('admin/locations/*') }}"><a href="{!! route('admin.locations.index')!!}"><span>{!! _t('Locations') !!}</span></a></li>
+                @endpermission
+                @permission('manage_participant')
                 <li class="{{ Active::pattern('admin/participants/*') }}"><a href="{!! route('admin.participants.index')!!}"><span>{!! _t('Participants') !!}</span></a></li>
+                @endpermission
+                @permission('manage_project')
                 <li class="{{ Active::pattern('admin/projects/*') }}"><a href="{!! route('admin.projects.index')!!}"><span>{!! _t('Projects') !!}</span></a></li>
+                @endpermission
+                @permission('add_result')
                 <li class="{{ Active::pattern('admin/language/*') }}"><a href="{!! route('admin.language.index')!!}"><span>{!! _t('Translation') !!}</span></a></li>
-                
+                @endpermission
               </ul><!-- /.sidebar-menu -->
             </section>
             <!-- /.sidebar -->

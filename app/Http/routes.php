@@ -64,8 +64,6 @@ Route::group(['namespace' => 'Backend'], function ()
 		{
 			Route::get('dashboard', ['as' => 'backend.dashboard', 'uses' => 'DashboardController@index']);
                         Route::get('media', ['as' => 'backend.media', 'uses' => 'MediaController@index']);
-                        Route::get('language', ['as' => 'admin.language.index', 'uses' => 'LocalizationController@index']);
-                        Route::match(['patch','put'],'language', ['as' => 'backend.language.update', 'uses' => 'LocalizationController@update']);
 			require(__DIR__ . "/Routes/Backend/Access.php");
 		});
                 require(__DIR__ . "/Routes/Backend/Participant.php");

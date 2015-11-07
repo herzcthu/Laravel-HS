@@ -34,11 +34,20 @@ Route::group(['middleware' => 'auth'], function ()
                         });
 
             });
+            /* Result Management */
+            Route::group([
+                    'middleware' => 'access.routeNeedsPermission',
+                    'permission' => ['add_result'], 
+                    'redirect'   => '/',
+                    'with'       => ['flash_danger', 'You do not have access to do that.']
+            ], function ()
+            {
             Route::get('project/{project}/results', ['as' => 'data.project.results.index', 'uses' => 'ResultController@index']);
             Route::get('project/{project}/results/create', ['as' => 'data.project.results.create', 'uses' => 'ResultController@create']);
             Route::get('project/{project}/results/{result}/edit', ['as' => 'data.project.results.edit', 'uses' => 'ResultController@edit']);
             Route::get('project/{project}/results/{result}/store', ['as' => 'data.project.results.store', 'uses' => 'ResultController@store']);
             //Route::resource('project.results', 'ResultController', ['except' => ['show','edit']]); 
+            });
         });
         Route::get('profile', ['as' => 'profile.index', 'uses' => 'ProfileController@index']);
         Route::get('profile/{profile}/edit', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);

@@ -61,4 +61,18 @@
                         Route::get('{project}/results/search', ['as' => 'admin.project.results.search', 'uses' => 'ResultController@search']);
                     });
                     
+                    /* Result Management */
+                    Route::group([
+                            'middleware' => 'access.routeNeedsPermission',
+                            'permission' => ['add_result'], 
+                            'redirect'   => '/',
+                            'with'       => ['flash_danger', 'You do not have access to do that.']
+                    ], function ()
+                    {                        
+                        
+                        Route::get('language', ['as' => 'admin.language.index', 'uses' => 'LocalizationController@index']);
+                        Route::match(['patch','put'],'language', ['as' => 'backend.language.update', 'uses' => 'LocalizationController@update']);
+                        
+                    });
+                    
                 });

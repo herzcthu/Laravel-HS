@@ -34,13 +34,18 @@
 
               <!-- Sidebar Menu -->
               <ul class="sidebar-menu">
-                <li class="header">General</li>
                 <!-- Optionally, you can add icons to the links -->
-                @permission('view_backend')
+                @if(!access()->user()->can('view_backend'))
                 <li class="{{ Active::pattern('dashboard') }}"><a href="{!!route('frontend.dashboard')!!}"><span>{!! _t('Dashboard') !!}</span></a></li>
-                @endpermission
+                @endif
                 @permission('add_result')
                 <li class="{{ Active::pattern('data/projects/*') }}"><a href="{!!url('data/projects')!!}"><span>{!! _t('Projects') !!}</span></a></li>
+                @endpermission
+                @permission('manage_participant')
+                <li class="{{ Active::pattern('admin/participants/*') }}"><a href="{!! route('admin.participants.index')!!}"><span>{!! _t('Participants') !!}</span></a></li>
+                @endpermission                
+                @permission('add_result')
+                <li class="{{ Active::pattern('admin/language/*') }}"><a href="{!! route('admin.language.index')!!}"><span>{!! _t('Translation') !!}</span></a></li>
                 @endpermission
               </ul><!-- /.sidebar-menu -->
             </section>
