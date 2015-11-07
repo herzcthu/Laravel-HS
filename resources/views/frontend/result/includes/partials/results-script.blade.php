@@ -20,6 +20,7 @@
         var url = [location.protocol, '//', location.host, location.pathname].join('');
         var ajaxurl;
             @foreach($project->questions as $k => $question)
+                @if(array_key_exists($question->report, $project->reporting))
                 $("#question-{!! $question->id !!}").on('change', function(e){
                     var other = '';
                     if($('#region').val() != ''){
@@ -30,6 +31,7 @@
                     }
                     window.location.href = url + "?question={{$question->id}}&answer=" + $(this).val() + other;
                 });
+                @endif
             @endforeach
             $('#region').on('change', function(e){
                 window.location.href = url + "?region=" + $(this).val();
@@ -100,17 +102,18 @@
                     }, name: 'village',"orderable": false },
                     { data: 'observers', name: 'observers',"orderable": false},
                     @foreach($project->questions as $k => $question)
+                    @if(array_key_exists($question->report, $project->reporting) && $project->reporting[$question->report]['text'] == 'Incident')
                     { data: function(row, type, val, meta){ //console.log(row.resultable.village);
                             var ans = '';
                         $.each(row.answers, function(i,v){ 
                             if(v.qid == '{{ $question->id }}'){
                                 //console.log(v.question.answers[v.akey].text);
-                                ans = v.question.answers[v.akey].text;
+                                ans += v.question.answers[v.akey].text + "\n";
                             }
                         });
                         return ans;
                     }, name: '{{ $question->qnum }}',"orderable": false },
-                    
+                    @endif
                     @endforeach
                     
                 ]

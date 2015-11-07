@@ -55,7 +55,7 @@ class ProjectController extends Controller
     {
         javascript()->put([
 			'sectindex' => 0,
-                        'reportindex' => 0
+                        'reportindex' => 1
 		]);
         return view('backend.project.create')
         ->withProjects($this->projects->getAllProjects('name','asc',true))
@@ -99,7 +99,7 @@ class ProjectController extends Controller
         //$project = $this->projects->findOrThrowException($id, true, true);
         
         $sections = count($project->sections) - 1;
-        $report = count($project->reporting) - 1;
+        $report = count($project->reporting);
         javascript()->put([
 			'sectindex' => $sections,
                         'reportindex' => $report

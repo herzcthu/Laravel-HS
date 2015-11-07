@@ -108,7 +108,7 @@
                 <div id="reportForm">
                     <div class="form-group">
                     <div class="col-xs-2">
-                        {!! Form::text('reporting[0][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
+                        {!! Form::text('reporting[1][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                     </div>
                     <div class="col-xs-2">
                         <button type="button" class="btn btn-default addReportButton"><i class="fa fa-plus"></i></button>                    

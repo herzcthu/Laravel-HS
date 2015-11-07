@@ -59,7 +59,7 @@ class Project extends Model
   
   public function getReportingAttribute() {
       $reporting =  $this->attributes['reporting'];
-      $reporting = json_decode($reporting);      
+      $reporting = json_decode($reporting, true);      
      return $reporting;
   }
   public function setReportingAttribute($val) {

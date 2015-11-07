@@ -89,7 +89,12 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Report to</label>
             <div class="col-lg-10">
-                {!! Form::select('report', aio()->addNone(aio()->createSelectBoxEntryFromArray($project->reporting, 'text')), null, ['class' => 'form-control']) !!}
+                <select name='report' class='form-control'>
+                    <option value="">None</option>
+                    @foreach($project->reporting as $rk => $report)
+                    <option value="{{$rk}}">{{$report['text']}}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         @endif

@@ -144,12 +144,16 @@
                 <div id="reportForm">
                     
                     @if(is_array($project->reporting))
-                        @foreach($project->reporting as $key => $report)
+                        @foreach($project->reporting as $rkey => $report)
+                        <?php if($rkey == 0 && $report->text != ""){
+                            $rkey = 1;
+                        }
+                        ?>
                         <div class="form-group">
                         <div class="col-xs-2">
-                            {!! Form::text("reporting[$key][text]", (isset($report->text)? $report->text:null), ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
+                            {!! Form::text("reporting[$rkey][text]", (isset($report->text)? $report->text:null), ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                         </div>
-                        @if($key == 0)
+                        @if($rkey <= 1)
                         <div class="col-xs-2">
                             <button type="button" class="btn btn-default addReportButton"><i class="fa fa-plus"></i></button>                    
                         </div>
@@ -163,7 +167,7 @@
                     @else
                     <div class="form-group">
                     <div class="col-xs-2">
-                        {!! Form::text('reporting[0][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
+                        {!! Form::text('reporting[1][text]', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                     </div>
                     <div class="col-xs-2">
                         <button type="button" class="btn btn-default addReportButton"><i class="fa fa-plus"></i></button>                    

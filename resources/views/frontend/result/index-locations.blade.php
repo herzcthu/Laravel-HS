@@ -69,6 +69,8 @@
                 </th>
                 <!--th class="observers">{!! _t('Observers') !!}</th-->
                 @foreach($project->questions as $k => $question)
+                
+                @if(array_key_exists($question->report, $project->reporting) && $project->reporting[$question->report]['text'] == 'Incident')
                 <th class="{{ $question->qnum }}" id="{{ $question->qnum }}" title="{{ $question->question }}" data-toggle="tooltip" data-placement="auto" data-html="true" data-container="body">
                     <i>{{ $question->qnum }}</i>
                     <br />
@@ -78,6 +80,7 @@
                         @endforeach
                     </select>
                 </th>
+                @endif
                 @endforeach                
             </tr>            
         </thead>
