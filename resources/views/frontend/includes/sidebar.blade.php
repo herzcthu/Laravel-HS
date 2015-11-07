@@ -46,7 +46,7 @@
                 @permission('manage_participant')
                 <li class="{{ Active::pattern('admin/participants/*') }}"><a href="{!! route('admin.participants.index')!!}"><span>{!! _t('Participants') !!}</span></a></li>
                 @endpermission                
-                @permission('add_result')
+                @permission('manage_project')
                 <li class="{{ Active::pattern('admin/language/*') }}"><a href="{!! route('admin.language.index')!!}"><span>{!! _t('Translation') !!}</span></a></li>
                 @endpermission
               </ul><!-- /.sidebar-menu -->
