@@ -145,7 +145,7 @@
                     
                     @if(is_array($project->reporting))
                         @foreach($project->reporting as $rkey => $report)
-                        <?php if($rkey == 0 && $report->text != ""){
+                        <?php if($rkey == 0 && isset($report->text) && $report->text != ""){
                             $rkey = 1;
                         }
                         ?>

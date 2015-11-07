@@ -183,6 +183,11 @@ class PermissionTableSeeder extends Seeder {
 				$uploadMedia->id,
                                 $manageMedia->id,
                                 $accessResult->id,
+                                $addResult->id,
+                                $accessQuestion->id,
+                                $accessOrganization->id,
+                                $accessProject->id,
+                                $accessLocation->id,
 			]
 		);
                 
