@@ -124,9 +124,11 @@ class StatusController extends Controller
         $dbraw = \DB::select(\DB::raw("SELECT pcode.state,answers.*,q.* 
             FROM pcode INNER JOIN results ON results.resultable_id = pcode.primaryid 
             INNER JOIN answers ON answers.status_id = results.id 
-            INNER JOIN ( SELECT id,qnum FROM questions where id = '$iresponseCol->id') q ON q.id = answers.qid;")); //dd($dbraw);
-        
-        
+            INNER JOIN ( SELECT id,qnum FROM questions where id = '$iresponseCol->id') q ON q.id = answers.qid")); 
+        $dbGroupBy = \DB::select(\DB::raw("SELECT pcode.state,answers.*,q.* 
+            FROM pcode INNER JOIN results ON results.resultable_id = pcode.primaryid 
+            INNER JOIN answers ON answers.status_id = results.id 
+            INNER JOIN ( SELECT id,qnum FROM questions where id = '$iresponseCol->id') q ON q.id = answers.qid GROUP BY results.id"));
         
         $incidents = \App\Result::where('project_id', $project->id);
         $locations = \App\PLocation::where('org_id', $project->org_id)->groupBy('state');
@@ -136,6 +138,7 @@ class StatusController extends Controller
                 ->withQuestion($iresponseCol)
                 ->withIncidents($incidents)
                 ->withLocations($locations)
-                ->withDbraw(collect($dbraw));
+                ->withDbraw(collect($dbraw))
+                ->withDbGroup(collect($dbGroupBy));
     }
 }

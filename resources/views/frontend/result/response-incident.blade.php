@@ -29,6 +29,7 @@
                 @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $qans)
                 <th>{!! $qans->text !!}</th>
                 @endforeach
+                <th>Total by region</th>
             </tr>
         </thead>
         <tbody>
@@ -40,6 +41,7 @@
                     {!! $dbraw->where('state',$location->state)->where('akey', $qans->akey)->count() !!}
                 </td>
                 @endforeach
+                <td>{!! $db_group->where('state',$location->state)->count() !!}</td>
             </tr>
             @endforeach
             <tr>
@@ -49,6 +51,7 @@
                     {!! $dbraw->where('akey', $qans->akey)->count() !!}
                 </td>
                 @endforeach
+                <td>{!! $db_group->count() !!}</td>
             </tr>
         </tbody>
         

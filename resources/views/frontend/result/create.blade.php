@@ -156,7 +156,7 @@
                                                     </div> 
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
-                                                    @if($key > ceil($question->qanswers->count() / 3) * 2)
+                                                    @if($key >= ceil($question->qanswers->count() / 3) * 2)
                                                         {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key + 1 == ($question->qanswers->count()) )

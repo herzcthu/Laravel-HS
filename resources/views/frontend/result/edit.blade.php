@@ -191,7 +191,7 @@
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
-                                                    @if($key > ceil(($question->qanswers->count() / 3) * 2))
+                                                    @if($key >= ceil(($question->qanswers->count() / 3) * 2))
                                                     {!! Form::answerField($question, $answer, $question->qnum, $answer->key, ['results' => $results, 'section' => isset($code->section_id)? $code->section_id: $section_key, 'project' => $project->id,  'validator' => $validated['validator_key'], 'incident' => isset($code->incident_id)? $code->incident_id:''],['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key + 1  == ($question->qanswers->count()) )
