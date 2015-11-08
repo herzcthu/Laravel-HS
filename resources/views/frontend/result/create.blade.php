@@ -264,7 +264,10 @@
 <script type="text/javascript">
 (function ($) {
     $(document).ready(function() {
-            function validate(url, replacement, output = false){
+            function validate(url, replacement, output){
+                if(typeof output === 'undefined'){
+                    output = false;
+                }
                 $('#validated').html("");
                 $.ajax({
                     url : url,
