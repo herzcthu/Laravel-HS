@@ -47,7 +47,7 @@
                                     <td>Missing</td>
                                 </tr>
                                 <tr>
-                                    @foreach($question->qanswers->sortBy('sort', SORT_NATURAL) as $qk => $qv)
+                                    @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $qk => $qv)
                                     <td>
                                      @foreach($question->ans->groupBy('akey') as $k => $qa)
                                         @if($k == $qv->akey)
