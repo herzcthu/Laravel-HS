@@ -35,11 +35,9 @@
               <!-- Sidebar Menu -->
               <ul class="sidebar-menu">
                 <!-- Optionally, you can add icons to the links -->
-                @if(access()->user())
-                @if(!access()->user()->can('view_backend'))
+                
                 <li class="{{ Active::pattern('dashboard') }}"><a href="{!!route('frontend.dashboard')!!}"><span>{!! _t('Dashboard') !!}</span></a></li>
-                @endif
-                @endif
+                
                 @permission('add_result')
                 <li class="{{ Active::pattern('data/projects/*') }}"><a href="{!!url('data/projects')!!}"><span>{!! _t('Projects') !!}</span></a></li>
                 @endpermission
