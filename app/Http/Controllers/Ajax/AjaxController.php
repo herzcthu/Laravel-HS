@@ -328,7 +328,7 @@ class AjaxController extends Controller
                         $answer = $request->get('answer');
                         $query->ofWithAndWhereHas('answers', function($q) use ($question, $answer){
                             $q->where('qid', $question)->where('akey', $answer);
-                        });
+                        })->with('answers');
                     }
                     if($request->get('phone')){
                         $phone = $request->get('phone');
