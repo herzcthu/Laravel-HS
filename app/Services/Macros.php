@@ -126,7 +126,7 @@ class Macros extends FormBuilder {
                 for($i=0; $i < count($arguments); $i++){
                     if(!is_numeric($arguments[$i])){
                     $forJS .= $arguments[$i].'var = $("#'.$cssId.'").val();';
-                    $forJS .= '$("input[name=\''.$inputname.'\'").on("change",function(){'.$arguments[$i].'this = $(this).is(":checked")? $(this).val():false;'.
+                    $forJS .= '$("input[name=\''.$inputname.'\']").on("change",function(){'.$arguments[$i].'this = $(this).is(":checked")? $(this).val():false;'.
                                      'if('.$forFormula.'){$("#'.$arguments[$i].'").addClass("alert alert-danger");}else{$("#'.$arguments[$i].'").removeClass("alert alert-danger");}});';
                     $forJS .= '$("#'.$arguments[$i].'").on("click",function(){$(this).removeClass("alert alert-danger");});';
                     $forJS .= '$("#'.$arguments[$i].'").on("focusout",function(){'.$arguments[$i].'this = $("input[name=\''.$inputname.'\']:checked").val();if($(this).val() == "" && '.$forFormula.'){$(this).addClass("alert alert-danger");}else{$(this).removeClass("alert alert-danger");}});';
