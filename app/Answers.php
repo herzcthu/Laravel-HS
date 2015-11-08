@@ -26,4 +26,8 @@ class Answers extends Model
   public function results() {
       return $this->belongsTo('App\Result', 'status_id');
   }
+  public function scopeOfWithAndWhereHas($query, $relation, $constraint){
+    return $query->whereHas($relation, $constraint)
+                 ->with([$relation => $constraint]);
+  }
 }

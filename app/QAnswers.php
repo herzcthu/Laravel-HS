@@ -24,6 +24,6 @@ class QAnswers extends Model
   }
   
   public function answers(){
-      return $this->hasMany('App\Answers', 'qid');
+      return $this->hasMany('App\Answers', 'qid', 'qid');
   }
 }

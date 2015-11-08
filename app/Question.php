@@ -24,21 +24,26 @@ class Question extends Model
   public function project() {
       return $this->belongsTo('App\Project', 'project_id');
   }
-  
+
   public function parent() {
       return $this->belongsTo('App\Question', 'related_id');
   }
-  
+
   public function children() {
       return $this->hasMany('App\Question', 'related_id');
   }
   
-  public function qanswers() {
-    return $this->hasMany('App\QAnswers', 'qid');
+    public function qanswers() {
+        return $this->hasMany('App\QAnswers', 'qid');
     }
     
     public function ans() {
-    return $this->hasMany('App\Answers', 'qid');
+        return $this->hasMany('App\Answers', 'qid');
+    }
+
+    public function scopeOfWithAndWhereHas($query, $relation, $constraint){
+        return $query->whereHas($relation, $constraint)
+                 ->with([$relation => $constraint]);
     }
   
   public function getAnswersAttribute() {

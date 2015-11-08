@@ -47,10 +47,12 @@ class Aio {
 		$this->app = $app;
 	}
         
-        public function calAnsCount($location,  $question, $akey) {
-            
-            $anscount = \App\Answers::where('qid', $question->id)->where('akey', $akey->akey)->count();
-            return $anscount;
+        public function calAnsCount($incidents,  $question, $qans) {
+            return $incidents->ofWithAndWhereHas('answers', function($ans) use ($question, $qans){
+                $ans->where('qid', $question->id)->where('akey', $qans->akey);
+            })->count();            
+            //$anscount = $location->answers->where('qid', $question->id)->where('akey', $qans->akey)->count();
+            //return $anscount;
         }
         
         public function section($column) {

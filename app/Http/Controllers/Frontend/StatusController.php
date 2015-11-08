@@ -119,18 +119,23 @@ class StatusController extends Controller
     }
     
     public function iresponse($project, Request $request) {
-        
         $iresponseCol = \App\Question::where('project_id', $project->id)->where('qnum', config('aio.iresponse'))->first();
-        $incidents = \App\Result::where('project_id', $project->id)->with('resultable')->get();
-        $locations = \App\PLocation::where('org_id', $project->org_id)->with('results')->groupBy('state')
-                ->ofWithAndWhereHas('answers', function($ans) use ($iresponseCol) {
-                    $ans->where('qid', $iresponseCol->id);
-                }); 
+        
+        $dbraw = \DB::select(\DB::raw("SELECT pcode.state,answers.*,q.* 
+            FROM pcode INNER JOIN results ON results.resultable_id = pcode.primaryid 
+            INNER JOIN answers ON answers.status_id = results.id 
+            INNER JOIN ( SELECT id,qnum FROM questions where id = '$iresponseCol->id') q ON q.id = answers.qid;")); //dd($dbraw);
+        
+        
+        
+        $incidents = \App\Result::where('project_id', $project->id);
+        $locations = \App\PLocation::where('org_id', $project->org_id)->groupBy('state');
         return view('frontend.result.response-incident')
                 ->withProject($project)
                 ->withRequest($request)
                 ->withQuestion($iresponseCol)
                 ->withIncidents($incidents)
-                ->withLocations($locations);
+                ->withLocations($locations)
+                ->withDbraw(collect($dbraw));
     }
 }

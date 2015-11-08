@@ -22,6 +22,8 @@ class Result extends Model
    */
   protected $guarded = ['id'];
   
+  protected $with = ['answers']; 
+  
   //public function pcode() {
   //    return $this->belongsTo('App\PLocation', 'station_id', 'primaryid');
   //}

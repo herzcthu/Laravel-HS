@@ -36,7 +36,9 @@
             <tr>
                 <td>{!! $location->state !!}</td>
                 @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $qans)
-                <td>{!! Aio()->calAnsCount($location, $question, $qans) !!}</td>
+                <td>
+                    {!! $dbraw->where('state',$location->state)->where('akey', $qans->akey)->count() !!}
+                </td>
                 @endforeach
             </tr>
             @endforeach
