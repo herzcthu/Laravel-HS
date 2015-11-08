@@ -121,6 +121,13 @@ class Project extends Model
   public function getViewResponseFrontendButtonAttribute() {
      return '<a href="'.route('data.project.response.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
   }
+  
+  /**
+  * @return string
+  */
+  public function getViewIresponseFrontendButtonAttribute() {
+     return '<a href="'.route('data.project.iresponse.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Incident Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
+  }
   /**
   * @return string
   */
@@ -146,6 +153,7 @@ class Project extends Model
               $this->getAddQuestionButtonAttribute().' '.
               $this->getEditQuestionsButtonAttribute().' '.
               $this->getAddResultsFrontendButtonAttribute().' '.
+              $this->getViewIresponseFrontendButtonAttribute().' '.
               $this->getViewResultsFrontendButtonAttribute().' '.
               $this->getExportButtonAttribute();
   }

@@ -42,6 +42,14 @@
                 @endforeach
             </tr>
             @endforeach
+            <tr>
+                <td>{!! _t('Total') !!}</td>
+                @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $qans)
+                <td>
+                    {!! $dbraw->where('akey', $qans->akey)->count() !!}
+                </td>
+                @endforeach
+            </tr>
         </tbody>
         
     </table>
