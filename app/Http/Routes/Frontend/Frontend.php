@@ -21,6 +21,8 @@ Route::group(['middleware' => 'auth'], function ()
             
             Route::get('project/{project}/response', ['as' => 'data.project.response.index', 'uses' => 'StatusController@response']);
             
+            Route::get('project/{project}/iresponse', ['as' => 'data.project.iresponse.index', 'uses' => 'StatusController@iresponse']);
+            
             Route::group(['prefix' => 'project'], function(){
                 
                         

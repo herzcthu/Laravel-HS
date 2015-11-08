@@ -117,4 +117,20 @@ class StatusController extends Controller
                         ->withLocations($locations)
                         ->withAllLoc($alocations);        
     }
+    
+    public function iresponse($project, Request $request) {
+        
+        $iresponseCol = \App\Question::where('project_id', $project->id)->where('qnum', config('aio.iresponse'))->first();
+        $incidents = \App\Result::where('project_id', $project->id)->with('resultable')->get();
+        $locations = \App\PLocation::where('org_id', $project->org_id)->with('results')->groupBy('state')
+                ->ofWithAndWhereHas('answers', function($ans) use ($iresponseCol) {
+                    $ans->where('qid', $iresponseCol->id);
+                }); 
+        return view('frontend.result.response-incident')
+                ->withProject($project)
+                ->withRequest($request)
+                ->withQuestion($iresponseCol)
+                ->withIncidents($incidents)
+                ->withLocations($locations);
+    }
 }

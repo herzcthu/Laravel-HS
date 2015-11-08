@@ -145,13 +145,14 @@
                     
                     @if(is_array($project->reporting))
                         @foreach($project->reporting as $rkey => $report)
-                        <?php if($rkey == 0 && isset($report->text) && $report->text != ""){
+                        <?php //dd($report);
+                        if($rkey == 0 && array_key_exists('text', $report) && $report['text'] != ""){
                             $rkey = 1;
                         }
                         ?>
                         <div class="form-group">
                         <div class="col-xs-2">
-                            {!! Form::text("reporting[$rkey][text]", (isset($report->text)? $report->text:null), ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
+                            {!! Form::text("reporting[$rkey][text]", (array_key_exists('text', $report) && $report['text'] != "")? $report['text']:null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}                     
                         </div>
                         @if($rkey <= 1)
                         <div class="col-xs-2">

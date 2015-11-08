@@ -47,6 +47,12 @@ class Aio {
 		$this->app = $app;
 	}
         
+        public function calAnsCount($location,  $question, $akey) {
+            
+            $anscount = \App\Answers::where('qid', $question->id)->where('akey', $akey->akey)->count();
+            return $anscount;
+        }
+        
         public function section($column) {
             
             
