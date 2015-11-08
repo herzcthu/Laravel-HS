@@ -32,7 +32,7 @@
                 @endif
                 </div>
                 <div class="panel-body">
-                    @foreach($questions as $question)
+                    @foreach($questions->sortBy('sort', SORT_NATURAL) as $question)
                         @if($section_key == $question->section)
                         <table class="table table-bordered table-condensed table-striped">
                             <tbody>
@@ -47,7 +47,7 @@
                                     <td>Missing</td>
                                 </tr>
                                 <tr>
-                                    @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $qk => $qv)
+                                    @foreach($question->qanswers as $qk => $qv)
                                     <td>
                                      @foreach($question->ans->groupBy('akey') as $k => $qa)
                                         @if($k == $qv->akey)
