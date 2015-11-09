@@ -45,9 +45,7 @@
                         'redirect'   => '/',
                         'with'       => ['flash_danger', 'You do not have access to do that.']
                         ], function () {
-                            Route::get('edit', ['as' => 'admin.project.result.edit', 'uses' => 'ResultController@edit']); 
                             Route::get('delete', ['as' => 'admin.project.result.delete-permanently', 'uses' => 'ResultController@delete']);
-                            Route::get('restore', ['as' => 'admin.project.result.restore', 'uses' => 'ResultController@restore']); 
                     });
                     
                     /* Result Management */

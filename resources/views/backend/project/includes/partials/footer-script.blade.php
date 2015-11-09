@@ -74,24 +74,17 @@
                                 .removeAttr('id')
                                 .attr({"data-index": sectindex, "id": 'sect_' + sectindex})
                                 .appendTo('#sectForm');
-                        
-            // Update the name attributes
-            //$clone
-            //    .find('[name="text"]').attr('name', 'answer[' + index + '].text').end()
-            //    .find('[name="type"]').attr('name', 'answer[' + index + '].type').end()
-            //    .find('[name="value"]').attr('name', 'answer[' + index + '].value').end()
-            //    .find('[name="remark"]').attr('name', 'answer[' + index + '].remark').end();
-            //$html = $clone.html();
+            
             $('#sect_'+sectindex).html($clone.html().replace(/INDEX/g, sectindex));
         })
 
         // Remove button click handler
         .on('click', '.removeSectButton', function() {
             var $row  = $(this).parents('.form-group'),
-                index = $row.attr('data-index');
+                //index = $row.attr('data-index');
             //find current element to remove
-            $remove = $row.find('[data-index="'+ index +'"]');
-            
+            $remove = $row.find('[data-index="'+ sectindex +'"]');
+            sectindex--;
             $remove.remove();
         });
     
@@ -108,23 +101,16 @@
                                 .attr({"data-index": reportindex, "id": 'report_' + reportindex})
                                 .appendTo('#reportForm');
                         
-            // Update the name attributes
-            //$clone
-            //    .find('[name="text"]').attr('name', 'answer[' + index + '].text').end()
-            //    .find('[name="type"]').attr('name', 'answer[' + index + '].type').end()
-            //    .find('[name="value"]').attr('name', 'answer[' + index + '].value').end()
-            //    .find('[name="remark"]').attr('name', 'answer[' + index + '].remark').end();
-            //$html = $clone.html();
             $('#report_'+reportindex).html($clone.html().replace(/INDEX/g, reportindex));
         })
 
         // Remove button click handler
         .on('click', '.removeReportButton', function() {
             var $row  = $(this).parents('.form-group'),
-                index = $row.attr('data-index');
+                //reportindex = $row.attr('data-index');
             //find current element to remove
-            $remove = $row.find('[data-index="'+ index +'"]');
-            
+            $remove = $row.find('[data-index="'+ reportindex +'"]');
+            reportindex--;
             $remove.remove();
         });
     });
