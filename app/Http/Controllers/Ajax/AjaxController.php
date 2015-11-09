@@ -375,9 +375,7 @@ class AjaxController extends Controller
     public function getAllStatus($project, Request $request){
         $located = PLocation::where('org_id', $project->organization->id )
                 ->with('participants')
-                ->OfwithAndWhereHas('results', function($query) use ($project){
-                        $query->where('project_id', $project->id);})
-                ->OrNotWithResults()
+                
                 ->with('answers');
         
         
@@ -445,6 +443,9 @@ class AjaxController extends Controller
 
                         $filter = true;
                     }
+                    
+                    $query->OfwithAndWhereHas('results', function($query) use ($project){
+                        $query->where('project_id', $project->id);});
                 })
                 ->editColumn('pcode', function ($model) use ($project){
                     //if($model->results){
