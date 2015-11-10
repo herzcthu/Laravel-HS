@@ -220,7 +220,11 @@
                                     //    return;
                                     //}
                                     @if(isset($section->report))
+                                        if(results.results.Note.Note_a1 != ""){
                                         status{{$k}} += '<img src="{{ asset('img/') }}/comment.png" title="'+ results.results.Note.Note_a1 +'" class="status-icon">';
+                                        }else{
+                                        status{{$k}} += '<img src="{{ asset('img/') }}/missing.png" title="text missing" class="status-icon">';
+                                        }
                                     @else
                                         status{{$k}} += '<img src="{{ asset('img/') }}/' + results.information + '.png" title="'+ results.information +'" class="status-icon">';
                                     @endif

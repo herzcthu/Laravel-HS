@@ -373,7 +373,10 @@ class AjaxController extends Controller
     }
     
     public function getAllStatus($project, Request $request){
-        $located = PLocation::where('org_id', $project->organization->id )->with('participants')->with('results')->with('answers');
+        $located = PLocation::where('org_id', $project->organization->id )
+                ->with('participants')
+                
+                ->with('answers');
         
         
         
@@ -392,7 +395,7 @@ class AjaxController extends Controller
          */
         
         $datatable = Datatables::of($located)
-                ->filter(function($query) use ($request){
+                ->filter(function($query) use ($request, $project){
                     if($request->get('pcode')){
                         $code = $request->get('pcode');
                         $query->where('pcode',$code);
@@ -428,18 +431,21 @@ class AjaxController extends Controller
                         $section = $request->get('section');
                         $status = $request->get('status');
                         if($status == 'missing'){
-                            $query->whereDoesntHave('results', function($query) use ($section){
-                                $query->where('section_id', $section);
+                            $query->whereDoesntHave('results', function($query) use ($project, $section){
+                                $query->where('project_id', $project->id)->where('section_id', $section);
                             });
                         }else{
 
-                            $query->OfwithAndWhereHas('results', function($query) use ($section, $status){
-                                    $query->where('information', $status)->where('section_id', (int)$section);
+                            $query->OfwithAndWhereHas('results', function($query) use ($project, $section, $status){
+                                    $query->where('project_id', $project->id)->where('information', $status)->where('section_id', (int)$section);
                             })->with('results');
                         }
 
                         $filter = true;
                     }
+                    
+                    $query->OfwithAndWhereHas('results', function($query) use ($project){
+                        $query->where('project_id', $project->id);});
                 })
                 ->editColumn('pcode', function ($model) use ($project){
                     //if($model->results){
