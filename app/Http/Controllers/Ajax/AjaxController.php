@@ -176,7 +176,7 @@ class AjaxController extends Controller
                             $query->where('section_id', $section)->where('information', 'error');
                         })->count();   
                         
-                ${$location->state}{$section} = PLocation::where('org_id', $project->id)
+                ${$location->state}{$section} = PLocation::where('org_id', $project->org_id)
                         ->where('state', $location->state)
                         ->ofWithAndWhereHas('results', function($query) use($section){
                             $query->where('section_id', $section);
