@@ -373,13 +373,16 @@ class AjaxController extends Controller
     }
     
     public function getAllStatus($project, Request $request){
+        //$noresults = Plocation::OfWhereDoesntHaveResults($project);
+        
+        //return $noresults->get();
+        
         $located = PLocation::where('org_id', $project->organization->id )
                 ->with('participants')
-                
-                ->with('answers');
-        
-        
-        
+                ->with('answers')
+                ->OfwithAndWhereHas('results', function($query) use ($project){
+                        $query->where('project_id', $project->id);
+                });
         //$locations = $located->get();
         /**
         if(isset($filter)){
@@ -396,10 +399,10 @@ class AjaxController extends Controller
         
         $datatable = Datatables::of($located)
                 ->filter(function($query) use ($request, $project){
+                    $filter = false;
                     if($request->get('pcode')){
                         $code = $request->get('pcode');
                         $query->where('pcode',$code);
-                        $filter = true;
                     }
 
                     if($request->get('region')){
@@ -407,24 +410,20 @@ class AjaxController extends Controller
                         if($state != 'total'){
                         $query->where('state',$state);
                         }
-                        $filter = true;
                     }
                     if($request->get('township')){
                         $township = $request->get('township');
                         $query->where('township',$township);
-                        $filter = true;
                     }
                     if($request->get('station')){
                         $station = $request->get('station');
                         $query->where('village',$station);
-                        $filter = true;
                     }
                     if($request->get('phone')){
                         $phone = $request->get('phone');
                         $query->OfWithAndWhereHas('participants',function($query) use ($phone){
                             $query->where('phones', 'like','%'.$phone.'%');
                         });
-                        $filter = true;
                     }                    
 
                     if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
@@ -444,8 +443,11 @@ class AjaxController extends Controller
                         $filter = true;
                     }
                     
-                    $query->OfwithAndWhereHas('results', function($query) use ($project){
-                        $query->where('project_id', $project->id);});
+                    if(!$filter){
+                        
+                        $query->OfOrNotWithResults($project);
+                    }
+                    
                 })
                 ->editColumn('pcode', function ($model) use ($project){
                     //if($model->results){

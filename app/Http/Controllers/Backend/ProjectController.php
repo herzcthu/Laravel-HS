@@ -175,6 +175,9 @@ class ProjectController extends Controller
     
     public function export($project) {
         $file = $this->projects->export($project);
+        if($file){
+            return redirect()->route('admin.media.index')->withFlashSuccess('The export file generated.');
+        }
     }
     
     private function getResults($param) {

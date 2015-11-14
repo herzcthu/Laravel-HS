@@ -369,8 +369,16 @@ class EloquentProjectRepository implements ProjectContract {
             $media->status = 1;
             $current_user = auth()->user();
             $media->owner()->associate($current_user);
+            $media2 = Media::firstOrNew(['filename' => $storecsv['title'], 'filedir' => $storecsv['full']]);
+            $media2->filename = $storecsv['title'];
+            $media2->filedir = $storecsv['full'];
+            $media2->file = json_encode($storecsv);
+            $media2->status = 1;
+            $media2->owner()->associate($current_user);
+            $media2->save();
             if($media->save()){
-            return $file->download('xls');
+                //return $file->download('xls');
+                return true;
             }
             throw new GeneralException('There was a problem creating export data. Please try again.');
         }

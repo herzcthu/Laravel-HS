@@ -113,6 +113,31 @@ class PLocation extends Model
         });
     }
     
+    
+    public function scopeOfOrNotWithResults($query, $project){
+        return $query->orWhereNotExists(function($q) use ($project){
+            $this_table = DB::getTablePrefix() . $this->table; 
+            $q->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.primaryid')
+                    ->where('project_id', $project->id); 
+            
+        });
+    }
+    public function scopeOfWhereDoesntHaveResults($query, $project){
+        return $query->whereDoesntHave('results', function($q) use ($project){
+            //$this_table = DB::getTablePrefix() . $this->table; 
+            $q->where('project_id', $project->id); 
+        });
+    }
+    
+    public function scopeOfNotWithResults($query, $project){
+        return $query->whereNotExists(function($q) use ($project){
+            $this_table = DB::getTablePrefix() . $this->table; 
+            $q->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.primaryid')
+                    ->where('project_id', $project->id); 
+            
+        });
+    }
+    
      public function scopeOfOrWithResults($query,$relation, $project){
         return $query->with($relation)->whereExists(function($query) use ($project) {
             $this_table = DB::getTablePrefix() . $this->table; 
