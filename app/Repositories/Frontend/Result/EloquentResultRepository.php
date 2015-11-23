@@ -516,21 +516,37 @@ class EloquentResultRepository implements ResultContract {
             }
             $section = (int) $section;
             //dd($answers);
+            /**
+             * Get total questions count in a section
+             */
             $section_qcount = $project->questions->where('section', $section)->count();
             
             $formulas = $project->sections[$section]->formula; 
             
-            $anscount = count(array_filter(array_values(array_dot($answers)), 'strlen'));// dd($anscount);
+            $anscount = count(array_filter(array_keys($answers), 'strlen'));// total answers count from form submit
+            
+            $ac = 0; //counter
+            /**
+             * Loop through form submitted answers
+             * $qnum string (question number)
+             * $answer array
+             */
             foreach($answers as $qnum => $answer){
                 //get only first item in array because question with logical check will include only one answer
                 $var[$qnum] = array_values($answer)[0];
                 
                 $q = $this->questions->getQuestionByQnum($qnum, $project->id);
-                $ac = 0;
+                
+                /**
+                 * Loop answer
+                 * $akey string (radio or answer key)
+                 * $aval mixed (string or integer submitted by form input)
+                 */
+                
                 foreach($answer as $akey => $aval){
                     if($akey != 'radio'){
                         $qanswer = $q->qanswers->where('akey', $akey)->first();
-                        if(in_array($qanswer->type, ['checkbox', 'text']) && $anscount > 0){
+                        if(in_array($qanswer->type, ['checkbox', 'text', 'number', 'textarea']) && $anscount > 0){
                             $ac++;
                         }
                     }else{
@@ -540,11 +556,12 @@ class EloquentResultRepository implements ResultContract {
                 }
                 
             }
+            //dd($ac);
             
             if($anscount === 0 ){ 
                 return 'missing';
-            }elseif ($anscount < $section_qcount) {
-                return 'incomplete';
+            }elseif($anscount >= $section_qcount && $ac > 0){
+                return 'complete';
             }elseif($anscount == $section_qcount){
                 if(!empty($formulas)){
                     $formula = explode(',', $formulas);//dd($answers[]);
@@ -574,8 +591,8 @@ class EloquentResultRepository implements ResultContract {
                 }else{
                     return 'complete';
                 }
-            }elseif($anscount > $section_qcount && $ac > 0){
-                return 'complete';
+            }elseif ($anscount < $section_qcount || $anscount != $section_qcount) {
+                return 'incomplete';
             }else{
                 return 'unknown';
             }

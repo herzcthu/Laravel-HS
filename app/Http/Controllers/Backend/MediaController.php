@@ -18,7 +18,13 @@ class MediaController extends Controller
 	 */
 	public function index()
 	{
-            $medias = $this->media->getMediasPaginatedTable(config('access.users.default_per_page'), true);
+            if(auth()->user()->can('manage_media')){
+                $withUser = false;
+            }else{
+                $withUser = true;
+            }
+            
+            $medias = $this->media->getMediasPaginatedTable(config('access.users.default_per_page'), $withUser);
             
             return view('backend.media', compact('medias'));
 	}

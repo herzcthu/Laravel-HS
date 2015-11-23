@@ -25,7 +25,7 @@ Route::group(['prefix' => Translation::getRoutePrefix(), 'middleware' => ['local
             if (file_exists($file_path))
             {
                 // Send Download
-                $filename = preg_filter('/[^a-zA-Z \.]/', '', $file);
+                $filename = preg_filter('/[^\d\w\s \.]/', '_', $file);
                 return Response::download($file_path, $filename, [
                     'Content-Length: '. filesize($file_path)
                 ], 'attachment');

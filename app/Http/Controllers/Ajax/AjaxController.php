@@ -123,12 +123,18 @@ class AjaxController extends Controller
     }
     
     public function timeGraph($project, Request $request){
+        /**
+         * Get last created data timestamp
+         */
         $last = Result::where('project_id', $project->id)->orderBy('created_at', 'desc')->first();
         if(!$last) return;
         $last_time = $last->created_at;
         $last_time = $last_time->subDay();
         
         foreach($project->sections as $section => $section_value){
+            /**
+             * Group data entry in every 5 minutes
+             */
             $query['p'.$project->id.'s'.$section] = DB::table('results')
                 ->select(DB::raw('count(*) as resultcount'),DB::raw('ROUND(UNIX_TIMESTAMP(created_at)/(5 * 60)) AS timekey'), DB::raw('UNIX_TIMESTAMP(created_at) as created'))
                 ->groupBy('timekey')->where('project_id', $project->id)->where('section_id',$section)->get();
@@ -137,10 +143,13 @@ class AjaxController extends Controller
         foreach($query as $qk => $qv){
             foreach($qv as $k=>$v){
                 $result[$qk][$k]['y'] = $v->resultcount;
-                $result[$qk][$k]['x'] = $v->created * 1000;
+                $result[$qk][$k]['x'] = $v->created * 1000; //Convert to javascript timestamp from mysql timestamp
             }
         }
         $result['last'] = $last_time->timestamp * 1000;
+        /**
+         * Return json response for time graph in dashboard
+         */
         return response()->json($result);
     }
     public function getResponse($project, Request $request) {

@@ -19,14 +19,14 @@ return array(
           | memory|gzip|serialized|igbinary|discISAM|apc|memcache|temp|wincache|sqlite|sqlite3
           |
          */
-        'driver' => 'memory',
+        'driver' => 'apc',
         /*
           |--------------------------------------------------------------------------
           | Cache settings
           |--------------------------------------------------------------------------
          */
         'settings' => array(
-            'memoryCacheSize' => '32MB',
+            'memoryCacheSize' => '256MB',
             'cacheTime' => 600
         ),
         /*
