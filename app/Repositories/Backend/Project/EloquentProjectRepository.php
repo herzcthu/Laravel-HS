@@ -389,9 +389,13 @@ class EloquentProjectRepository implements ProjectContract {
     }
     
     public function export2($project){
-        $questions = \DB::select(\DB::raw("SELECT questions.qnum, qanswers.akey, qanswers.type FROM questions "
+        $questions = \DB::select(\DB::raw("SELECT questions.qnum, questions.id, qanswers.akey, qanswers.type FROM questions "
                 . "LEFT JOIN qanswers ON qanswers.qid = questions.id "
                 . " WHERE (questions.project_id = $project->id)"));
+        $default['pcode'] = "";
+        $default['state'] = "";
+        $default['township'] = "";
+        $default['village'] = "";
         foreach ($questions as $question){
             switch ($question->type){
                 case 'radio':
@@ -401,12 +405,13 @@ class EloquentProjectRepository implements ProjectContract {
                     $qkey = $question->akey;
                     break;
             }
-            $default['pcode'] = "";
-            $default['state'] = "";
-            $default['township'] = "";
-            $default['village'] = "";
             $default[$qkey] = "";
         }
+        //@uksort($arqs, 'natsort');
+        
+        //$default = array_merge($default, $arqs);
+        //dd($default);
+        
         $results = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
                 . "rs.section_id,rs.information,rs.updated_at,participants.name,questions.qnum,qanswers.akey,qanswers.type,answers.value "
                 . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
@@ -414,52 +419,56 @@ class EloquentProjectRepository implements ProjectContract {
                 . "JOIN questions ON questions.project_id = $project->id "
                 . "JOIN qanswers ON qanswers.qid = questions.id "
                 . "JOIN answers ON (answers.akey = qanswers.akey) AND (answers.qid = questions.id) AND (answers.status_id = rs.id) "
-                . ""));//dd($results);
-        foreach ($results as $result){
-            $arr['pcode'] = $result->pcode;
-            $arr['state'] = $result->state;
-            $arr['township'] = $result->township;
-            $arr['village'] = $result->village;
-            foreach ($project->sections as $sk => $section) {
-                        if( $sk == $result->section_id){
-                            $information = $result->information;
-                            switch ($information) {
-                                case 'complete':
-                                    $arr[$project->sections[$result->section_id]->text] = 1;
-                                    break;
-                                case 'incomplete':
-                                    $arr[$project->sections[$result->section_id]->text] = 2;
-                                    break;
-                                case 'error':
-                                    $arr[$project->sections[$result->section_id]->text] = 3;
-                                    break;
-                                case 'unknown':
-                                    $arr[$project->sections[$result->section_id]->text] = -1;
-                                    break;
-                                default:
-                                    $arr[$project->sections[$result->section_id]->text] = "0";
-                                    break;
-                            }
-                        
-                            $arr[$project->sections[$result->section_id]->text . ' Time'] = $result->updated_at;
-                            $arr[$project->sections[$result->section_id]->text . ' Data Clerk'] = $result->name;
-                        }else{
-                            continue;
-                        }
-                        
-                    }
-            switch ($result->type) {
-                case 'radio':
-                    $arr[$result->qnum] = $result->value;
-                    break;
+                . "ORDER BY pcode.pcode"));//dd($results);
+        $arr = [];
+        $array = [];
+        $locations = collect($results);
+        foreach($locations->groupBy('pcode') as $pcode => $answers){
+            foreach ($answers as $result){
+                $arr[$pcode]['pcode'] = $result->pcode;
+                $arr[$pcode]['state'] = $result->state;
+                $arr[$pcode]['township'] = $result->township;
+                $arr[$pcode]['village'] = $result->village;
+                foreach ($project->sections as $sk => $section) {
+                            if( $sk == $result->section_id){
+                                $information = $result->information;
+                                switch ($information) {
+                                    case 'complete':
+                                        $arr[$pcode][$project->sections[$result->section_id]->text] = 1;
+                                        break;
+                                    case 'incomplete':
+                                        $arr[$pcode][$project->sections[$result->section_id]->text] = 2;
+                                        break;
+                                    case 'error':
+                                        $arr[$pcode][$project->sections[$result->section_id]->text] = 3;
+                                        break;
+                                    case 'unknown':
+                                        $arr[$pcode][$project->sections[$result->section_id]->text] = -1;
+                                        break;
+                                    default:
+                                        $arr[$pcode][$project->sections[$result->section_id]->text] = "0";
+                                        break;
+                                }
 
-                default:
-                    $arr[$result->akey] = $result->value;
-                    break;
+                                $arr[$pcode][$project->sections[$result->section_id]->text . ' Time'] = $result->updated_at;
+                                $arr[$pcode][$project->sections[$result->section_id]->text . ' Data Clerk'] = $result->name;
+                            }else{
+                                continue;
+                            }
+
+                        }
+                switch ($result->type) {
+                    case 'radio':
+                        $arr[$pcode][$result->qnum] = (string) $result->value;
+                        break;
+                    default:
+                        $arr[$pcode][$result->akey] = (string) $result->value;
+                        break;
+                }
             }
-            $array[$result->pcode] = array_merge($default, $arr);
+            $array[$pcode] = array_merge($default, $arr[$pcode]);
+            
         }
-        
         $filename = preg_filter('/[^\d\w\s\.]/', ' ', $project->name . Carbon::now());
         $file = Excel::create(str_slug($filename), function($excel) use($array) {
 
