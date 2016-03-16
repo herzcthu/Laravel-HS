@@ -255,6 +255,15 @@ class AjaxController extends Controller
         return response()->json($result);
     }
     
+    public function getAllResults2($project, Request $request) {
+        $query = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
+                . "rs.section_id,rs.results,rs.information,rs.updated_at,users.name "
+                . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
+                . ""
+                . "ORDER BY pcode.pcode"));
+        return Datatables::of($result)
+                ->make(true);
+    }
     public function getAllResults($project, Request $request) {
         $result = Result::with('resultable')->with('answers')->with('answers.question.qanswers');
         
@@ -381,7 +390,63 @@ class AjaxController extends Controller
                 ->make(true);
     }
     
-    public function getAllStatus($project, Request $request){
+    public function getAllStatus($project, Request $request) {
+        /**
+         * 
+         *
+        $issuesJoinQuery = Issue::select('project_id', DB::raw('COUNT(*) AS issue_count'))
+    ->whereRaw('created_at >= curdate()-7')
+    ->groupBy('project_id');
+
+$projects = Project::select('*')
+    ->join(DB::raw('(' . $issuesJoinQuery->toSql() . ') i'), function ($join)
+        {
+            $join->on('i.project_id', '=', 'projects.id');
+        })
+    ->orderBy('issue_count', 'desc')
+    ->take(5)
+    ->get();
+         * 
+         */
+        /**
+        
+        $query = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
+                . "p.name, p.phones,"
+                . "rs.section_id,rs.results,rs.information,rs.updated_at "
+                . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode "
+                . "LEFT JOIN participants as p ON p.pcode_id = pcode.primaryid "
+                . "LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
+                . "GROUP BY pcode.pcode "
+                . "ORDER BY pcode.pcode"));
+        dd($query);
+         * 
+         */
+        $participantsJoinQuery = Participant::select('*');
+        $resultsJoinQuery = \DB::statement(\DB::raw("SET @sql = NULL; "
+                . "SELECT GROUP_CONCAT(DISTINCT "
+                . "CONCAT('MAX(IF(`section_id` = ', `section_id`, ', section_id,NULL)) AS section_id', `section_id`)) "
+                . "INTO @sql FROM results; "
+                . "SET @sql = CONCAT('SELECT ID, ', @sql, ' FROM results GROUP BY resultable_id'); "
+                . "PREPARE stmt FROM @sql; "
+                . "EXECUTE stmt; "
+                //. "SELECT * from stmt;"
+                . ""));
+        dd($resultsJoinQuery);
+        $pcode = PLocation::select("*")
+                ->leftjoin(DB::raw("(". $participantsJoinQuery->toSql() .") p"), function($p){
+                    $p->on("p.pcode_id", "=", "pcode.primaryid");
+                })
+                ->leftjoin(DB::raw("(". $resultsJoinQuery->toSql() . ") r"), function($r){
+                    $r->on("r.resultable_id", "=", "pcode.primaryid");                    
+                })
+                ->groupBy('primaryid')
+                ->first();
+                dd($pcode);
+        return Datatables::of($pcode)
+                ->make(true);
+    }
+    
+    public function getAllStatusBak($project, Request $request){
         //$noresults = Plocation::OfWhereDoesntHaveResults($project);
         
         //return $noresults->get();

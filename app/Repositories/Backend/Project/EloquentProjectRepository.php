@@ -388,7 +388,7 @@ class EloquentProjectRepository implements ProjectContract {
         throw new GeneralException('There was a problem creating export data. Please try again.');
     }
     
-    public function export2($project){
+    public function export3($project){
         $questions = \DB::select(\DB::raw("SELECT questions.qnum, questions.id, qanswers.akey, qanswers.type FROM questions "
                 . "LEFT JOIN qanswers ON qanswers.qid = questions.id "
                 . " WHERE (questions.project_id = $project->id)"));
@@ -413,7 +413,7 @@ class EloquentProjectRepository implements ProjectContract {
         //dd($default);
         
         $results = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
-                . "rs.section_id,rs.information,rs.updated_at,participants.name,questions.qnum,qanswers.akey,qanswers.type,answers.value "
+                . "rs.section_id,rs.results,rs.information,rs.incident_id,rs.updated_at,participants.name,questions.qnum,qanswers.akey,qanswers.type,answers.value "
                 . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
                 . "LEFT JOIN participants ON participants.pcode_id = pcode.primaryid "
                 . "JOIN questions ON questions.project_id = $project->id "
@@ -429,6 +429,9 @@ class EloquentProjectRepository implements ProjectContract {
                 $arr[$pcode]['state'] = $result->state;
                 $arr[$pcode]['township'] = $result->township;
                 $arr[$pcode]['village'] = $result->village;
+                if(!is_null($result->incident_id)){
+                    $arr[$pcode]['incident_id'] = $result->incident_id;
+                }
                 foreach ($project->sections as $sk => $section) {
                             if( $sk == $result->section_id){
                                 $information = $result->information;
@@ -460,6 +463,17 @@ class EloquentProjectRepository implements ProjectContract {
                 switch ($result->type) {
                     case 'radio':
                         $arr[$pcode][$result->qnum] = (string) $result->value;
+                        break;
+                    case 'textarea':
+                        if(is_array($result->results) && array_key_exists($result->qnum, $result->results)){
+                            if(array_key_exists($result->akey, $result->results[$result->qnum])){
+                                $arr[$pcode][$result->akey] = (string) $result->results[$result->qnum][$result->akey];
+                            }else{
+                                $arr[$pcode][$result->akey] = (string) $result->value;
+                            }
+                        }else{
+                            $arr[$pcode][$result->akey] = (string) $result->value;
+                        }
                         break;
                     default:
                         $arr[$pcode][$result->akey] = (string) $result->value;
@@ -503,6 +517,163 @@ class EloquentProjectRepository implements ProjectContract {
         
     }
 
+    public function export2($project){
+        $questions = \DB::select(\DB::raw("SELECT questions.qnum, questions.id, qanswers.akey, qanswers.type FROM questions "
+                . "LEFT JOIN qanswers ON qanswers.qid = questions.id "
+                . " WHERE (questions.project_id = $project->id)"));
+        $default['pcode'] = "";
+        $default['state'] = "";
+        $default['township'] = "";
+        $default['village'] = "";
+        foreach ($questions as $question){
+            switch ($question->type){
+                case 'radio':
+                    $qkey = $question->qnum;
+                    break;
+                default:
+                    $qkey = $question->akey;
+                    break;
+            }
+            $default[$qkey] = "";
+        }
+        $rawproject = \DB::select(\DB::raw("SELECT projects.type,projects.sections FROM projects WHERE (projects.id = $project->id)"));
+        $sections = json_decode($rawproject[0]->sections);
+        foreach($sections as $section)
+        {
+            $default[$section->text] = 0;
+            $default[$section->text . ' Time'] = "";
+            $default[$section->text . ' Data Clerk'] = "";
+        }
+        
+        $type = $rawproject[0]->type;
+        if($type == 'incident')
+        {
+            $default['incident_id'] = '';
+        }
+        //@uksort($arqs, 'natsort');
+        
+        //$default = array_merge($default, $arqs);
+        //dd($default);
+        
+        $results = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
+                . "rs.section_id,rs.results,rs.information,rs.incident_id,rs.updated_at,users.name "
+                . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
+                . "JOIN users ON users.id = rs.user_id "
+                . "ORDER BY pcode.pcode"));//dd($results);
+        $qna = \DB::select(\DB::raw("SELECT questions.qnum,qanswers.akey,qanswers.value,qanswers.type "
+                . "FROM (SELECT questions.* FROM questions WHERE(questions.project_id = $project->id))"
+                . "AS questions "
+                . "LEFT JOIN qanswers ON qanswers.qid = questions.id "));
+        foreach($qna as $qa)
+        {
+            $qnaarray[$qa->qnum][$qa->akey]['value'] = $qa->value;
+            $qnaarray[$qa->qnum][$qa->akey]['type'] = $qa->type;
+        }
+        $arr = [];
+        $array = [];
+        //dd($qnaarray);
+        //dd($results);
+        $locations = collect($results);
+        foreach($locations->groupBy('pcode') as $pcode => $answers){
+            foreach ($answers as $result){
+                if($type == 'incident' && !is_null($result->incident_id))
+                {                    
+                    $incident_id = $result->incident_id;
+                    $arr[$pcode.$incident_id]['incident_id'] = $result->pcode.$result->incident_id;
+                }
+                else
+                {
+                    $incident_id = '';
+                }
+                $arr[$pcode.$incident_id]['pcode'] = $result->pcode;
+                $arr[$pcode.$incident_id]['state'] = $result->state;
+                $arr[$pcode.$incident_id]['township'] = $result->township;
+                $arr[$pcode.$incident_id]['village'] = $result->village;
+                
+                foreach ($project->sections as $sk => $section) {
+                            if( $sk == $result->section_id){
+                                $information = $result->information;
+                                switch ($information) {
+                                    case 'complete':
+                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = 1;
+                                        break;
+                                    case 'incomplete':
+                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = 2;
+                                        break;
+                                    case 'error':
+                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = 3;
+                                        break;
+                                    case 'unknown':
+                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = -1;
+                                        break;
+                                    default:
+                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = "0";
+                                        break;
+                                }
+
+                                $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text . ' Time'] = $result->updated_at;
+                                $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text . ' Data Clerk'] = $result->name;
+                            }else{
+                                continue;
+                            }
+
+                        }
+                $allResults = json_decode($result->results, true);
+                foreach($allResults as $qnum => $ranswers)
+                {
+                    foreach($ranswers as $akey => $value)
+                    {
+                        switch($akey)
+                        {
+                            case 'radio':
+                                $arr[$pcode.$incident_id][$qnum] = $qnaarray[$qnum][$value]['value'];
+                                break;
+                            default:
+                                $arr[$pcode.$incident_id][$akey] = $value; 
+                                break;
+                        }
+                    }
+                }
+                $array[$pcode.$incident_id] = array_merge($default, $arr[$pcode.$incident_id]);
+            }            
+            
+                
+            
+        }
+        //dd($array);
+        $filename = preg_filter('/[^\d\w\s\.]/', ' ', $project->name . Carbon::now());
+        $file = Excel::create(str_slug($filename), function($excel) use($array) {
+
+                    $excel->sheet('Sheetname', function($sheet) use($array) {
+
+                        $sheet->fromArray($array);
+                    });
+                });
+        $store = $file->store('xls', false, true); // dd($store);
+        //$file->setUseBOM(true);
+        $storecsv = $file->store('csv', false, true);
+
+        $media = Media::firstOrNew(['filename' => $store['title'], 'filedir' => $store['full']]);
+        $media->filename = $store['title'];
+        $media->filedir = $store['full'];
+        $media->file = json_encode($store);
+        $media->status = 1;
+        $current_user = auth()->user();
+        $media->owner()->associate($current_user);
+        $media2 = Media::firstOrNew(['filename' => $storecsv['title'], 'filedir' => $storecsv['full']]);
+        $media2->filename = $storecsv['title'];
+        $media2->filedir = $storecsv['full'];
+        $media2->file = json_encode($storecsv);
+        $media2->status = 1;
+        $media2->owner()->associate($current_user);
+        $media2->save();
+        if ($media->save()) {
+            //return $file->download('xls');
+            return true;
+        }
+        throw new GeneralException('There was a problem creating export data. Please try again.');
+        
+    }
     /**
      * @param $id
      * @param $status
