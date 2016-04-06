@@ -10,22 +10,34 @@ Route::group(['prefix' => 'lang', 'middleware' => ['locale']], function(){
 
 Route::group(['prefix' => Translation::getRoutePrefix(), 'middleware' => ['locale']], function()
 {
-    Route::get('download/{file}', function($file){ 
-        $file_path = storage_path() .'/'. $file;//dd($file_path);
-        if (file_exists($file_path))
-        {
-            // Send Download
-            $filename = preg_filter('/[^a-zA-Z \.]/', '', $file);
-            return Response::download($file_path, $filename, [
-                'Content-Length: '. filesize($file_path)
-            ], 'attachment');
-        }
-        else
-        {
-            // Error
-            exit('Requested file does not exist on our server!');
-        }
-    })->where(['file' => '(.*)']);
+    Route::group(['middleware' => 'auth'], function ()
+	{
+        Route::group([
+			'middleware' => 'access.routeNeedsRoleOrPermission',
+			'role'       => ['Administrator'],
+			'permission' => ['view_backend'],
+			'redirect'   => '/',
+			'with'       => ['flash_danger', 'You do not have access to do that.']
+		], function ()
+		{
+        Route::get('download/{file}', function($file){ 
+            $file_path = storage_path() .'/'. $file;//dd($file_path);
+            if (file_exists($file_path))
+            {
+                // Send Download
+                $filename = preg_filter('/[^\d\w\s \.]/', '_', $file);
+                return Response::download($file_path, $filename, [
+                    'Content-Length: '. filesize($file_path)
+                ], 'attachment');
+            }
+            else
+            {
+                // Error
+                exit('Requested file does not exist on our server!');
+            }
+        })->where(['file' => '(.*)']);
+                });
+        });
 /**
  * Frontend Routes
  * Namespaces indicate folder structure

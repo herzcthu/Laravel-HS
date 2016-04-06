@@ -123,12 +123,18 @@ class AjaxController extends Controller
     }
     
     public function timeGraph($project, Request $request){
+        /**
+         * Get last created data timestamp
+         */
         $last = Result::where('project_id', $project->id)->orderBy('created_at', 'desc')->first();
         if(!$last) return;
         $last_time = $last->created_at;
         $last_time = $last_time->subDay();
         
         foreach($project->sections as $section => $section_value){
+            /**
+             * Group data entry in every 5 minutes
+             */
             $query['p'.$project->id.'s'.$section] = DB::table('results')
                 ->select(DB::raw('count(*) as resultcount'),DB::raw('ROUND(UNIX_TIMESTAMP(created_at)/(5 * 60)) AS timekey'), DB::raw('UNIX_TIMESTAMP(created_at) as created'))
                 ->groupBy('timekey')->where('project_id', $project->id)->where('section_id',$section)->get();
@@ -137,10 +143,13 @@ class AjaxController extends Controller
         foreach($query as $qk => $qv){
             foreach($qv as $k=>$v){
                 $result[$qk][$k]['y'] = $v->resultcount;
-                $result[$qk][$k]['x'] = $v->created * 1000;
+                $result[$qk][$k]['x'] = $v->created * 1000; //Convert to javascript timestamp from mysql timestamp
             }
         }
         $result['last'] = $last_time->timestamp * 1000;
+        /**
+         * Return json response for time graph in dashboard
+         */
         return response()->json($result);
     }
     public function getResponse($project, Request $request) {
@@ -176,7 +185,7 @@ class AjaxController extends Controller
                             $query->where('section_id', $section)->where('information', 'error');
                         })->count();   
                         
-                ${$location->state}{$section} = PLocation::where('org_id', $project->id)
+                ${$location->state}{$section} = PLocation::where('org_id', $project->org_id)
                         ->where('state', $location->state)
                         ->ofWithAndWhereHas('results', function($query) use($section){
                             $query->where('section_id', $section);
@@ -373,15 +382,17 @@ class AjaxController extends Controller
     }
     
     public function getAllStatus($project, Request $request){
+
+        //$noresults = Plocation::OfWhereDoesntHaveResults($project);
+        
+        //return $noresults->get();
+        
         $located = PLocation::where('org_id', $project->organization->id )
                 ->with('participants')
+                ->with('answers')
                 ->OfwithAndWhereHas('results', function($query) use ($project){
                         $query->where('project_id', $project->id);
-                })
-                ->with('answers');
-        
-        
-        
+                });
         //$locations = $located->get();
         /**
         if(isset($filter)){
@@ -398,29 +409,8 @@ class AjaxController extends Controller
         
         $datatable = Datatables::of($located)
                 ->filter(function($query) use ($request, $project){
-                    
-                    if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
-                        $section = $request->get('section');
-                        $status = $request->get('status');
-                        if($status == 'missing'){
-                            $query->whereDoesntHave('results', function($query) use ($project, $section){
-                                $query->where('project_id', $project->id)->where('section_id', $section);
-                            });
-                        }else{
 
-                            $query->OfwithAndWhereHas('results', function($query) use ($project, $section, $status){
-                                    $query->where('project_id', $project->id)->where('information', $status)->where('section_id', (int)$section);
-                            })->with('results');
-                        }
-
-                        $filter = true;
-                    }
-                    
-                    
-                     if(!isset($filter)){
-                     //    $query->NotWithResults();
-                     }
-                     
+                    $filter = false;
                     if($request->get('pcode')){
                         $code = $request->get('pcode');
                         $query->where('pcode',$code);
@@ -447,6 +437,28 @@ class AjaxController extends Controller
                         });
                     }                    
 
+                    if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
+                        $section = $request->get('section');
+                        $status = $request->get('status');
+                        if($status == 'missing'){
+                            $query->whereDoesntHave('results', function($query) use ($project, $section){
+                                $query->where('project_id', $project->id)->where('section_id', $section);
+                            });
+                        }else{
+
+                            $query->OfwithAndWhereHas('results', function($query) use ($project, $section, $status){
+                                    $query->where('project_id', $project->id)->where('information', $status)->where('section_id', (int)$section);
+                            })->with('results');
+                        }
+
+                        $filter = true;
+                    }
+                    
+                    if(!$filter){
+                        
+                        $query->OfOrNotWithResults($project);
+                    }
+                
                 })
                 ->editColumn('pcode', function ($model) use ($project){
                     //if($model->results){
