@@ -27,6 +27,7 @@ Route::group(['middleware' => 'auth'], function ()
         Route::get('project/{project}/status', ['as' => 'ajax.project.status', 'uses' => 'AjaxController@getAllStatus']);
         Route::get('project/{project}/results', ['as' => 'ajax.project.results', 'uses' => 'AjaxController@getAllResults']);
         Route::post('project/{project}/questions/sort', ['as' => 'ajax.project.questions.sort', 'uses' => 'AjaxController@sortQuestions']);
+        Route::post('project/{project}/question/new', ['as' => 'ajax.project.question.new', 'uses' => 'AjaxController@newQuestion']);
         Route::get('locations/allstates', ['as' => 'ajax.locations.allstates', 'uses' => 'AjaxController@allstates']);
         Route::get('locations/alldistricts', ['as' => 'ajax.locations.alldistricts', 'uses' => 'AjaxController@alldistricts']);
         Route::get('locations/alltownships', ['as' => 'ajax.locations.alltownships', 'uses' => 'AjaxController@alltownships']);

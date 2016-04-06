@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 use App\Http\Requests\Backend\Project\Question\CreateQuestionRequest;
 use App\Http\Requests\Backend\Project\Question\UpdateQuestionRequest;
 use App\Repositories\Backend\Organization\OrganizationContract;
 use App\Repositories\Backend\Project\ProjectContract;
 use App\Repositories\Backend\Question\QuestionContract;
+use Hash;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use Symfony\Component\HttpFoundation\Response;
 
 class QuestionController extends Controller
@@ -26,6 +25,9 @@ class QuestionController extends Controller
             ProjectContract $project,
             OrganizationContract $organization
             ) {
+        //$this->middleware('ajaxurl', ['only' => [
+        //    'editall',
+        //]]);
         $this->questions = $questions;
         $this->project = $project;
         $this->organization = $organization;
@@ -130,10 +132,32 @@ class QuestionController extends Controller
      * @return Response
      */
     public function editall($project)
-    {
+    {        
+        // ajax route for sorting
         $route = route('ajax.project.questions.sort', [$project->id]);
+        
+        // ajax route for creating new question
+        $add_question_url = route('ajax.project.question.new', [$project->id]);
+        
+        // get ajax urlhash for project
+        $urlhash = $project->urlhash;
+        
+        // check if rehash need or not
+        if (Hash::needsRehash($urlhash)) {
+            // rehash if urlhash column in project table empty or invalid
+            $urlhash = Hash::make($add_question_url);
+            // update project table in database with new or correct urlhash
+            $project->update(['urlhash' => $urlhash]);
+        }
+        /*
+         * send javascript global object using helper function.
+         * javascript global object is stored in variable named "ems" by default.
+         * That variable can only be changed in config/javascript.php
+         */
         javascript()->put([
 			'url' => $route,
+                        'add_question_url' => $add_question_url,
+                        'urlhash' => $urlhash,
                         //'org' => 
 		]);
         return view('backend.project.questions.editall')

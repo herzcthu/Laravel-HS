@@ -22,7 +22,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -238,6 +238,11 @@ return [
          * https://github.com/yajra/laravel-datatables/wiki/Installation
          */
         yajra\Datatables\DatatablesServiceProvider::class,
+        
+        /**
+         * https://github.com/barryvdh/laravel-ide-helper
+         */
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         
         
         /**

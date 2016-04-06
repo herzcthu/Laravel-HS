@@ -33,9 +33,11 @@ class RedirectIfNotAjax
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $editall)
     {
-        if (!$request->ajax())
+        
+        dd($editall);
+        if (!$request->ajax() || $editall !== true)
 	{
             if ($this->auth->check())
 		{

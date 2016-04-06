@@ -165,6 +165,9 @@ class Macros extends FormBuilder {
             }
             $options['class'] = $css;
             $options['id'] = $cssId; //dd($options);
+            /*
+             * To Do: need to fix select box answer
+             */
             if($type == 'select') {
                 $default_array = explode('|', $default);
                 $selecthtml = "<div class='form-group'>";

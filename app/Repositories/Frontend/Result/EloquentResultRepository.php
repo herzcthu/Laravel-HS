@@ -196,6 +196,7 @@ class EloquentResultRepository implements ResultContract {
                     if(array_key_exists('incident_id', $input)){
                         $incident_id = $input['incident_id'];
                     }else{ 
+                        // get last incident id
                         $incident = \App\Result::where('project_id', $project->id)
                             ->where('section_id', $section)
                             ->where('resultable_id', $resultable_id)

@@ -110,13 +110,15 @@ class EloquentQuestionRepository implements QuestionContract {
 	 * @throws GeneralException
 	 * @throws QuestionNeedsOrganizationsException
 	 */
-	public function create($input, $project) {
+	public function create($input, $project, $ajax = false) {
                 $question = $this->createQuestionStub($input);
-                $related_id = $input['related_data']['q'];
-                if(!empty($related_id)){
-                    $related = $this->findOrThrowException($related_id);
-                           
-                    $question->parent()->associate($related);
+                if(isset($input['related_data'])) {
+                    $related_id = $input['related_data']['q'];
+                    if(!empty($related_id)){
+                        $related = $this->findOrThrowException($related_id);
+
+                        $question->parent()->associate($related);
+                    }
                 }
                 //$question->answers = $input['answers'];
                 
@@ -129,14 +131,26 @@ class EloquentQuestionRepository implements QuestionContract {
                     foreach($input['answers'] as $k => $av){
                         $qanswer = \App\QAnswers::firstOrNew(['qid' => $question->id, 'akey' => $k]);
                         $qanswer->akey = $k;
-                        $qanswer->type = $av['type'];
-                        $qanswer->text = $av['text'];
-                        $qanswer->value = $av['value'];
-                        $qanswer->require = $av['require'];
-                        $qanswer->css = $av['css'];
+                        if(isset($av['type']))
+                            $qanswer->type = $av['type'];
+                        if(isset($av['text']))
+                            $qanswer->text = $av['text'];
+                        if(isset($av['value']))
+                            $qanswer->value = $av['value'];
+                        if(isset($av['require']))
+                            $qanswer->qarequire = $av['require'];
+                        if(isset($av['optional']))
+                            $qanswer->optional = $av['optional'];
+                        if(isset($av['css']))
+                            $qanswer->css = $av['css'];
                         $question->qanswers()->save($qanswer);
                     }
-			return true;
+                    if($ajax == true){
+                    // need to return $question for ajax
+			return $question;
+                    }else{
+                        return true;
+                    }
 		}
 
 		throw new GeneralException('There was a problem creating this question. Please try again.');
@@ -176,7 +190,7 @@ class EloquentQuestionRepository implements QuestionContract {
                         $qanswer->type = $av['type'];
                         $qanswer->text = $av['text'];
                         $qanswer->value = $av['value'];
-                        $qanswer->require = $av['require'];
+                        $qanswer->qarequire = $av['require'];
                         $qanswer->css = $av['css'];
                         $question->qanswers()->save($qanswer);
                     }
@@ -332,16 +346,29 @@ class EloquentQuestionRepository implements QuestionContract {
 	private function createQuestionStub($input)
 	{
 		$question = new Question;
+                if(isset($input['section']))
                 $question->section = $input['section'];
-                $question->report = $input['report'];
+                
+                if(isset($input['report']))
+                    $question->report = $input['report'];
+                
 		$question->qnum = $input['qnum'];
 		$question->question = $input['question'];
-                $question->related_data = $input['related_data'];
+                
+                if(isset($input['related_data']))
+                    $question->related_data = $input['related_data'];
+                
                 $question->answers = $input['answers'];
+                
                 if(isset($input['display']))
                     $question->display = $input['display'];
-                $question->answer_view = $input['answer_view'];
-                $question->sameanswer = isset($input['sameanswer']) ? 1 : 0;
+                
+                if(isset($input['answer_view']))
+                    $question->answer_view = $input['answer_view'];
+                
+                if(isset($input['sameanswer']))
+                    $question->sameanswer = isset($input['sameanswer']) ? 1 : 0;
+                
 		return $question;
 	}
 }

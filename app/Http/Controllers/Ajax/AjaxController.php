@@ -1,17 +1,21 @@
 <?php namespace App\Http\Controllers\Ajax;
 
 use App\Http\Controllers\Controller;
+use App\Locale;
 use App\Location;
 use App\Participant;
 use App\PLocation;
+use App\Question;
 use App\Repositories\Backend\Location\LocationContract;
 use App\Repositories\Backend\Participant\ParticipantContract;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
 use App\Repositories\Backend\PLocation\PLocationContract;
+use App\Repositories\Backend\Question\QuestionContract;
 use App\Repositories\Frontend\Result\ResultContract;
 use App\Result;
 use App\Translation;
 use DB;
+use Hash;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use yajra\Datatables\Facades\Datatables;
@@ -29,6 +33,8 @@ class AjaxController extends Controller
     protected $proles;
     
     protected $results;
+    
+    protected $question;
 
 
     public function __construct(
@@ -36,13 +42,15 @@ class AjaxController extends Controller
             ParticipantContract $participant,
             LocationContract $locations,
             RoleRepositoryContract $proles,
-            ResultContract $results) {
+            ResultContract $results,
+            QuestionContract $question) {
         $this->plocation = $plocation;
         $this->participant = $participant;
         $this->locations = $locations;
         $this->country = config('aio.country');
         $this->proles = $proles;
         $this->results = $results;
+        $this->question = $question;
     }
     
     public function sortQuestions($project, Request $request) {
@@ -53,7 +61,7 @@ class AjaxController extends Controller
                 foreach ($request->get('listid') as $qid) {
                     $search['id'] = $qid;
                     $data['sort'] = $i;
-                    $question = \App\Question::updateOrCreate($search, $data);
+                    $question = Question::updateOrCreate($search, $data);
                     $i++;
                 }
                 
@@ -66,6 +74,28 @@ class AjaxController extends Controller
 
 
 		
+    }
+    
+    public function newQuestion($project, Request $request){
+        if($request->ajax()){
+            $ajax = true;
+        }
+        $input = $request->all();
+        // get urlhash from request header
+        $urlhash = $request->header('X-URLHASH');
+        if(empty($urlhash)) {
+            return response()->json(array('success'=>false));
+        }else{
+            if (Hash::check($request->url(), $urlhash)) {
+                // url match with hash...
+                $question = $this->question->create($input, $project, $ajax);
+                
+                return response()->json(array('success'=>true, 'message'=>$question));
+            } else {
+                return response()->json(array('success'=>false));
+            }
+        }        
+        
     }
     
     public function updateTranslation(Request $request) {
@@ -85,7 +115,7 @@ class AjaxController extends Controller
                         //return $original; die();
                         //$original->translated()->delete();
                         foreach($translation as $lang => $string){
-                            $locale = \App\Locale::where('code', $lang)->first();
+                            $locale = Locale::where('code', $lang)->first();
                             $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $original->id]);
                             $child->translation = $string;
                             $child->original()->dissociate();                            
@@ -255,6 +285,15 @@ class AjaxController extends Controller
         return response()->json($result);
     }
     
+    public function getAllResults2($project, Request $request) {
+        $query = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
+                . "rs.section_id,rs.results,rs.information,rs.updated_at,users.name "
+                . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
+                . ""
+                . "ORDER BY pcode.pcode"));
+        return Datatables::of($result)
+                ->make(true);
+    }
     public function getAllResults($project, Request $request) {
         $result = Result::with('resultable')->with('answers')->with('answers.question.qanswers');
         
@@ -353,7 +392,7 @@ class AjaxController extends Controller
                     }
                 })
                 ->editColumn('cq', function ($model) use ($project){
-                    $q = \App\Question::find($model->section_id);
+                    $q = Question::find($model->section_id);
                     if(!is_null($q)){
                         return $q->question;
                     }else{
@@ -381,7 +420,64 @@ class AjaxController extends Controller
                 ->make(true);
     }
     
-    public function getAllStatus($project, Request $request){
+
+    public function getAllStatus($project, Request $request) {
+        /**
+         * 
+         *
+        $issuesJoinQuery = Issue::select('project_id', DB::raw('COUNT(*) AS issue_count'))
+    ->whereRaw('created_at >= curdate()-7')
+    ->groupBy('project_id');
+
+$projects = Project::select('*')
+    ->join(DB::raw('(' . $issuesJoinQuery->toSql() . ') i'), function ($join)
+        {
+            $join->on('i.project_id', '=', 'projects.id');
+        })
+    ->orderBy('issue_count', 'desc')
+    ->take(5)
+    ->get();
+         * 
+         */
+        /**
+        
+        $query = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
+                . "p.name, p.phones,"
+                . "rs.section_id,rs.results,rs.information,rs.updated_at "
+                . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode "
+                . "LEFT JOIN participants as p ON p.pcode_id = pcode.primaryid "
+                . "LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
+                . "GROUP BY pcode.pcode "
+                . "ORDER BY pcode.pcode"));
+        dd($query);
+         * 
+         */
+        $participantsJoinQuery = Participant::select('*');
+        $resultsJoinQuery = \DB::statement(\DB::raw("SET @sql = NULL; "
+                . "SELECT GROUP_CONCAT(DISTINCT "
+                . "CONCAT('MAX(IF(`section_id` = ', `section_id`, ', section_id,NULL)) AS section_id', `section_id`)) "
+                . "INTO @sql FROM results; "
+                . "SET @sql = CONCAT('SELECT ID, ', @sql, ' FROM results GROUP BY resultable_id'); "
+                . "PREPARE stmt FROM @sql; "
+                . "EXECUTE stmt; "
+                //. "SELECT * from stmt;"
+                . ""));
+        dd($resultsJoinQuery);
+        $pcode = PLocation::select("*")
+                ->leftjoin(DB::raw("(". $participantsJoinQuery->toSql() .") p"), function($p){
+                    $p->on("p.pcode_id", "=", "pcode.primaryid");
+                })
+                ->leftjoin(DB::raw("(". $resultsJoinQuery->toSql() . ") r"), function($r){
+                    $r->on("r.resultable_id", "=", "pcode.primaryid");                    
+                })
+                ->groupBy('primaryid')
+                ->first();
+                dd($pcode);
+        return Datatables::of($pcode)
+                ->make(true);
+    }
+    
+    public function getAllStatusBak($project, Request $request){
 
         //$noresults = Plocation::OfWhereDoesntHaveResults($project);
         

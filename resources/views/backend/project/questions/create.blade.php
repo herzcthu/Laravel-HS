@@ -4,7 +4,7 @@
 
 @section ('before-styles-end')
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
-@stop
+@endsection
 
 @section('page-header')
     <h1>
@@ -18,7 +18,7 @@
     <li>{!! link_to_route('admin.projects.index', _t('Project Management')) !!}</li>
     <li>{!! link_to_route('admin.project.questions.index', _t('Question Management'), [$project->id]) !!}</li>
     <li>{!! link_to_route('admin.project.questions.create', _t('Create Question'), [$project->id]) !!}</li>
-@stop
+@endsection
 
 @section('content')
     @include('backend.project.includes.partials.header-buttons')
@@ -39,7 +39,9 @@
                 <label class="control-label">{{ $project->organization->name }} </label>
             </div>
         </div>
-        @if($project->sections)
+            <?php // dd($project->sections) 
+        ?>
+        @if(is_array($project->sections))
         <div class="form-group">
             <label class="col-lg-2 control-label">Section</label>
             <div class="col-lg-10">
@@ -227,5 +229,4 @@
     {!! Form::close() !!}
     
 @endsection
-@include('backend.project.questions.includes.partials.footer-script')    
-@stop
+@include('backend.project.questions.includes.partials.footer-script') 
