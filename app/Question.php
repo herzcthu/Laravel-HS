@@ -74,18 +74,18 @@ class Question extends Model
   * @return string
   */
   public function getEditButtonAttribute() {
-     return '<a href="'.route('admin.project.question.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+     return '<a href="'.route('admin.project.question.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#editForm" ><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"  ></i></a>';
   }
   
   /**
   * @return string
   */
   public function getDeleteButtonAttribute() {
-    return '<a href="'.route('admin.project.questions.destroy', [$this->project->id, $this->id]).'" data-method="delete" class="btn btn-xs btn-danger"><i class="fa fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i></a>';
+    return '<a href="'.route('admin.project.questions.destroy', [$this->project->id, $this->id]).'" data-method="delete" class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>';
   }
   
   public function getActionButtonsAttribute() {
-      return $this->getEditButtonAttribute().' '.
+      return $this->getEditButtonAttribute().
       $this->getDeleteButtonAttribute();
   }
   

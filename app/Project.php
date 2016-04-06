@@ -69,14 +69,14 @@ class Project extends Model
   * @return string
   */
   public function getEditButtonAttribute() {
-     return '<a href="'.route('admin.project.edit', $this->id).'" class="btn btn-xs btn-primary"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+     return '<a href="'.route('admin.project.edit', $this->id).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getDeleteButtonAttribute() {
-    return '<a href="'.route('admin.project.delete-permanently', $this->id).'" data-method="delete" class="btn btn-xs btn-danger"><i class="fa fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i></a>';
+    return '<a href="'.route('admin.project.delete-permanently', $this->id).'" data-method="delete" class="btn btn-lg btn-danger" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></a>';
   }
   
   
@@ -84,67 +84,67 @@ class Project extends Model
   * @return string
   */
   public function getExportButtonAttribute() {
-    return '<a href="'.route('admin.project.export', $this->id).'" class="btn btn-xs btn-primary"><i class="fa fa-download" data-toggle="tooltip" data-placement="top" title="Export"></i></a>';
+    return '<a href="'.route('admin.project.export', $this->id).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" title="Export"><i class="fa fa-download"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getAddQuestionButtonAttribute() {
-     return '<a href="'.route('admin.project.questions.create', ['p' => $this->id]).'" class="btn btn-xs btn-primary"><i class="fa fa-question"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add Question"></i></a>';
+     return '<a href="'.route('admin.project.questions.create', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" title="Add Question"><i class="fa fa-question"></i><i class="fa fa-plus"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getShowQuestionsButtonAttribute() {
-     return '<a href="'.route('admin.project.questions.index', ['p' => $this->id]).'" class="btn btn-xs btn-success"><i class="fa fa-database"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add Answers"></i></a>';
+     return '<a href="'.route('admin.project.questions.index', ['p' => $this->id]).'" class="btn btn-lg btn-success" data-toggle="tooltip" data-placement="top" title="Add Answers"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getAddResultsButtonAttribute() {
-     return '<a href="'.route('clerk.project.questions.index', ['p' => $this->id]).'" class="btn btn-xs btn-success"><i class="fa fa-database"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add Answers"></i></a>';
+     return '<a href="'.route('clerk.project.questions.index', ['p' => $this->id]).'" class="btn btn-lg btn-success" data-toggle="tooltip" data-placement="top" title="Add Answers"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getViewStatusFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.status.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Status</h5><p>click here to add data or check status</p>"><i class="fa fa-database"></i><i class="fa fa-eye"></i></a>';
+     return '<a href="'.route('data.project.status.index', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Status</h5><p>click here to add data or check status</p>"><i class="fa fa-database"></i><i class="fa fa-eye"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getViewResponseFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.response.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
+     return '<a href="'.route('data.project.response.index', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getViewIresponseFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.iresponse.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Incident Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
+     return '<a href="'.route('data.project.iresponse.index', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Incident Response Rate</h5><p>response rate table</p>"><i class="fa fa-database"></i><i class="fa fa-calendar-o"></i></a>';
   }
   /**
   * @return string
   */
   public function getAddResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Incidents</h5><p>click here to add incident data</p>"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
+     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Incidents</h5><p>click here to add incident data</p>"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
   }
   /**
   * @return string
   */
   public function getViewResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.index', ['p' => $this->id]).'" class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to edit incident or check results</p>"><i class="fa fa-database"></i><i class="fa fa-table"></i></a>';
+     return '<a href="'.route('data.project.results.index', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to edit incident or check results</p>"><i class="fa fa-database"></i><i class="fa fa-table"></i></a>';
   }
   /**
   * @return string
   */
   public function getEditQuestionsButtonAttribute() {
-     return '<a href="'.route('admin.project.questions.editall', ['p' => $this->id]).'" class="btn btn-xs btn-primary"><i class="fa fa-question"></i><i class="fa fa-wrench" data-toggle="tooltip" data-placement="top" title="Edit Questions"></i></a>';
+     return '<a href="'.route('admin.project.questions.editall', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" title="Edit Questions"><i class="fa fa-question"></i><i class="fa fa-wrench"></i></a>';
   }
   
   public function getIncidentActionButtonsAttribute() {

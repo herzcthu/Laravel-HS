@@ -239,6 +239,11 @@ return [
          */
         yajra\Datatables\DatatablesServiceProvider::class,
         
+        /**
+         * https://github.com/barryvdh/laravel-ide-helper
+         */
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        
         
         /**
          * My own providers

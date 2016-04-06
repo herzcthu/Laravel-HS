@@ -39,7 +39,9 @@
                 <label class="control-label">{{ $project->organization->name }} </label>
             </div>
         </div>
-        @if($project->sections)
+            <?php // dd($project->sections) 
+        ?>
+        @if(is_array($project->sections))
         <div class="form-group">
             <label class="col-lg-2 control-label">Section</label>
             <div class="col-lg-10">

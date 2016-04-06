@@ -29,6 +29,7 @@ class CreateProjectsTable extends Migration {
             $table->json('sections');
             $table->json('reporting');
             $table->string('validate');
+            $table->string('urlhash');
             $table->timestamps();
             $table->unique('name', 'projects_name_unique');
             $table->index('project_id', 'projects_project_id_foreign');

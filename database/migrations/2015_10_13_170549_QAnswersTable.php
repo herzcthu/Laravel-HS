@@ -19,8 +19,9 @@ class QAnswersTable extends Migration
             $table->string('text');
             $table->string('value');
             $table->string('akey');
-            $table->string('require');
+            $table->string('qarequire');
             $table->string('css');
+            $table->string('optional');
             $table->timestamps();
             $table->unique(['qid','akey']);
             $table->foreign('qid')

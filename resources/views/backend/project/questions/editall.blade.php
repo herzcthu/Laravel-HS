@@ -32,7 +32,11 @@
     <div class="col-md-12">
     <div class="pull-left" style="margin-bottom:10px">
         <div class="btn-group">
-            <a href='{{ route('admin.project.questions.create', [$project->id])}}' class="btn btn-md btn-primary"><i class="fa fa-question"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add New Question"></i> Add Question</a>
+            <!--a href='{{ route('admin.project.questions.create', [$project->id])}}' class="btn btn-md btn-primary"><i class="fa fa-question"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add New Question"></i> Add Question</a-->
+        <!-- Button trigger modal -->
+        <button id="launch" type="button" class="btn btn-primary" data-toggle="modal" data-target="#formTemplate" data-backdrop="static">
+          <i class="fa fa-question"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add New Question"></i> Create Question
+        </button>
         </div>
         
     </div> 
@@ -45,7 +49,7 @@
     {!! Form::open(['route' => ['admin.project.questions.editall', $project->id], 'class' => 'form-horizontal', 'question' => 'form', 'method' => 'PATCH']) !!}
         @if(is_array($project->sections))
             @foreach($project->sections as $section_key => $section)
-            <fieldset>
+            <fieldset id="fieldset{{ $section_key }}">
                 <legend>{!! $section->text !!}</legend>
                 @if(!empty($section->desc))
                 
@@ -56,7 +60,7 @@
                 <div class="panel-group" id="accordion{{ $section_key }}">
                     <span id="message"></span>
                     @foreach($project->questions->sortBy('sort', SORT_NATURAL) as $question)
-                        @if(empty($question->related_data->q) && $question->related_data->type != 'parent')                            
+                        @if(empty($question->related_data) || (empty($question->related_data->q) && $question->related_data->type != 'parent'))                          
                         
                             @if($section_key == $question->section)
 
@@ -66,19 +70,20 @@
                                     <a data-toggle="collapse" data-parent="#accordion{{ $section_key }}" href="#collapse{{ $question->id}}">
                                     +</a>
                                       <div class="row">
-                                        <div class="col-lg-1 pull-right">
-                                        {!! $question->action_buttons !!}
-                                        </div>
                                         @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
-                                        <label class="col-lg-1 control-label">{!! $question->qnum !!}</label>
+                                        <label class="col-xs-1 control-label">{!! $question->qnum !!}</label>
                                         @endif
                                         @if((isset($question->display->question) && $question->display->question == 0) || empty($question->display))
-                                        <div class="col-lg-10">
+                                        <div class="col-xs-10">
                                             <div class="form-control-static">
                                             {!! $question->question !!}
                                             </div>
                                         </div>
                                         @endif
+                                        
+                                        <div class="col-xs-1">
+                                        {!! $question->action_buttons !!}
+                                        </div>
                                       </div>
                                     
                                   </h4>
@@ -88,8 +93,8 @@
                                   <div class="panel-body">
                                     <div class="form-group {!! Aio()->section($section->column) !!}">                                                            
 
-                                    <label class="col-lg-1 control-label">&nbsp;</label>
-                                    <div class="col-lg-11">
+                                    <label class="col-xs-1 control-label">&nbsp;</label>
+                                    <div class="col-xs-11">
                                         @if($question->qanswers->count() > 0 )
                                             @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $key => $answer)
                                                 
@@ -112,21 +117,21 @@
                                                     @endif
                                                 @elseif($question->answer_view == 'three-column')
                                                     @if($key == 0)
-                                                    <div class="col-xs-4 col-lg-4">
+                                                    <div class="col-xs-4 col-xs-4">
                                                     @endif    
                                                     @if($key <= ceil(($question->qanswers->count() / 3))+1)
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3))+1)
                                                     </div>
-                                                    <div class="col-xs-4 col-lg-4">
+                                                    <div class="col-xs-4 col-xs-4">
                                                     @endif
                                                     @if($key > ceil(($question->qanswers->count() / 3)+1) && $key <= ceil(($question->qanswers->count() / 3) * 2)+1)
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3) * 2)+1)
                                                     </div>
-                                                    <div class="col-xs-4 col-lg-4">
+                                                    <div class="col-xs-4 col-xs-4">
                                                     @endif
                                                     @if($key > ceil(($question->qanswers->count() / 3) * 2)+1 && $key < $question->qanswers->count())
                                                     {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
@@ -161,18 +166,18 @@
             <div class="panel-group" id="accordion">
                 <span id="message"></span>
                 @foreach($project->questions as $question)
-                    @if(empty($question->related_data->q) && $question->related_data->type != 'parent') 
+                    @if(empty($question->related_data) || (empty($question->related_data->q) && $question->related_data->type != 'parent'))
                     <div class="panel panel-default sortable" id="listid-{{ $question->id }}">
                                 <div class="panel-heading">
                                   <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ $question->id}}">
                                     +</a>
                                       <div class="row">
-                                      <label class="col-lg-1 control-label">{!! $question->qnum !!}</label>
-                                        <div class="col-lg-11">
+                                      <label class="col-xs-1 control-label">{!! $question->qnum !!}</label>
+                                        <div class="col-xs-11">
                                             <div class="form-control-static">
                                             {!! $question->question !!} 
-                                                    <div class="col-lg-1 pull-right">
+                                                    <div class="col-xs-2 pull-right">
                                                     {!! $question->action_buttons !!}
                                                     </div>
                                             </div>
@@ -185,9 +190,10 @@
                         <div class="panel-body">
                     <div class="form-group">
 
-                            <label class="col-lg-1 control-label">&nbsp;</label>
-                            <div class="col-lg-11">
+                            <label class="col-xs-1 control-label">&nbsp;</label>
+                            <div class="col-xs-11">
                                 <div class="form-control-static">
+                                <!-- this code does not work for select box -->
                                 @if($question->qanswers->count() > 0 )
                                     @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
@@ -214,23 +220,438 @@
         </div>
 
         <div class="pull-right">
-            <input type="submit" class="btn btn-success" value="Save" />
+            <!--input type="submit" class="btn btn-success" value="Save" /-->
         </div>
         <div class="clearfix"></div>
 
     {!! Form::close() !!}
+    
+    <div class="modal fade" id="formTemplate" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <H2>Create Questions</H2>
+                      Fill the form, add answers and click "Create" to add question to project.
+
+            </div><!-- Modal header -->
+              <div class="modal-body">
+                  <FORM id="inputForm">
+                        @if(is_array($project->sections))
+                        <div class="row form-group">
+                            <label class="col-xs-2 input-label">Section</label>
+                            <div class="col-xs-10">
+                                {!! Form::select('inputsect', (Aio()->createSelectBoxEntryFromArray($project->sections, 'text')),null, ['class' => 'input-sm', 'placeholder' => 'Section Number']) !!}
+                            </div>
+                        </div><!--form control-->
+                        @endif
+                      <div class="row form-group">
+                      <LABEL class="control-label col-xs-2" for="num">Q No.: </LABEL>
+                      <div class="col-xs-10">
+                            <INPUT class="form-control" id="num" type="text" name="inputnum" value="" />
+                      </div>
+                      </div>
+                      <div class="row form-group">
+                      <LABEL class="control-label col-xs-2" for="question">Question: </LABEL>
+                      <div class="col-xs-10">
+                            <INPUT class="form-control" type="text" name="inputq"  value="" />
+                      </div>
+                      </div>
+
+                      <div class="row form-group">
+                      <!--LABEL for="name">Name: </LABEL-->
+                      <div class="col-xs-2">
+                          <INPUT class="input-sm" type="hidden" name="fprefix" />
+                      <LABEL  class="input-label" for="type">Type: </LABEL>
+                      <SELECT id="ftype" class="input-sm" name="ftype">
+                          <OPTION value="text">Text</OPTION>
+                          <OPTION value="radio">Radio</OPTION>
+                          <OPTION value="textarea">Textarea</OPTION>
+                          <OPTION value="checkbox">Checkbox</OPTION>  
+                          <!-- select box need to fix to work in server side 
+                          <OPTION value="select">Select</OPTION>
+                          -->
+                      </SELECT>
+                      </div>
+                      <div class="col-xs-2">
+                        <LABEL class="control-label"  for="flabel">Label: </LABEL>
+                        <INPUT class="form-control"  type="text" name="flabel" />
+                      </div>
+                      <div class="col-xs-2">
+                        <LABEL class="control-label" for="fvalue">Value: </LABEL>
+                        <INPUT class="form-control" type="text" name="fvalue" />
+                      </div>
+                      <div class="col-xs-2 hide" id="optionlabel">
+                        <LABEL class="control-label"  for="foption">Option Label: </LABEL>
+                        <INPUT class="form-control"  type="text" name="foption" />
+                      </div>
+                      <div class="col-xs-2">
+                        <LABEL class="control-label">&nbsp; </LABEL>
+                        <button class="btn btn-sm form-control"  id="add" type="button" value="Add" data-toggle="tooltip" data-placement="top" title="Add New Answer"/><i class="fa fa-plus"></i></button>
+                      </div>
+                      </div>
+                </FORM>
+                <form id="qForm" name="qForm">
+                    <div class="row">
+                    <div id="qgroup" class="form-group">
+                        <input type="hidden" value="" name="section" data-prefix="section" data-name="section" data-label="">
+                        <label class="control-label col-xs-1" for="qnum" id="qnum"></label>
+                        <input type="hidden" value="" name="qnum" data-prefix="qnum" data-name="qnum" data-label="">
+                        <label class="col-xs-11" for="question" id="question"></label>
+                        <input type="hidden" value="" name="question" data-prefix="question" data-name="question" data-label="">
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div id="answers" class="col-xs-offset-1 form-group">
+                    </div> 
+                    </div>
+                </form>
+
+            </div><!-- Modal body -->
+            <div class="modal-footer">
+                <button class="btn btn-success pull-left" id="create" type="button" value="Create" data-dismiss="">Create</button>
+                <button class="btn btn-danger pull-left" id="resetall" type="button" class="btn btn-primary btn-xs">reset</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div><!-- Modal footer -->
+          </div><!-- Modal content -->
+        </div>
+    </div><!-- #formTemplate -->
+    
+    <div id="editForm" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+              <div class="modal-header"></div>
+          </div>
+        </div>        
+    </div>
     @push('scripts')
     
     <script type="text/javascript">
+        var index = 0;
+        {{-- 
+            <!-- reassign javascript global object variable name from config file for later use -->
+        --}}
+        var ems = {{ config('javascript.js_namespace') }};
 	$.ajaxSetup({
 		headers: {
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		}
 	});
+    
+    function add(type, value, prefix, labeltext, foption, index) {
+        //Create an input type dynamically.
+        var element = document.createElement("input");
+
+        //Assign different attributes to the element.
+        element.setAttribute("type", type);
+        element.setAttribute("value", value);
+        element.setAttribute("name", prefix);
+        
+        element.setAttribute("data-prefix", prefix);
+        element.setAttribute("data-name", prefix + index);
+        element.setAttribute("data-label", labeltext);
+        element.setAttribute("class", prefix + index);
+
+        var label = document.createElement("label");
+        label.setAttribute("for", prefix);
+        label.setAttribute("data-label", prefix + index);
+        label.setAttribute("class", prefix + index + " control-label " + type);
+        
+        var del = document.createElement("button");
+        del.setAttribute("class", "del col-xs-1 " + prefix + index);
+        del.setAttribute("type", "button");
+        del.setAttribute("data-del", prefix + index);
+        del.innerHTML = "X";
+        
+        var answerdiv = document.getElementById("answers");
+
+        var br = document.createElement("br");
+        
+        var inputgroup = document.createElement("div");
+            inputgroup.setAttribute("class", "row form-group");
+            
+        var wrapper = document.createElement("div");
+        
+        //console.log(wrapper);
+
+        //Append the element in page (in span).
+        switch(type) {
+            case "radio":
+                answerdiv.appendChild(inputgroup);
+                inputgroup.appendChild(wrapper);
+                wrapper.setAttribute("class", type + " col-xs-10");
+                wrapper.appendChild(label);
+                label.appendChild(element);
+                label.innerHTML += " " + labeltext + " (" + value + ")";
+                inputgroup.appendChild(del);
+                break;
+            case "checkbox":
+                answerdiv.appendChild(inputgroup);
+                inputgroup.appendChild(wrapper);
+                wrapper.setAttribute("class", type + " col-xs-10");
+                wrapper.appendChild(label);
+                label.appendChild(element);
+                label.innerHTML += " " + labeltext + " (" + value + ")";
+                inputgroup.appendChild(del);
+                break;
+            case "textarea":
+                var textarea = document.createElement("textarea");
+                textarea.setAttribute("name", prefix + index);
+                textarea.setAttribute("data-prefix", prefix);
+                textarea.setAttribute("data-label", labeltext);
+                textarea.className += " col-xs-8 " + prefix + index;
+                label.className += " col-xs-2";
+                label.innerHTML += " " + labeltext + " ";
+                answerdiv.appendChild(inputgroup);
+                inputgroup.appendChild(label);
+                inputgroup.appendChild(textarea);
+                inputgroup.appendChild(del);
+
+                break;
+            case "select":
+                // get select element by id.
+                var selectbox = document.getElementById(prefix + "select");
+                // get div for select element
+                var selectdiv = document.getElementById(prefix + "div");
+
+                // create new div if selectdiv is null and assign ID attribute and class
+                if(null === selectdiv){
+                    selectdiv = document.createElement("div");
+                    selectdiv.setAttribute("class", "row form-group");
+                    selectdiv.setAttribute("id", prefix + "div");
+                }
+
+                // create new select element if null             
+                if(null === selectbox){                
+                    selectbox = document.createElement("select");
+                    selectbox.setAttribute("id", prefix + "select");
+                    selectbox.setAttribute("name", prefix + index);
+                    selectbox.setAttribute("data-prefix", prefix);                
+                    selectbox.setAttribute("data-label", labeltext);                
+                    selectbox.className += " input-sm col-xs-8";
+
+                    label.className += " col-xs-2";
+                    label.innerHTML += " " + labeltext + " ";
+
+                    selectdiv.appendChild(label);
+                    selectdiv.appendChild(selectbox);
+                    selectdiv.appendChild(del);
+
+                    answerdiv.appendChild(selectdiv);
+
+                }
+
+
+                var option = document.createElement("option");
+                console.log(selectbox);
+                option.setAttribute("value", value );
+                option.setAttribute("data-label", foption );
+                option.innerHTML = foption;
+                selectbox.appendChild(option);
+                break;
+            default:
+                answerdiv.appendChild(inputgroup);
+                inputgroup.appendChild(label);
+                label.className += " col-xs-2";
+                inputgroup.appendChild(wrapper);
+                element.className += " form-control";
+                wrapper.setAttribute("class", "col-xs-8");
+                wrapper.appendChild(element);
+                label.innerHTML += " " + labeltext + " ";
+                inputgroup.appendChild(del);
+                break;
+        }
+        
+        
+        
+       // foo.appendChild(br);
+
+    }
+
+    function createQuestion(form) {
+        var qna = {}, answers = {}, container;
+        $.ajaxSetup({
+                headers: {
+                        'X-URLHASH': ems.urlhash
+                }
+        });
+        if (typeof ajaxQURL === 'undefined') {
+		var ajaxQURL = ems.add_question_url;
+	}
+        
+            
+        console.log(form);
+        var j = 0, op = {};
+        for ( var i = 0; i < form.elements.length; i++ ) {
+           var e = form.elements[i]; //console.log(e);
+           var ename = e.getAttribute("data-prefix"); //console.log(e.type);
+           switch(e.type) {
+               case "hidden":
+                   qna[ename] =  e.getAttribute("value");
+                   break;
+               case "radio":                   
+                   e.setAttribute("name", ename + "radio");
+                   e.setAttribute("data-name", ename + j);
+                   answers[ename + j] = {   "type": e.getAttribute("type"),
+                                        "name" : e.getAttribute("name"),
+                                        "value" : e.getAttribute("value"),
+                                        "data-name" : e.getAttribute("data-name"),
+                                        "text" : e.getAttribute("data-label")
+                                    };
+                   j++;
+                   break;
+               //javascript form object is "select-one" for single selection selectbox
+               case "select-one":
+                   console.log(e);
+                   for(var o = 0; o < e.length; o++){
+                       answers[ename + j + "#" +e.options[o].value] = {
+                           "type" : "option",
+                           "value" : e.options[o].value,
+                           "name":e.options[o].innerHTML,
+                           "text" : e.options[o].getAttribute("data-label"),
+                           "optional" : e.getAttribute("data-label")
+                       } 
+                   }
+                    j++;
+                    break;
+               case "button":
+                    break;
+               default:                   
+                   e.setAttribute("name", ename + j);
+                   e.setAttribute("data-name", ename + j);
+                   //console.log(e.getAttribute("data-name"));
+                   answers[ename + j] = {   "type": e.getAttribute("type"),
+                                        "name": e.getAttribute("name"),
+                                        "value": e.getAttribute("value"),
+                                        "data-name": e.getAttribute("data-name"),
+                                        "text": e.getAttribute("data-label")
+                                    };
+                   j++;
+                   break;
+           }
+           
+           
+           
+        }
+        qna["answers"] = answers;
+
+        //send ajax request
+        $.ajax({
+                url    : ajaxQURL,
+                type   : 'POST',
+                dataType:"json",
+                data   : qna,
+                success: function (data) {
+                        if(data.success){
+                                $("#message").html('Sorted');
+                                $("#message").addClass('text-green');
+                        }else{
+                                $("#message").html('Something wrong');
+                                $("#message").addClass('text-red');
+                        }
+                }
+
+        });
+        // if no section or section value is 0, get "accordion" container
+        if(typeof qna.section == "undefined" || qna.section.value == ""){
+            container = document.getElementById("accordion");
+
+            // create new container if null.
+            if(null === container){
+                container = '<div class="panel-group" id="accordion"><span id="message"></span></div>';
+            }
+        }else{
+            // if section value exist, get container by section value.
+            container = document.getElementById("accordion" + qna.section.value);
+        }
+        //console.log(container);
+        console.log(JSON.stringify(qna));
+    }
+    
+    
 	if (typeof ajaxURL === 'undefined') {
 		var ajaxURL = ems.url;
 	}
 	$(document).ready(function ($) {
+            $( "#formTemplate" ).on("click", "#add", function(){                
+                var inputForm = document.getElementById("inputForm");
+                var fnum = inputForm.inputnum.value;
+                var fq = inputForm.inputq.value;
+                var ftype = inputForm.ftype.value;
+                var fprefix = inputForm.fprefix.value;
+                var fvalue = inputForm.fvalue.value;
+                var flabel = inputForm.flabel.value;
+                var foption = inputForm.foption.value;
+                
+                if( fnum == '' || fq == '' ) return;
+                add(ftype, fvalue, fprefix, flabel, foption, index);
+                index++;
+            }) 
+            .on("click", "#create", function(){
+                var inputForm = document.getElementById("inputForm");
+                var fnum = inputForm.inputnum.value;
+                var fq = inputForm.inputq.value;
+                if( fnum == '' || fq == '' ) return;
+                createQuestion(document.forms["qForm"]);
+            })
+            .on("click change", "#inputForm input[name='inputsect']", function(){
+                var sect = $(this).val();
+                if(sect !== ''){
+                    $("#qForm input[name='section']").val(sect);
+                }else{
+                    $("#qForm input[name='section']").val('');
+                }
+                console.log( $(this).val() );
+            }) 
+            .on("keyup change", "#inputForm input[name='inputnum']", function(){
+                var num = $(this).val();
+                if(num !== ''){
+                    $("#qnum").text(num + ' : ');
+                    $("#qForm input[name='qnum']").val(num);
+                    $("#inputForm input[name='fprefix']").val(num + "_a");
+                }else{
+                    $("#qnum").text('');
+                    $("#qForm input[name='qnum']").val('');
+                    $("#inputForm input[name='fprefix']").val('');
+                    //$("#inputForm").trigger("reset");
+                }
+                console.log( $(this).val() );
+            })            
+            .on("keyup change", "#inputForm input[name='inputq']", function(){
+                var question = $(this).val();
+                $("#question").text(question);
+                $("#qForm input[name='question']").val(question);
+                console.log( $(this).val() );
+            })
+            .on('click', "#resetall", function(){
+                $("#qnum").text('');
+                $("#question").text('');
+                $("#answers").html('');
+                $("#inputForm").trigger("reset");
+                $("#qForm").trigger("reset");
+            })
+            .on('change', '#ftype', function(){
+                if($("#ftype").val() == "select"){
+                    $("#optionlabel").removeClass("hide");
+                }else{
+                    $("#optionlabel").addClass("hide");
+                }
+            })
+            .on("click", ".del", function(){
+                //console.log("del clicked");
+                var self = $(this);
+                //element name to delete
+                var deldata = $(this).data("del");
+                //console.log(deldata);
+                $("." + deldata).remove();
+                //index--;
+            });
+            
+            $( "#launch" ).on('click', function(){
+                $("#inputForm").trigger("reset");
+                $("#qForm").trigger("reset");
+            });
+            
             $("#accordion").sortable({
 			cursor: 'move',
 			axis: 'y',

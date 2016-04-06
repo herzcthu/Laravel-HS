@@ -1,17 +1,21 @@
 <?php namespace App\Http\Controllers\Ajax;
 
 use App\Http\Controllers\Controller;
+use App\Locale;
 use App\Location;
 use App\Participant;
 use App\PLocation;
+use App\Question;
 use App\Repositories\Backend\Location\LocationContract;
 use App\Repositories\Backend\Participant\ParticipantContract;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
 use App\Repositories\Backend\PLocation\PLocationContract;
+use App\Repositories\Backend\Question\QuestionContract;
 use App\Repositories\Frontend\Result\ResultContract;
 use App\Result;
 use App\Translation;
 use DB;
+use Hash;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use yajra\Datatables\Facades\Datatables;
@@ -29,6 +33,8 @@ class AjaxController extends Controller
     protected $proles;
     
     protected $results;
+    
+    protected $question;
 
 
     public function __construct(
@@ -36,13 +42,15 @@ class AjaxController extends Controller
             ParticipantContract $participant,
             LocationContract $locations,
             RoleRepositoryContract $proles,
-            ResultContract $results) {
+            ResultContract $results,
+            QuestionContract $question) {
         $this->plocation = $plocation;
         $this->participant = $participant;
         $this->locations = $locations;
         $this->country = config('aio.country');
         $this->proles = $proles;
         $this->results = $results;
+        $this->question = $question;
     }
     
     public function sortQuestions($project, Request $request) {
@@ -53,7 +61,7 @@ class AjaxController extends Controller
                 foreach ($request->get('listid') as $qid) {
                     $search['id'] = $qid;
                     $data['sort'] = $i;
-                    $question = \App\Question::updateOrCreate($search, $data);
+                    $question = Question::updateOrCreate($search, $data);
                     $i++;
                 }
                 
@@ -66,6 +74,28 @@ class AjaxController extends Controller
 
 
 		
+    }
+    
+    public function newQuestion($project, Request $request){
+        if($request->ajax()){
+            $ajax = true;
+        }
+        $input = $request->all();
+        // get urlhash from request header
+        $urlhash = $request->header('X-URLHASH');
+        if(empty($urlhash)) {
+            return response()->json(array('success'=>false));
+        }else{
+            if (Hash::check($request->url(), $urlhash)) {
+                // url match with hash...
+                $question = $this->question->create($input, $project, $ajax);
+                
+                return response()->json(array('success'=>true, 'message'=>$question));
+            } else {
+                return response()->json(array('success'=>false));
+            }
+        }        
+        
     }
     
     public function updateTranslation(Request $request) {
@@ -85,7 +115,7 @@ class AjaxController extends Controller
                         //return $original; die();
                         //$original->translated()->delete();
                         foreach($translation as $lang => $string){
-                            $locale = \App\Locale::where('code', $lang)->first();
+                            $locale = Locale::where('code', $lang)->first();
                             $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $original->id]);
                             $child->translation = $string;
                             $child->original()->dissociate();                            
@@ -362,7 +392,7 @@ class AjaxController extends Controller
                     }
                 })
                 ->editColumn('cq', function ($model) use ($project){
-                    $q = \App\Question::find($model->section_id);
+                    $q = Question::find($model->section_id);
                     if(!is_null($q)){
                         return $q->question;
                     }else{
