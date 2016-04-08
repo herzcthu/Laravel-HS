@@ -18,6 +18,7 @@ use DB;
 use Hash;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use yajra\Datatables\Facades\Datatables;
 
 class AjaxController extends Controller
@@ -452,29 +453,119 @@ $projects = Project::select('*')
         dd($query);
          * 
          */
+        
+        DB::enableQueryLog();
         $participantsJoinQuery = Participant::select('*');
-        $resultsJoinQuery = \DB::statement(\DB::raw("SET @sql = NULL; "
-                . "SELECT GROUP_CONCAT(DISTINCT "
-                . "CONCAT('MAX(IF(`section_id` = ', `section_id`, ', section_id,NULL)) AS section_id', `section_id`)) "
-                . "INTO @sql FROM results; "
-                . "SET @sql = CONCAT('SELECT ID, ', @sql, ' FROM results GROUP BY resultable_id'); "
-                . "PREPARE stmt FROM @sql; "
-                . "EXECUTE stmt; "
-                //. "SELECT * from stmt;"
-                . ""));
-        dd($resultsJoinQuery);
-        $pcode = PLocation::select("*")
-                ->leftjoin(DB::raw("(". $participantsJoinQuery->toSql() .") p"), function($p){
-                    $p->on("p.pcode_id", "=", "pcode.primaryid");
+        $parameters = [
+            'project_id' => $project->id,
+            'org_id' => $project->org_id
+        ];
+        // get sections as columns for next query
+        $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT(\"MAX(IF(results.section_id = \",section_id,\", results.information, NULL)) AS s\", section_id)) AS sections  FROM results WHERE (project_id = $project->id);"));
+        
+        /**
+        $query = "SELECT pcode.pcode, pcode.state, pcode.district, pcode.township, pcode.village,";
+        $query .= "GROUP_CONCAT(DISTINCT CONCAT(p.name,\"|\", p.participant_id,\"|\", p.phones) ORDER BY p.name) AS observers,";
+        $query .= $column[0]->sections;
+        $query .= " FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = :org_id)) AS pcode ";
+        $query .= "LEFT JOIN participants as p ON p.pcode_id = pcode.primaryid "
+                ."LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) "
+                ."AND (rs.project_id = :project_id) GROUP BY pcode.pcode;";
+        $status = DB::select($query,$parameters);
+         * 
+         */
+        $project_id = $project->id;
+        $org_id = $project->org_id;
+        $status = Result::select([
+            'pcode.pcode', 
+            'pcode.state', 
+            'pcode.district', 
+            'pcode.township', 
+            'pcode.village',
+            'results.section_id',
+            'results.information',
+            'results.resultable_id',
+            DB::raw("GROUP_CONCAT(DISTINCT CONCAT(p.name,\"|\", p.participant_id,\"|\", p.phones) ORDER BY p.name) AS observers"),
+            DB::raw($column[0]->sections),            
+        ])
+                ->where('results.project_id', $project->id)
+                ->leftjoin('pcode',function($pcode) use ($org_id){
+                    $pcode->on('results.resultable_id','=','pcode.primaryid')
+                            ->where('pcode.org_id','=', $org_id);
                 })
-                ->leftjoin(DB::raw("(". $resultsJoinQuery->toSql() . ") r"), function($r){
-                    $r->on("r.resultable_id", "=", "pcode.primaryid");                    
-                })
-                ->groupBy('primaryid')
-                ->first();
-                dd($pcode);
-        return Datatables::of($pcode)
-                ->make(true);
+                ->leftjoin('participants as p', 'p.pcode_id','=','pcode.primaryid')
+                ->groupBy('pcode.pcode')->get();
+                
+                return Datatables::of($status)
+                        ->filter(function($instance) use ($request){
+                            if($request->has('pcode')){
+                                $code = $request->get('pcode');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['pcode'], $request->get('pcode')) ? true : false;
+                                });
+                            }
+                            if($request->has('region')){
+                                $code = $request->get('region');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['state'], $request->get('region')) ? true : false;
+                                });
+                            }
+                            if($request->has('township')){
+                                $code = $request->get('township');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['township'], $request->get('township')) ? true : false;
+                                });
+                            }
+                            if($request->has('station')){
+                                $code = $request->get('station');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['village'], $request->get('station')) ? true : false;
+                                });
+                            }
+                            if($request->has('phone')){
+                                $code = $request->get('phone');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    //dd($row->toArray());
+                                    return Str::contains($row['observers'], $request->get('phone')) ? true : false;
+                                });
+                            }
+                            
+                            if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
+                                $section = "s".$request->get('section'); // array key will be s0,s1,s2 etc..
+                                $status = $request->get('status');
+                                if($status == 'missing'){
+                                    $instance->collection = $instance->collection->filter(function ($row) use ($request, $section) {
+                                        return Str::is($row[$section], null) ? true : false;
+                                    });
+                                }else{
+                                   $instance->collection = $instance->collection->filter(function ($row) use ($request, $section, $status) {
+                                        return Str::contains($row[$section], $status) ? true : false;
+                                    });
+                                }
+                            }
+                        })
+                        ->make(true);
+            /**    
+                    
+                    if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
+                        $section = $request->get('section');
+                        $status = $request->get('status');
+                        if($status == 'missing'){
+                            $datatable->whereNull('results.section_id');
+                        }else{
+                           $datatable->groupBy('results.information')->groupBy('results.section_id')
+                                   ->having('results.information','=', $status)
+                                   ->having('results.section_id','=', $section)
+                                   ;
+                        }
+                    }
+                    
+                return $datatable->make(true);
+             * 
+             * @param type $project
+             * @param Request $request
+             * @return type
+             */
     }
     
     public function getAllStatusBak($project, Request $request){

@@ -182,12 +182,26 @@
                 } ),
                 deferRender: true,
                 "columnDefs": [
-                    { "orderable": false, "targets": 0 },
-                    { "orderable": false, "targets": 1 },
-                    { "orderable": false, "targets": 2 },
-                    { "orderable": false, "targets": 3 },
-                    { "orderable": false, "targets": [ 4 ], "width": "300px" },
-                    { "orderable": false, "targets": 5 }
+                    { "orderable": false, "targets": 0, "data": null, },
+                    { "orderable": false, "targets": 1, "data": null, },
+                    { "orderable": false, "targets": 2, "data": null, },
+                    { "orderable": false, "targets": 3, "data": null, },
+                    { "orderable": false, "targets": [ 4 ], "width": "200px", "data": null, },
+                    @foreach($project->sections as $k => $section)
+                    // add 5 to $k because section start from column index 5 in table
+                    { "orderable": false, "targets": {{$k + 5}}, "data": "section{{$k}}",
+                            "render": function ( data, type, full, meta ) {
+                                switch(data){
+                                    case null:
+                                        return '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
+                                        break;
+                                    default:
+                                        return '<img src="{{ asset('img/') }}/' + data + '.png" title="'+ data +'" class="status-icon">';
+                                        break;
+                                }
+                            }
+                    },
+                    @endforeach                    
                   ],
                 columns: [  
                     { data: 'pcode', name: 'pcode' },
@@ -196,49 +210,7 @@
                     { data: 'village', name: 'station' },
                     { data: 'observers', name: 'observers'},
                     @foreach($project->sections as $k => $section)
-                    //{ data: 'results.{{$k}}.information', name: 'section{{$k}}'},
-                    
-                    { data: function(row, type, val, meta){
-                        var status{{$k}};
-                        var pc = row.participants.length;
-                        var rc = row.results.length;
-                        var i = 0;
-                        var r = 0;
-                            var sections = row.results.reduce(function(sec, cur){ 
-                                    sec[cur.section_id] = sec[cur.section_id] || [];
-                                    sec[cur.section_id].push(cur);
-                                    return sec;
-                                }, {});
-                            
-                            if(typeof sections[{{$k}}] != "undefined"){ //console.log(sections[{{$k}}][0].section_id);
-                                $.each(sections[{{$k}}], function(section, results){
-                                    if(typeof status{{$k}} == "undefined"){
-                                        status{{$k}} = '';
-                                    }
-                                    //console.log(results);
-                                    //if(typeof results[{{$k}}] == "undefined"){
-                                    //    return;
-                                    //}
-                                    @if(isset($section->report))
-                                        if(results.results.Note.Note_a1 != ""){
-                                        status{{$k}} += '<img src="{{ asset('img/') }}/comment.png" title="'+ results.results.Note.Note_a1 +'" class="status-icon">';
-                                        }else{
-                                        status{{$k}} += '<img src="{{ asset('img/') }}/missing.png" title="text missing" class="status-icon">';
-                                        }
-                                    @else
-                                        status{{$k}} += '<img src="{{ asset('img/') }}/' + results.information + '.png" title="'+ results.information +'" class="status-icon">';
-                                    @endif
-                                });
-                            }else{
-                                    if(typeof status{{$k}} == "undefined"){
-                                        status{{$k}} = '';
-                                    }
-                                    status{{$k}} += '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
-                            }
-                            
-                        return status{{$k}};
-                    }, name: 'section{{$k}}', defaultContent: "<i>Not set</i>"},
-                    
+                    { data: 's{{$k}}', name: 'section{{$k}}'},
                     @endforeach
                 ]
             });
