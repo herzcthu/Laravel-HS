@@ -237,7 +237,7 @@ return [
         /**
          * https://github.com/yajra/laravel-datatables/wiki/Installation
          */
-        yajra\Datatables\DatatablesServiceProvider::class,
+        Yajra\Datatables\DatatablesServiceProvider::class,
         
         /**
          * https://github.com/barryvdh/laravel-ide-helper
@@ -321,7 +321,7 @@ return [
         
         'FormAutocomplete'   => Sukohi\FormAutocomplete\Facades\FormAutocomplete::class,
         
-        'Datatables'      => yajra\Datatables\Datatables::class,
+        'Datatables'      => Yajra\Datatables\Datatables::class,
         
         'Translation' => Stevebauman\Translation\Facades\Translation::class,
 

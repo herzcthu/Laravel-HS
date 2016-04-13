@@ -19,7 +19,7 @@ use Hash;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use yajra\Datatables\Facades\Datatables;
+use Yajra\Datatables\Facades\Datatables;
 
 class AjaxController extends Controller
 {
@@ -183,7 +183,72 @@ class AjaxController extends Controller
          */
         return response()->json($result);
     }
-    public function getResponse($project, Request $request) {
+    
+    public function getResponse($project , Request $request) {
+        $column = DB::select(DB::raw("SELECT "
+                . "GROUP_CONCAT(DISTINCT "
+                . "CONCAT("
+                . "\"SUM(IF(section_id = \",section_id,\" AND information = '\",information,\"', 1, 0)) AS s\", section_id,information "
+                . ")"   
+                . ") AS sections,  "
+                . "GROUP_CONCAT(DISTINCT "
+                . "CONCAT("
+                . "\"COUNT(DISTINCT pcode.primaryid) - SUM(IF(section_id = \",section_id,\", 1, 0)) AS s\", section_id,\"missing\" "
+                . ")) AS sectiontotal "
+                . "FROM results WHERE (project_id = $project->id);"));
+        //dd($column[0]);
+        $project_id = $project->id;
+        $org_id = $project->org_id;
+        $responses = PLocation::select([
+            //'pcode.pcode', 
+            'pcode.state', 
+            'pcode.district', 
+            'pcode.township', 
+            'pcode.village',
+            'pcode.org_id',
+            DB::raw('COUNT(DISTINCT pcode.primaryid) AS total'),
+            DB::raw($column[0]->sections),
+            DB::raw($column[0]->sectiontotal),
+            ])
+                ->where('results.project_id', $project->id)
+                ->leftjoin('results',function($results) use ($org_id){
+                    $results->on('results.resultable_id','=','pcode.primaryid')
+                            ->where('pcode.org_id','=', $org_id);
+                });
+            
+            
+            $datatables =  Datatables::of($responses);
+            if($request->has('area')){
+                $area = $request->get('area');
+                $datatables->groupBy('pcode.'.$area);
+            } else {
+                $datatables->groupBy('pcode.org_id');
+            }
+            $datatables->editColumn('state', function ($modal) use ($project, $request){
+                            if($request->has('area')){
+                                $area = $request->get('area');
+                                switch ($area) {
+                                    case 'state':
+                                        return $modal->state;
+                                        break;
+                                    case 'township':
+                                        return $modal->township;
+                                        break;
+                                    default:
+                                        return;
+                                        break;
+                                }
+                                
+                            } else {
+                                return "Total";
+                            }
+                        });
+            if ($township = $request->get('township')) {
+                $datatables->where('pcode.township', 'like', "$township%"); // additional pcode.township search
+            }        
+            return $datatables->make(true);
+    }
+    public function getResponseBK($project, Request $request) {
         $total_forms = PLocation::where('org_id', $project->org_id)->count();
         $total_results = Result::where('project_id', $project->id)->count();
         $locations = PLocation::where('org_id', $project->org_id)->groupBy('state')->get();
@@ -421,41 +486,14 @@ class AjaxController extends Controller
                 ->make(true);
     }
     
-
+    /**
+     * 
+     * @param Project $project
+     * @param Request $request
+     * @return string
+     */
     public function getAllStatus($project, Request $request) {
-        /**
-         * 
-         *
-        $issuesJoinQuery = Issue::select('project_id', DB::raw('COUNT(*) AS issue_count'))
-    ->whereRaw('created_at >= curdate()-7')
-    ->groupBy('project_id');
-
-$projects = Project::select('*')
-    ->join(DB::raw('(' . $issuesJoinQuery->toSql() . ') i'), function ($join)
-        {
-            $join->on('i.project_id', '=', 'projects.id');
-        })
-    ->orderBy('issue_count', 'desc')
-    ->take(5)
-    ->get();
-         * 
-         */
-        /**
         
-        $query = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
-                . "p.name, p.phones,"
-                . "rs.section_id,rs.results,rs.information,rs.updated_at "
-                . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode "
-                . "LEFT JOIN participants as p ON p.pcode_id = pcode.primaryid "
-                . "LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
-                . "GROUP BY pcode.pcode "
-                . "ORDER BY pcode.pcode"));
-        dd($query);
-         * 
-         */
-        
-        DB::enableQueryLog();
-        $participantsJoinQuery = Participant::select('*');
         $parameters = [
             'project_id' => $project->id,
             'org_id' => $project->org_id
@@ -482,10 +520,9 @@ $projects = Project::select('*')
             'pcode.district', 
             'pcode.township', 
             'pcode.village',
-            'results.section_id',
             'results.information',
             'results.resultable_id',
-            DB::raw("GROUP_CONCAT(DISTINCT CONCAT(p.name,\"|\", p.participant_id,\"|\", p.phones) ORDER BY p.name) AS observers"),
+            DB::raw('GROUP_CONCAT(DISTINCT "\"",p.name,"\":",CONCAT("{\"name\":\"",p.name,"\",\"id\":\"", p.participant_id,"\",\"phones\":", p.phones, "}") ORDER BY p.name) AS observers'),
             DB::raw($column[0]->sections),            
         ])
                 ->where('results.project_id', $project->id)
@@ -539,33 +576,32 @@ $projects = Project::select('*')
                                     });
                                 }else{
                                    $instance->collection = $instance->collection->filter(function ($row) use ($request, $section, $status) {
-                                        return Str::contains($row[$section], $status) ? true : false;
+                                        return Str::is($row[$section], $status) ? true : false;
                                     });
                                 }
                             }
                         })
-                        ->make(true);
-            /**    
-                    
-                    if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
-                        $section = $request->get('section');
-                        $status = $request->get('status');
-                        if($status == 'missing'){
-                            $datatable->whereNull('results.section_id');
-                        }else{
-                           $datatable->groupBy('results.information')->groupBy('results.section_id')
-                                   ->having('results.information','=', $status)
-                                   ->having('results.section_id','=', $section)
-                                   ;
-                        }
-                    }
-                    
-                return $datatable->make(true);
-             * 
-             * @param type $project
-             * @param Request $request
-             * @return type
-             */
+                        ->editColumn('pcode', function ($modal) use ($project){
+                            //if($modal->results){
+                            return $modal->pcode."<a href='".route('data.project.results.edit', [$project->id, $modal->resultable_id])."' title='Edit'> <i class='fa fa-edit'></i></a>";
+                            //}
+                        })
+                        ->editColumn('state', function ($modal) use ($project){
+                            $state = (!is_null($modal->state))? $modal->state:'';
+                            return _t($state);
+                        })
+                        ->editColumn('township', function ($modal) use ($project){
+                            $township = (!is_null($modal->township))? $modal->township:'';
+                            return _t($township);
+                        })
+                        ->editColumn('village', function ($modal) use ($project){
+                            $village = (!is_null($modal->village))? $modal->village:'';
+                            return _t($village);
+                        })
+                        ->editColumn('observers', function ($modal) use ($project) {
+                            return json_decode("{" . $modal->observers . "}", true);
+                        })
+                        ->make(true);            
     }
     
     public function getAllStatusBak($project, Request $request){
@@ -684,111 +720,6 @@ $projects = Project::select('*')
                 })
                 ->make(true);
         return $datatable; 
-    }
-    
-    public function getAllStatusBK($project, Request $request)
-    { //dd($request->all());
-        $start = $request->get('start');
-        $length = $request->get('length');
-        if($request->get('code')){
-            $pcode = $request->get('code');
-            $located = PLocation::where('org_id', $project->organization->id )
-                    ->where('pcode',$pcode)
-                    ->orNotWithResults()
-                    ->OfWithAndWhereHas('results',function($query) use ($project){
-                        $query->where('project_id', $project->id);
-                    })
-                    ->with('participants')
-                    ->get();
-        
-        }elseif($request->get('region')){
-            $state = $request->get('region');
-            
-            $located = PLocation::where('org_id', $project->organization->id )
-                    ->where('state',$state)
-                    ->orNotWithResults()
-                    ->OfWithAndWhereHas('results',function($query) use ($project){
-                        $query->where('project_id', $project->id);
-                    })
-                    ->with('participants')->get();
-        }elseif($request->get('district')){
-            $district = $request->get('district');
-            $located = PLocation::where('org_id', $project->organization->id )
-                    ->where('district',$district)
-                    ->orNotWithResults()
-                    ->OfWithAndWhereHas('results',function($query) use ($project){
-                        $query->where('project_id', $project->id);
-                    })
-                    ->with('participants')->get();
-        }elseif($request->get('station')){
-            $search_key = $request->get('station');
-            $located = PLocation::where('org_id', $project->organization->id )
-                    ->where('village',$search_key)
-                    ->orNotWithResults()
-                    ->OfWithAndWhereHas('results',function($query) use ($project){
-                        $query->where('project_id', $project->id);
-                    })
-                    ->orderBy('village')
-                    ->with('participants')->get();
-        }elseif($request->get('section') >= 0){
-            $section = $request->get('section');
-            $search_key = $request->get('status');
-            if($search_key == 'missing'){
-
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
-                        $query->where('project_id', $project->id)->where('section_id', (int)$section)
-                                ->whereNotIn('information',['complete', 'incomplete', 'error']);
-
-                })->orNotWithResults()->with('participants')->get();
-            }else{
-                $located = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project, $section, $search_key){
-                        $query->where('project_id', $project->id)->where('information', $search_key)->where('section_id', (int)$section);
-
-                })->with('participants')->with('answers')->get();
-            }
-        }else{
-            
-        }
-        //dd($search_key);
-        if(isset($search_key)){
-            $locations = $located;
-            $sections = $project->sections;
-        }else{
-            $results = $project->results;
-            $sections = $project->sections;
-            $locations = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project){
-                        $query->where('project_id', $project->id);
-
-                })->orNotWithResults()->with('participants')->get();
-        }
-        
-        $datatable = Datatables::of($locations)
-                ->editColumn('code', function ($model) use ($project){
-                    //if($model->results){
-                    return $model->pcode."<a href='".route('data.project.results.edit', [$project->id, $model->primaryid])."' title='Edit'> <i class='fa fa-edit'></i></a>";
-                    //}
-                })
-                ->editColumn('state', function ($model) use ($project){
-                    $state = (!is_null($model->state))? $model->state:'';
-                    return _t($state);
-                })
-                ->editColumn('district', function ($model) use ($project){
-                    $district = (!is_null($model->district))? $model->district:'';
-                    return _t($district);
-                })
-                ->editColumn('village', function ($model) use ($project){
-                    $village = (!is_null($model->village))? $model->village:'';
-                    return _t($village);
-                })
-                ->editColumn('observers', function ($model) {
-                    $p = '';
-                    foreach($model->participants as $participant){
-                        $p .= $participant->name.'('.$participant->participant_id.') <br>';
-                    }
-                    return $p;
-                })
-                ->make(true);
-        return $datatable;
     }
     
     public function formValidatePerson($project, $person, Request $request) {

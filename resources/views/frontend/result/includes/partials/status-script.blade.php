@@ -176,30 +176,50 @@
                 serverSide: true,
                 searching: false,
                 pageLength: 10,
+                buttons: [
+                    'csv', 'excel', 'pdf', 'print', 'reset', 'reload'
+                ],
                 ajax: $.fn.dataTable.pipeline( {
                     url: ajax,
                     pages: 5 // number of pages to cache
                 } ),
                 deferRender: true,
                 "columnDefs": [
-                    { "orderable": false, "targets": 0, "data": null, },
-                    { "orderable": false, "targets": 1, "data": null, },
-                    { "orderable": false, "targets": 2, "data": null, },
-                    { "orderable": false, "targets": 3, "data": null, },
-                    { "orderable": false, "targets": [ 4 ], "width": "200px", "data": null, },
+                    { "orderable": false, "targets": 0, "data": null, }, // Pcode column
+                    { "orderable": false, "targets": 1, "data": null, }, // State column
+                    { "orderable": false, "targets": 2, "data": null, }, // Township column
+                    { "orderable": false, "targets": 3, "data": null, }, // Station or village column
+                    // To Do: need to format observer information
+                    { "orderable": false, "targets": [ 4 ], "width": "200px", "data": "observers",
+                        "render": function ( data, type, full, meta) {
+                            var observer = "<dl>";
+                            for (var key in data) {
+                                if (data.hasOwnProperty(key)) {
+                                observer += "<dt>" +data[key].name+ "</dt>";
+                                observer += "<dl>ID: " +data[key].id+ "</dl>";
+                                observer += "<dl>Mobile: " +data[key].phones.mobile+ "</dl>";
+                                if(data[key].phones.emergency != 0){
+                                observer += "<dl>Emergency: " +data[key].phones.emergency+ "</dl>";
+                                }
+                                }
+                            }
+                            observer += "</dl>";
+                            return observer;
+                        }
+                    }, // observer column
                     @foreach($project->sections as $k => $section)
                     // add 5 to $k because section start from column index 5 in table
                     { "orderable": false, "targets": {{$k + 5}}, "data": "section{{$k}}",
-                            "render": function ( data, type, full, meta ) {
-                                switch(data){
-                                    case null:
-                                        return '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
-                                        break;
-                                    default:
-                                        return '<img src="{{ asset('img/') }}/' + data + '.png" title="'+ data +'" class="status-icon">';
-                                        break;
-                                }
+                        "render": function ( data, type, full, meta ) {
+                            switch(data){
+                                case null:
+                                    return '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
+                                    break;
+                                default:
+                                    return '<img src="{{ asset('img/') }}/' + data + '.png" title="'+ data +'" class="status-icon">';
+                                    break;
                             }
+                        }
                     },
                     @endforeach                    
                   ],
