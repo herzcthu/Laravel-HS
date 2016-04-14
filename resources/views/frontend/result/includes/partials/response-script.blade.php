@@ -157,7 +157,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}complete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                            return '<a href="'+filter+'?section={{$k}}&status=complete" target="_blank">' +data+'</a>';
+                            return '<a class="text-green" href="'+filter+'?section={{$k}}&status=complete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -167,7 +167,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 2}}, "data": "s{{$k}}incomplete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                            return '<a href="'+filter+'?section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
+                            return '<a class="text-orange" href="'+filter+'?section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -177,7 +177,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 3}}, "data": "s{{$k}}error", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                            return '<a href="'+filter+'?section={{$k}}&status=error" target="_blank">' +data+'</a>';
+                            return '<a class="text-yellow" href="'+filter+'?section={{$k}}&status=error" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -187,7 +187,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 4}}, "data": "s{{$k}}missing", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                            return '<a href="'+filter+'?section={{$k}}&status=missing" target="_blank">' +data+'</a>';
+                            return '<a class="text-red" href="'+filter+'?section={{$k}}&status=missing" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -203,7 +203,9 @@
                     { data: 's{{$k}}error', name: 's{{$k}}error',"defaultContent": "0" },
                     { data: 's{{$k}}missing', name: 's{{$k}}missing',"defaultContent": "0" },
                     @endforeach
-                    { data: 'total', name: 'total',"defaultContent": "0"},
+                    { data: function(row, type, val, meta){ 
+                        return '<a href="'+filter+'" target="_blank">' +row.total+'</a>';
+                    }, name: 'total',"defaultContent": "0"},
                 ]
             });
             
@@ -229,7 +231,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}complete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
+                                return '<a class="text-green" href="'+filter+'?region='+full.state+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -238,7 +240,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 2}}, "data": "s{{$k}}incomplete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
+                                return '<a class="text-orange" href="'+filter+'?region='+full.state+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -247,7 +249,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 3}}, "data": "s{{$k}}error", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
+                                return '<a class="text-yellow" href="'+filter+'?region='+full.state+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -256,7 +258,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 4}}, "data": "s{{$k}}missing", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
+                                return '<a class="text-red" class="text-red" href="'+filter+'?region='+full.state+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -272,7 +274,9 @@
                     { data: 's{{$k}}error', name: 's{{$k}}error',"defaultContent": "0" },
                     { data: 's{{$k}}missing', name: 's{{$k}}missing',"defaultContent": "0" },
                     @endforeach
-                    { data: 'total', name: 'total',"defaultContent": "0"},
+                    { data: function(row, type, val, meta){ 
+                        return '<a href="'+filter+'?region='+row.state+'" target="_blank">' +row.total+'</a>';
+                    }, name: 'total',"defaultContent": "0"},
                 ]
             });
             
@@ -298,34 +302,34 @@
                     { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}complete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
+                                return '<a class="text-green" href="'+filter+'?township='+full.township+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
                         }
                     },
-                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}incomplete", 
+                    { "orderable": false, "targets": {{($k * 4) + 2}}, "data": "s{{$k}}incomplete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
+                                return '<a class="text-orange" href="'+filter+'?township='+full.township+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
                         }
                     },
-                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}error", 
+                    { "orderable": false, "targets": {{($k * 4) + 3}}, "data": "s{{$k}}error", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
+                                return '<a class="text-yellow" href="'+filter+'?township='+full.township+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
                         }
                     },
-                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}missing", 
+                    { "orderable": false, "targets": {{($k * 4) + 4}}, "data": "s{{$k}}missing", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
+                                return '<a class="text-red" href="'+filter+'?township='+full.township+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -342,7 +346,9 @@
                     { searchable: false, data: 's{{$k}}error', name: 's{{$k}}error',"defaultContent": "0" },
                     { searchable: false, data: 's{{$k}}missing', name: 's{{$k}}missing',"defaultContent": "0" },
                     @endforeach
-                    { searchable: false, data: 'total', name: 'total',"defaultContent": "0"},
+                    { searchable: false, data: function(row, type, val, meta){ 
+                        return '<a href="'+filter+'?township='+row.township+'" target="_blank">' +row.total+'</a>';
+                    }, name: 'total',"defaultContent": "0"},
                 ]
             });
             
