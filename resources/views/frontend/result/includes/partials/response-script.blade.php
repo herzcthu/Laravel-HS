@@ -298,7 +298,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}complete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
+                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -307,7 +307,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}incomplete", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
+                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -316,7 +316,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}error", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
+                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
@@ -325,7 +325,7 @@
                     { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}missing", 
                         "render": function ( data, type, full, meta ) {
                             if(typeof data != 'undefined'){
-                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
+                                return '<a href="'+filter+'?township='+full.township+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
                             }else{
                                 return data;
                             }
