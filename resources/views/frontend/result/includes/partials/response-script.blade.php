@@ -145,6 +145,56 @@
                 stateSave: true,
                 deferRender: true,
                 ajax: ajax,
+                columnDefs: [
+                    { "orderable": false, "targets": 0, "data": null, }, // Total column
+                    @foreach($sections as $k => $section)
+                    /**
+                     *  $k + 1 = current section column group
+                     *  if $k = 0; 1st section column in 1st group = 1;
+                     *  if $k = 1; 1st section column in 2nd group = 5;
+                     *  {{($k * 4) + 1 }}
+                     */
+                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}complete", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                            return '<a href="'+filter+'?section={{$k}}&status=complete" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    // {{($k * 4) + 2}}
+                    { "orderable": false, "targets": {{($k * 4) + 2}}, "data": "s{{$k}}incomplete", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                            return '<a href="'+filter+'?section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    // {{($k * 4) + 3 }}
+                    { "orderable": false, "targets": {{($k * 4) + 3}}, "data": "s{{$k}}error", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                            return '<a href="'+filter+'?section={{$k}}&status=error" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    // {{($k * 4) + 4 }}
+                    { "orderable": false, "targets": {{($k * 4) + 4}}, "data": "s{{$k}}missing", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                            return '<a href="'+filter+'?section={{$k}}&status=missing" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    @endforeach
+                ],
                 columns: [
                     { data: 'state', name: 'township'},
                     @foreach($sections as $k => $section)
@@ -172,6 +222,48 @@
                         "area":"state"
                     }
                 },
+                columnDefs: [
+                    { "orderable": false, "targets": 0, "data": null, }, // Total column
+                    @foreach($sections as $k => $section)
+                    // Column start from {{ $k + 1 }}
+                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}complete", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    { "orderable": false, "targets": {{($k * 4) + 2}}, "data": "s{{$k}}incomplete", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    { "orderable": false, "targets": {{($k * 4) + 3}}, "data": "s{{$k}}error", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    { "orderable": false, "targets": {{($k * 4) + 4}}, "data": "s{{$k}}missing", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.state+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    @endforeach
+                ],
                 columns: [
                     { data: 'state', name: 'state'},
                     @foreach($sections as $k => $section)
@@ -199,6 +291,49 @@
                         area : "township"
                     }
                 },
+                columnDefs: [
+                    { "orderable": false, "targets": 0, "data": null, }, // Total column
+                    @foreach($sections as $k => $section)
+                    // Column start from {{ $k + 1 }}
+                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}complete", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=complete" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}incomplete", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=incomplete" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}error", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=error" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    { "orderable": false, "targets": {{($k * 4) + 1}}, "data": "s{{$k}}missing", 
+                        "render": function ( data, type, full, meta ) {
+                            if(typeof data != 'undefined'){
+                                return '<a href="'+filter+'?region='+full.township+'&section={{$k}}&status=missing" target="_blank">' +data+'</a>';
+                            }else{
+                                return data;
+                            }
+                        }
+                    },
+                    @endforeach
+                    { "orderable": false, "targets": 0, "data": null, }, // Total column
+                ],
                 columns: [
                     { data: 'township', name: 'township'},
                     @foreach($sections as $k => $section)

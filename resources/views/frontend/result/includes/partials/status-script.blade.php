@@ -184,7 +184,7 @@
                     pages: 5 // number of pages to cache
                 } ),
                 deferRender: true,
-                "columnDefs": [
+                columnDefs: [
                     { "orderable": false, "targets": 0, "data": null, }, // Pcode column
                     { "orderable": false, "targets": 1, "data": null, }, // State column
                     { "orderable": false, "targets": 2, "data": null, }, // Township column
