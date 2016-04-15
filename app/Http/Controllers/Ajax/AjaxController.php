@@ -199,18 +199,23 @@ class AjaxController extends Controller
         //dd($column[0]);
         $project_id = $project->id;
         $org_id = $project->org_id;
-        $responses = PLocation::select([
+        $query = [
             //'pcode.pcode', 
             'pcode.state', 
             'pcode.district', 
             'pcode.township', 
             'pcode.village',
             'pcode.org_id',
-            DB::raw('COUNT(DISTINCT pcode.primaryid) AS total'),
-            DB::raw($column[0]->sections),
-            DB::raw($column[0]->sectiontotal),
-            ])
-                ->where('results.project_id', $project->id)
+            DB::raw('COUNT(DISTINCT pcode.primaryid) AS total')
+            ];
+        if(!empty($column[0]->sections)){
+            $query[] = DB::raw($column[0]->sections);
+        }
+        if(!empty($column[0]->sectiontotal)){
+            $query[] = DB::raw($column[0]->sectiontotal);
+        }
+        $responses = PLocation::select($query)
+                ->where('pcode.org_id', $org_id)
                 ->leftjoin('results',function($results) use ($org_id){
                     $results->on('results.resultable_id','=','pcode.primaryid')
                             ->where('pcode.org_id','=', $org_id);
@@ -499,8 +504,8 @@ class AjaxController extends Controller
             'org_id' => $project->org_id
         ];
         // get sections as columns for next query
-        $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT(\"MAX(IF(results.section_id = \",section_id,\", results.information, NULL)) AS s\", section_id)) AS sections  FROM results WHERE (project_id = $project->id);"));
-        
+        //$column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT(\"MAX(IF(results.section_id = \",section_id,\", results.information, NULL)) AS s\", section_id)) AS sections  FROM results WHERE (project_id = $project->id);"));
+        $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(results.section_id = ',results.section_id,', results.information, NULL)) AS s', results.section_id)) AS sections  FROM results WHERE (results.project_id = $project->id);"));
         /**
         $query = "SELECT pcode.pcode, pcode.state, pcode.district, pcode.township, pcode.village,";
         $query .= "GROUP_CONCAT(DISTINCT CONCAT(p.name,\"|\", p.participant_id,\"|\", p.phones) ORDER BY p.name) AS observers,";
@@ -512,26 +517,27 @@ class AjaxController extends Controller
         $status = DB::select($query,$parameters);
          * 
          */
-        $project_id = $project->id;
-        $org_id = $project->org_id;
-        $status = Result::select([
+        $query = ['pcode.primaryid',
             'pcode.pcode', 
             'pcode.state', 
             'pcode.district', 
             'pcode.township', 
-            'pcode.village',
-            'results.information',
-            'results.resultable_id',
-            DB::raw('GROUP_CONCAT(DISTINCT "\"",p.name,"\":",CONCAT("{\"name\":\"",p.name,"\",\"id\":\"", p.participant_id,"\",\"phones\":", p.phones, "}") ORDER BY p.name) AS observers'),
-            DB::raw($column[0]->sections),            
-        ])
-                ->where('results.project_id', $project->id)
-                ->leftjoin('pcode',function($pcode) use ($org_id){
-                    $pcode->on('results.resultable_id','=','pcode.primaryid')
-                            ->where('pcode.org_id','=', $org_id);
-                })
-                ->leftjoin('participants as p', 'p.pcode_id','=','pcode.primaryid')
-                ->groupBy('pcode.pcode')->get();
+            'pcode.village'];
+        $query[] = DB::raw('GROUP_CONCAT(DISTINCT "\"",p.name,"\":",CONCAT("{\"name\":\"",p.name,"\",\"id\":\"", p.participant_id,"\",\"phones\":", p.phones, "}") ORDER BY p.name) AS observers');
+        if(!empty($column[0]->sections)){
+            $query[] = DB::raw($column[0]->sections);
+        }
+        
+        $project_id = $project->id;
+        $org_id = $project->org_id;
+        $status = PLocation::select($query)
+                ->where('pcode.org_id', $org_id)
+                ->leftjoin('participants as p', 'pcode.primaryid','=','p.pcode_id')
+                ->leftjoin('results',function($pcode) use ($project_id){
+                    $pcode->on('pcode.primaryid','=','results.resultable_id')
+                            ->where('results.project_id','=', $project_id);
+                })                
+                ->groupBy('pcode.primaryid')->get();
                 
                 return Datatables::of($status)
                         ->filter(function($instance) use ($request){

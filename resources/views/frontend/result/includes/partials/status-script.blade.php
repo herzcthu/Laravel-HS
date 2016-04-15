@@ -211,13 +211,18 @@
                     // add 5 to $k because section start from column index 5 in table
                     { "orderable": false, "targets": {{$k + 5}}, "data": "section{{$k}}",
                         "render": function ( data, type, full, meta ) {
-                            switch(data){
-                                case null:
-                                    return '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
-                                    break;
-                                default:
-                                    return '<img src="{{ asset('img/') }}/' + data + '.png" title="'+ data +'" class="status-icon">';
-                                    break;
+                            if(typeof data == 'undefined'){
+                                return '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
+                                        
+                            }else{
+                                switch(data){
+                                    case null:
+                                        return '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
+                                        break;
+                                    default:
+                                        return '<img src="{{ asset('img/') }}/' + data + '.png" title="'+ data +'" class="status-icon">';
+                                        break;
+                                }
                             }
                         }
                     },
