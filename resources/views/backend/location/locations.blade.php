@@ -53,6 +53,7 @@
         
         <div class="button col-xs-4">
         <a href="{{route('admin.locations.import')}}" class="btn btn-primary">Import</a>
+        <a href="{{route('admin.locations.create')}}" class="btn btn-primary">Create</a>
         </div>
     </div>
 </div>

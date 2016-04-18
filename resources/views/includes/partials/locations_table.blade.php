@@ -9,6 +9,10 @@
     'state' => _t('State')
     ]
     )
+    ->modify('pcode', function($plocations){
+    $link = ' <a href="'.route("admin.locations.edit", $plocations->id).'"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+        return $plocations->pcode. $link;
+    })
     
     ->render('includes.partials.laravel-5-table');
             

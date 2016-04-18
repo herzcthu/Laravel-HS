@@ -19,61 +19,45 @@
 ?>
 @section('after-scripts-end')
 <script type="text/javascript">
-//console.log(ems.index);
 (function ($) {
     $(document).ready(function() {
-          $( "#location" ).autocomplete({
-            source: "{!! route('ajax.locations.searchname') !!}",
-            //minLength: 2,
-            select: function( event, result ) {                
-              $.each(result, function(key, value){
-                  $('#location_id').val(value.id);
-                    //$.each(value, function(index, value){
-                        //console.log( index + ": " + value );
-                    //});
-                });
-            }
+          var area = {};
+          $(".location").each(function(index){
+              var key = $(this).attr('name');
+              var val = $(this).val();
+              area[key] = val;
           });
-      });
-    
-    $(document).ready(function() {   
-    //var index = ems.index;
-    var index = 1;
-    $('#duplicatedForm')
-        .on('click', '.addButton', function() {
-            index++;
-            
-            var $template = $('#formTemplate'),
-                $clone    = $template
-                                .clone()
-                                .removeClass('hide')
-                                .removeAttr('id')
-                                .attr({"data-index": index, "id": 'answer_' + index})
-                                .appendTo('#duplicatedForm');
-                        
-            // Update the name attributes
-            //$clone
-            //    .find('[name="text"]').attr('name', 'answer[' + index + '].text').end()
-            //    .find('[name="type"]').attr('name', 'answer[' + index + '].type').end()
-            //    .find('[name="value"]').attr('name', 'answer[' + index + '].value').end()
-            //    .find('[name="remark"]').attr('name', 'answer[' + index + '].remark').end();
-            //$html = $clone.html();
-            $('#answer_'+index).html($clone.html().replace(/INDEX/g, index));
-        })
-
-        // Remove button click handler
-        .on('click', '.removeButton', function() {
-            var $row  = $(this).parents('.form-group'),
-                index = $row.attr('data-index');
-            //find current element to remove
-            $remove = $row.find('[data-index="'+ index +'"]');
-            
-            $remove.remove();
-        });
-    });
-    $(document).ready(function() {
-                               $(document).dynamicForm('set', '#duplicated', '#formTemplate')
-                                       .dynamicForm('init');
-                           });    
+          $( ".location" ).autocomplete({
+            source: function (request, response)
+            {
+                var location = this.element.attr('name');
+                var org = document.getElementById('org_id').value;
+                $.ajax(
+                {
+                    url: "{!! route('ajax.locations.searchname') !!}",
+                    dataType: "json",
+                    data:
+                    {
+                        term: request.term,
+                        area: area,
+                        location: location,
+                        org: org
+                    },
+                    success: function (data)
+                    {
+                        response(data);
+                    }
+                });
+            },
+            //minLength: 2,
+            select: function( event, result ) {
+                //console.log(result);
+                var input = document.getElementsByName(result.item.key);
+                input[0].value = result.item.value;
+                
+                //console.log(input);
+            }
+          });   
+    });   
 }(jQuery)); 
 </script>

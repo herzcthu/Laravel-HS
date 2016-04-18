@@ -2,11 +2,10 @@
 
 use App\Http\Controllers\Controller;
 use App\Locale;
-use App\Location;
-use App\Participant;
 use App\PLocation;
+use App\Project;
 use App\Question;
-use App\Repositories\Backend\Location\LocationContract;
+use App\Repositories\Backend\Organization\OrganizationContract;
 use App\Repositories\Backend\Participant\ParticipantContract;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
 use App\Repositories\Backend\PLocation\PLocationContract;
@@ -16,15 +15,12 @@ use App\Result;
 use App\Translation;
 use DB;
 use Hash;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Yajra\Datatables\Facades\Datatables;
 
 class AjaxController extends Controller
 {
-    protected $locations;
-    
     protected $country;
     
     protected $plocation;
@@ -36,22 +32,24 @@ class AjaxController extends Controller
     protected $results;
     
     protected $question;
+    
+    protected $organizations;
 
 
     public function __construct(
             PLocationContract $plocation, 
             ParticipantContract $participant,
-            LocationContract $locations,
             RoleRepositoryContract $proles,
             ResultContract $results,
-            QuestionContract $question) {
+            QuestionContract $question,
+            OrganizationContract $organizations) {
         $this->plocation = $plocation;
         $this->participant = $participant;
-        $this->locations = $locations;
         $this->country = config('aio.country');
         $this->proles = $proles;
         $this->results = $results;
         $this->question = $question;
+        $this->organizations = $organizations;
     }
     
     public function sortQuestions($project, Request $request) {
@@ -926,125 +924,20 @@ class AjaxController extends Controller
      */
     public function searchLocationsOnlyName(Request $request) {
         $term = $request->get('term');
-        if (strlen($term) != strlen(utf8_decode($term))) {
-        // $str uses multi-byte chars (isn't English)
-            $column = 'mya_name';
-        } else {
-            // $str is ASCII (probably English)
-            $column = 'name';
-        }
-        $order_by = $column;
-        $result = $this->locations->searchOnlyName($term, $this->country, $column)->orderBy($order_by, 'asc')->get();
-        $result = $result->transform(function ($item, $key) use ($column) {
-                    $item['value'] = $item[$column];
-                    $item['label'] = $item[$column];
+        $area = $request->get('area');
+        $location = $request->get('location');
+        $org_id = $request->get('org');
+        // find correct organization object
+        $org = $this->organizations->findOrThrowException($org_id);
+        
+        $result = $this->plocation->searchLocations($term, $location, $area, $org->id, $location, 'asc');
+        
+        $data = $result->transform(function ($item, $key) use ($location) {
+                    $item['value'] = $item[$location];
+                    $item['label'] = $item[$location];
+                    $item['key'] = $location;
                     return $item;
                 });
-        return response()->json($result);
-    }
-    /**
-     * Ajax response for states
-     */
-    public function allstates(){
-        return response()->json($this->locations->getStatesScope($this->country, 'name', 'asc')->lists('name','id'));
-    }
-    
-    /**
-     * Ajax response for states
-     */
-    public function alldistricts(){
-        return response()->json($this->locations->getDistrictsScope($this->country, 'name', 'asc')->lists('name','id'));
-    }
-    
-    /**
-     * Ajax response for states
-     */
-    public function alltownships(){
-        return response()->json($this->locations->getTownshipsScope($this->country, 'name', 'asc')->lists('name','id'));
-    }
-    
-    /**
-     * Ajax response for states
-     */
-    public function allvillagetracks(){
-        return response()->json($this->locations->getVtracksScope($this->country, 'name', 'asc')->lists('name','id'));
-    }
-    
-    /**
-     * Ajax response for states
-     */
-    public function allvillages(){
-        return response()->json($this->locations->getVillagesScope($this->country, 'name', 'asc')->lists('name','id'));
-    }
-    
-    /**
-     * Ajax response villages from $id
-     */
-    public function villages_by_id($id) {
-        $location = $this->locations->findVillagesById($id, 'name', 'asc');
-        
-        if($location instanceof Location){
-            return response()->json([$location]);
-        }
-        if($location instanceof Builder){
-            return response()->json($location->get());
-        }
-        
-    }
-    
-    /**
-     * Ajax response villagetracks from $id
-     */
-    public function villagetracks_by_id($id) {
-        $location = $this->locations->findVTracksById($id, 'name', 'asc');
-        
-        if($location instanceof Location){
-            return response()->json([$location]);
-        }
-        if($location instanceof Builder){
-            return response()->json($location->get());
-        }        
-    }
-    
-    /**
-     * Ajax response townships from $id
-     */
-    public function townships_by_id($id) {
-        $location = $this->locations->findTownshipsById($id, 'name', 'asc');
-        
-        if($location instanceof Location){
-            return response()->json([$location]);
-        }
-        if($location instanceof Builder){
-            return response()->json($location->get());
-        }        
-    }
-    
-    /**
-     * Ajax response districts from $id
-     */
-    public function districts_by_id($id) {
-        $location = $this->locations->findDistrictsById($id, 'name', 'asc');
-        
-        if($location instanceof Location){
-            return response()->json([$location]);
-        }
-        if($location instanceof Builder){
-            return response()->json($location->get());
-        }        
-    }
-    
-    /**
-     * Ajax response townships from $id
-     */
-    public function states_by_id($id) {
-        $location = $this->locations->findStatesById($id, 'name', 'asc');
-        
-        if($location instanceof Location){
-            return response()->json([$location]);
-        }
-        if($location instanceof Builder){
-            return response()->json($location->get());
-        }        
+        return response()->json($data);
     }
 }

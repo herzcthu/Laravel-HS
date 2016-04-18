@@ -60,6 +60,6 @@ class CreateUsersTable extends Migration {
             $table->dropForeign('users_org_id_foreign');
             //$table->dropForeign('users_role_id_foreign');
         });
-        Schema::drop('users');
+        Schema::dropIfExists('users');
     }
 }

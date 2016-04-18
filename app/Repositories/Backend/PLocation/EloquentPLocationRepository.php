@@ -9,6 +9,7 @@ use App\Repositories\Frontend\Auth\AuthenticationContract;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\Facades\Excel;
+use Storage;
 
 /**
  * Class EloquentLocationRepository
@@ -261,11 +262,19 @@ class EloquentPLocationRepository implements PLocationContract {
 	 * @param int $status
 	 * @return mixed
 	 */
-	public function searchLocations($q, $search_by, $order_by = 'name', $sort = 'asc') {
-            $order_by = ((null !== Input::get('field'))? Input::get('field'):$order_by);
-            $sort = ((null !== Input::get('sort'))? Input::get('sort'):$sort);
+	public function searchLocations($q, $location, $area, $org_id, $order_by, $sort = 'asc') {
             
-            return Location::where('type',$search_by)->search($q)->orderBy($order_by, $sort)->get();
+            $query = PLocation::select($location)->where('org_id','=',$org_id);                    
+                    
+            foreach($area as $key => $val){
+                if(!empty($val) && $key !== $location){
+                    $query->where($key, '=', $val);
+                }else{
+                    break;
+                }
+            }
+            $query->where($location, 'LIKE', "$q%");
+            return $query->orderBy($order_by, $sort)->get();
             
 	}
 
@@ -274,7 +283,7 @@ class EloquentPLocationRepository implements PLocationContract {
 	 * @return Paginator
 	 */
 	public function getDeletedLocationsPaginated($per_page) {
-		return Location::onlyTrashed()->paginate($per_page);
+		return PLocation::onlyTrashed()->paginate($per_page);
 	}
 
 	/**
@@ -294,25 +303,21 @@ class EloquentPLocationRepository implements PLocationContract {
 	 * @throws GeneralException
 	 * @throws LocationNeedsUsersException
 	 */
-	public function create($input, $org_id, $location_id) {
-            
-		$location = $this->locations->findOrThrowException($location_id['location_id']);
-                
+	public function create($input, $org_id) {
+                            
                 $organization = $this->organizations->findOrThrowException($org_id['org_id']);
-                
-                $plocation = $this->createLocationStub($input, $organization->id);
-                
-                $plocation->location()->associate($location);
-                
-                $plocation->organization()->associate($organization);
-                
-                $plocation = $plocation->save();
-                
-		if ($plocation) {
-			
-			return $plocation;
-		}
+                if(null !== $organization) {
+                    $plocation = $this->createLocationStub($input, $organization->id);
 
+                    $plocation->organization()->associate($organization);
+
+                    $plocation = $plocation->save();
+
+                    if ($plocation) {
+
+                            return $plocation;
+                    }
+                }
 		throw new GeneralException('There was a problem creating this media. Please try again.');
 	}
         
@@ -324,25 +329,9 @@ class EloquentPLocationRepository implements PLocationContract {
 	 * @throws GeneralException
 	 */
 	public function update($id, $input) {
-		$media = $this->findOrThrowException($id);
-		//$this->checkLocationByEmail($input, $media);
-                //dd(\Illuminate\Support\Facades\Input::file());
+		$location = $this->findOrThrowException($id);                
                 
-                
-		if ($media->update($input)) {
-                      if ($file) {
-                       // $media->saveLocation($file, 'profile_picture');
-                      }
-
-			//For whatever reason this just wont work in the above call, so a second is needed for now
-			$media->status = isset($input['status']) ? 1 : 0;
-			$media->confirmed = isset($input['confirmed']) ? 1 : 0;
-			$media->save();
-
-			$this->checkLocationUsersCount($users);
-			$this->flushUsers($users, $media);
-			$this->flushPermissions($permissions, $media);
-
+		if ($location->update($input)) {
 			return true;
 		}
 
@@ -418,67 +407,27 @@ class EloquentPLocationRepository implements PLocationContract {
 		throw new GeneralException("There was a problem updating this media. Please try again.");
 	}
 
-	/**
-	 * Check to make sure at lease one role is being applied or deactivate media
-	 * @param $media
-	 * @param $users
-	 * @throws LocationNeedsUsersException
-	 */
-	private function validateUserAmount($media, $users) {
-		//Validate that there's at least one role chosen, placing this here so
-		//at lease the media can be updated first, if this fails the users will be
-		//kept the same as before the media was updated
-		if (count($users) == 0) {
-			//Deactivate media
-			$media->status = 0;
-			$media->save();
-
-			$exception = new LocationNeedsUsersException();
-			$exception->setValidationErrors('You must choose at lease one role. Location has been created but deactivated.');
-
-			//Grab the media id in the controller
-			$exception->setLocationID($media->id);
-			throw $exception;
-		}
-	}
-
 	
-
-	/**
-	 * @param $users
-	 * @param $media
-	 */
-	private function flushUsers($users, $media)
-	{
-		//Flush users out, then add array of new ones
-		$media->detachUsers($media->users);
-		$media->attachUsers($users['owner_id']);
-	}
-	
-
-	/**
-	 * @param $users
-	 * @throws GeneralException
-	 */
-	private function checkLocationUsersCount($users)
-	{
-		//Location Updated, Update Users
-		//Validate that there's at least one role chosen
-		if (count($users['owner_id']) == 0)
-			throw new GeneralException('You must choose at least one role.');
-	}
-
 	/**
 	 * @param $input
 	 * @return mixed
 	 */
 	private function createLocationStub($request, $org_id)
 	{
-		$location = PLocation::firstOrNew(['primaryid' => $request['pcode'].'-'.$org_id]);
+		$location = PLocation::firstOrNew(['pcode' => $request['pcode'],'org_id' => $org_id]);
                 $location->pcode = $request['pcode'];
-                if(array_key_exists('uec_code', $request)){
-                    $location->uec_code = $request['uec_code'];
+                if(array_key_exists('ueccode', $request)){
+                    $location->ueccode = $request['ueccode'];
                 }
+                $countries_file = Storage::get('countries.json');
+                $countries_list = json_decode($countries_file, true);
+                $location->country = $countries_list[$request['isocode']];
+                $location->isocode = $request['country'];
+                $location->state = $request['state'];
+                $location->district = $request['district'];
+                $location->township = $request['township'];
+                $location->village_tract = $request['village_tract'];
+                $location->village = $request['village'];
                 
 		return $location;
 	}

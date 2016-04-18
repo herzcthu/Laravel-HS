@@ -4,18 +4,17 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Nicolaslopezj\Searchable\SearchableTrait;
 use Stevebauman\EloquentTable\TableTrait;
 
 class PLocation extends Model
 {
-    use TableTrait, SearchableTrait;
+    use TableTrait;
+    
+    public $timestamps = false;
     
     protected $table = 'pcode';
     
     protected $guarded = ['id'];
-    
-    protected $primaryKey = 'primaryid';
     
     protected $with = ['participants']; 
 

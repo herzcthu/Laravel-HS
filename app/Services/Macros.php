@@ -1,6 +1,8 @@
 <?php namespace App\Services;
 
+use App\Services\Aio\Facades\Aio;
 use Illuminate\Html\FormBuilder;
+use Storage;
 
 /**
  * Class Macros
@@ -31,15 +33,23 @@ class Macros extends FormBuilder {
 	 * @param array $options
 	 * @return string
 	 */
-	public function selectCountry($name, $selected = null, $options = array())
+	public function selectCountry($name, $selected = 'MM', $options = array())
 	{
-		$list = [
-			'' => 'Select One...',
-			'AF' => 'Afghanistan',
-			'AX' => 'Aland Islands'
-		];
-
-		return $this->select($name, $list, $selected, $options);
+		/**
+                $countries_file = Storage::get('countries.csv');
+                
+                $countries_lines = array_values(explode(PHP_EOL, $countries_file));
+                
+                while (list($key, $val) = each($countries_lines)) {
+                    $line = explode(',', $val);
+                    $countries_list[$line[0]] = $line[1];
+                }   
+                Storage::put('countries.json',json_encode($countries_list));
+                 * 
+                 */
+                $countries_file = Storage::get('countries.json');
+                $countries_list = json_decode($countries_file);
+		return $this->select($name, $countries_list, $selected, $options);
 	}
         
         

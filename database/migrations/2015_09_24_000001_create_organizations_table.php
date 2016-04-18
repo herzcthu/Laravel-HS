@@ -20,6 +20,7 @@ class CreateOrganizationsTable extends Migration {
                   ->unsigned();
             $table->string('name', 255);
             $table->string('short', 255);
+            $table->string('country', 255)->default('MM');
             $table->timestamps();
             $table->unique('name', 'organizations_name_unique');
            
@@ -32,6 +33,6 @@ class CreateOrganizationsTable extends Migration {
      * @return void
      */
     public function down() {
-        Schema::drop('organizations');
+        Schema::dropIfExists('organizations');
     }
 }

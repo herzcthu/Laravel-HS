@@ -22,18 +22,8 @@ class CreateParticipantRolesTable extends Migration {
             $table->string('level', 255);
             $table->timestamps();
             $table->unique(['name', 'level'], 'participant_roles_name_level_unique');
-
-                    });
-        Schema::table('participants', function(Blueprint $table){
-            $table->foreign('role_id')
-                  ->references('id')
-                  ->on('participant_roles');
-        });  
-        Schema::table('pcode', function(Blueprint $table){
-            $table->foreign('role_id')
-                  ->references('id')
-                  ->on('participant_roles');
-        }); 
+            
+        });        
     }
 
     /**
@@ -48,6 +38,6 @@ class CreateParticipantRolesTable extends Migration {
         Schema::table('pcode', function(Blueprint $table){
             $table->dropForeign('pcode_role_id_foreign');
         });
-        Schema::drop('participant_roles');
+        Schema::dropIfExists('participant_roles');
     }
 }

@@ -40,6 +40,6 @@ class QAnswersTable extends Migration
         Schema::table('qanswers', function(Blueprint $table){
             $table->dropForeign('qanswers_qid_foreign');
         });
-        Schema::drop('qanswers');
+        Schema::dropIfExists('qanswers');
     }
 }

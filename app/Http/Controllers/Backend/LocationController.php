@@ -77,7 +77,7 @@ class LocationController extends Controller
     public function create()
     {
         return view('backend.location.create')
-            ->withLocations($this->locations->getAllLocations('name'))
+            //->withLocations($this->locations->getAllLocations('name'))
             ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', ['pcode', 'projects']));
     }
 
@@ -89,10 +89,10 @@ class LocationController extends Controller
      */
     public function store(CreateLocationRequest $request)
     {
+        //dd($request->all());
         $this->plocations->create(
-			$request->except('org_id', 'location_id'),
-			$request->only('org_id'),
-                        $request->only('location_id')
+			$request->except('org_id'),
+			$request->only('org_id')
 		);
 	return redirect()->route('admin.locations.index')->withFlashSuccess('The location was successfully created.');
     }
@@ -105,7 +105,9 @@ class LocationController extends Controller
      */
     public function show($id)
     {
-        dd('show');
+        return view('backend.location.edit')
+            ->withLocations($this->plocations->findOrThrowException($id))
+            ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc', ['pcode', 'projects']));
     }
 
     /**
@@ -116,7 +118,9 @@ class LocationController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('backend.location.edit')
+            ->withLocations($this->plocations->findOrThrowException($id));
+    
     }
 
     /**
@@ -127,8 +131,12 @@ class LocationController extends Controller
      * @return Response
      */
     public function update(Request $request, $id)
-    {
-        //
+    { 
+        $this->plocations->update(
+			$id,
+			$request->all()
+		);
+        return redirect()->route('admin.locations.index')->withFlashSuccess('The location was successfully updated.');
     }
 
     /**

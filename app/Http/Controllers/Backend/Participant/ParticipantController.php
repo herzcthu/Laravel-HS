@@ -72,16 +72,16 @@ class ParticipantController extends Controller {
 	public function create() {
                 javascript()->put([
 			'url' => [//'state' => route('ajax.locations.allstates'),
-                            'state' => null,
-                            'district' => route('ajax.locations.districts_by_id'),
-                            'township' => route('ajax.locations.townships_by_id'),
-                            'villagetrack' => route('ajax.locations.villagetracks_by_id'),
-                            'village' => route('ajax.locations.villages_by_id')
+                            //'state' => null,
+                            //'district' => route('ajax.locations.districts_by_id'),
+                            //'township' => route('ajax.locations.townships_by_id'),
+                            //'villagetrack' => route('ajax.locations.villagetracks_by_id'),
+                            //'village' => route('ajax.locations.villages_by_id')
                             ]
 		]);
 		return view('backend.participant.create')
 			->withRoles($this->roles->getAllRoles('id', 'asc', true))
-                        ->withLocations($this->locations->getStatesScope(config('aio.country'))->orderBy('name', 'asc')->lists('name','id'));
+                        ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc'));
 	}
 
 	/**
@@ -91,9 +91,7 @@ class ParticipantController extends Controller {
 	public function store(CreateParticipantRequest $request) {
             //dd($request->all());
 		$this->participants->create(
-			$request->except('role', 'locations'),
-			$request->only('role'),
-			$request->only('locations')
+			$request->all()
 		);
 		return redirect()->route('admin.participants.index')->withFlashSuccess('The user was successfully created.');
 	}

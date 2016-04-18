@@ -144,7 +144,8 @@ class EloquentParticipantRepository implements ParticipantContract {
          * @return boolean
          * @throws GeneralException
          */
-	public function create($input, $locate, $role, $org) {
+	public function create($input) {
+                // To Do: rewrite the whole function
                 $pcode_id = $input['pcode'].'-'.$org;
                 $organization = $this->organization->findOrThrowException($org);
                 if(array_key_exists('supervisor', $input)){

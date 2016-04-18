@@ -38,7 +38,12 @@
                 {!! Form::text('short', null, ['class' => 'form-control', 'placeholder' => 'Short Name']) !!}
             </div>
         </div><!--form control-->
-
+        <div class="form-group">
+            {!! Form::label('country', 'Country', ['class'=>'col-xs-2 control-label']) !!}
+            <div class="col-lg-10">
+            {!! Form::selectCountry('country', 'MM', ['class'=>'form-control']) !!}
+            </div>
+        </div>
         <div class="pull-left">
             <a href="{{route('admin.access.organizations.index')}}" class="btn btn-danger">Cancel</a>
         </div>

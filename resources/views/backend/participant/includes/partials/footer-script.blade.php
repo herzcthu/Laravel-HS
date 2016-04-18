@@ -27,13 +27,22 @@
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
-    $('#prole').on("change", function (e) {
-        var role = $(this).find(":selected");
-        
-        var location = $('#plocation').val();
-            e.preventDefault();
-            getPosts(role.data('role'), location);
-        });
+    // get participant role
+      var datarole = $('select#prole option:selected').data('role');
+      // show or hide location fields based on participant role.
+      for(var i = 3; i >= datarole; i--){
+          $('#level'+i).removeClass('hide');
+        }
+      $('#prole').on('change', function(){
+        var datarole = $('select#prole option:selected').data('role');
+        // show or hide location fields based on participant role.
+        for(var i = 3; i >= datarole; i--){
+          $('#level'+i).removeClass('hide');
+        }
+        for(var i = 0; i < datarole; i++){
+          $('#level'+i).addClass('hide');
+        }
+      });
     $('#plocation').on("change", function (e) {
         var location = $(this).val();
         var role = $('#prole').find(":selected");
@@ -67,6 +76,47 @@
             console.log('Data could not be loaded.');
 	});
     }
+    
+    $(document).ready(function() {
+          var area = {};
+          $(".location").each(function(index){
+              var key = $(this).attr('name');
+              var val = $(this).val();
+              area[key] = val;
+          });
+          $( ".location" ).autocomplete({
+            source: function (request, response)
+            {
+                var location = this.element.attr('name');
+                var org = document.getElementById('org_id').value;
+                $.ajax(
+                {
+                    url: "{!! route('ajax.locations.searchname') !!}",
+                    dataType: "json",
+                    data:
+                    {
+                        term: request.term,
+                        area: area,
+                        location: location,
+                        org: org
+                    },
+                    success: function (data)
+                    {
+                        response(data);
+                    }
+                });
+            },
+            //minLength: 2,
+            select: function( event, result ) {
+                //console.log(result);
+                var input = document.getElementsByName(result.item.key);
+                input[0].value = result.item.value;
+                
+                //console.log(input);
+            }
+          });
+          
+      });
 }(jQuery)); 
 </script>
 @stop

@@ -22,15 +22,17 @@ class CreateLocationRequest extends Request {
 	public function rules()
 	{
 		return [
-			'location' => 'required',
-                        'location_id' => 'required',
+			'village' => 'required',
+                        'pcode' => 'required',
+                        'org_id' => 'required'
 		];
 	}
         
         public function messages() {
             
             return [
-              'location_id.required' => 'Location field is required.' 
+              'pcode.required' => 'Custom Location Code field is required.',
+              'org_id.required' => 'Organization field is required.' 
             ];            
         }
         

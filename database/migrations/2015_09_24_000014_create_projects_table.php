@@ -53,6 +53,6 @@ class CreateProjectsTable extends Migration {
             $table->dropForeign('projects_project_id_foreign');
             $table->dropForeign('projects_org_id_foreign');
         });
-        Schema::drop('projects');
+        Schema::dropIfExists('projects');
     }
 }

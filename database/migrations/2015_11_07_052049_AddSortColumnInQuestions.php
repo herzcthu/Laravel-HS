@@ -13,7 +13,7 @@ class AddSortColumnInQuestions extends Migration
     public function up()
     {
         Schema::table('questions', function(Blueprint $table){
-            $table->string('sort')->after('qnum');
+            //$table->string('sort')->after('qnum');
         });
     }
 

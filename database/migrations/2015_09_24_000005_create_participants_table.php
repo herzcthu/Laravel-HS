@@ -31,21 +31,13 @@ class CreateParticipantsTable extends Migration {
             $table->date('dob')->nullable();
             $table->string('gender')->nullable()->default('Unspecified');
             $table->json('phones')->nullable();
-            $table->string('base')->nullable();
             $table->text('address');
-            $table->string('pcode_id')->nullable();
-            $table->json('locations');
-            $table->integer('org_id')->unsigned()->nullable();            
+            $table->integer('pcode_id')->unsigned()->nullable();
+            $table->json('locations');           
             $table->integer('role_id')->unsigned()->nullable();
             
             $table->softDeletes();
             $table->timestamps();
-            
-            $table->foreign('org_id')
-                  ->references('id')
-                  ->on('organizations');
-            
-           
         });
     }
 
@@ -55,6 +47,6 @@ class CreateParticipantsTable extends Migration {
      * @return void
      */
     public function down() {
-        Schema::drop('participants');
+        Schema::dropIfExists('participants');
     }
 }

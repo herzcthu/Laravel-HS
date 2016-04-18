@@ -25,6 +25,7 @@ class CreateQuestionsTable extends Migration {
                   ->nullable()
                   ->default(NULL);
             $table->string('qnum', 255)->index();
+            $table->integer('sort');
             $table->text('question');
             $table->text('display');
             $table->text('related_data');
@@ -61,6 +62,6 @@ class CreateQuestionsTable extends Migration {
             $table->dropForeign('questions_related_id_foreign');
             $table->dropForeign('questions_project_id_foreign');
         });
-        Schema::drop('questions');
+        Schema::dropIfExists('questions');
     }
 }

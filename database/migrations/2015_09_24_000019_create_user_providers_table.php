@@ -40,6 +40,6 @@ class CreateUserProvidersTable extends Migration {
      * @return void
      */
     public function down() {
-        Schema::drop('user_providers');
+        Schema::dropIfExists('user_providers');
     }
 }

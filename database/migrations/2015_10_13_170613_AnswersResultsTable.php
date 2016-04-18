@@ -40,6 +40,6 @@ class AnswersResultsTable extends Migration
             $table->dropForeign('answers_qid_foreign');
             $table->dropForeign('answers_status_id_foreign');
         });
-        Schema::drop('answers');
+        Schema::dropIfExists('answers');
     }
 }

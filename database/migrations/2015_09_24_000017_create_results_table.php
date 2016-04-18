@@ -64,6 +64,6 @@ class CreateResultsTable extends Migration {
             //$table->dropForeign('results_station_id_foreign');
             $table->dropForeign('results_user_id_foreign');
         });
-        Schema::drop('results');
+        Schema::dropIfExists('results');
     }
 }

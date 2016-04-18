@@ -45,6 +45,6 @@ class CreateProjectsParticipantsTable extends Migration {
             $table->dropForeign('projects_participants_project_id_foreign');
             $table->dropForeign('projects_participants_participant_id_foreign');
         });
-        Schema::drop('projects_participants');
+        Schema::dropIfExists('projects_participants');
     }
 }

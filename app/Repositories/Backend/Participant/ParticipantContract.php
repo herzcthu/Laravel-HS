@@ -51,7 +51,7 @@ interface ParticipantContract {
 	 * @param $roles
 	 * @return mixed
 	 */
-	public function create($input, $location, $role, $org);
+	public function create($input);
 
 	/**
 	 * @param $id

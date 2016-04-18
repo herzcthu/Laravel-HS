@@ -24,7 +24,7 @@ class CreateAssignedRolesTable extends Migration {
                   ->unsigned();
             $table->index('user_id', 'assigned_roles_user_id_foreign');
             $table->index('role_id', 'assigned_roles_role_id_foreign');
-                       $table->foreign('role_id', 'assigned_roles_role_id_foreign')
+            $table->foreign('role_id', 'assigned_roles_role_id_foreign')
                   ->references('id')
                   ->on('roles');
 
@@ -42,6 +42,6 @@ class CreateAssignedRolesTable extends Migration {
      * @return void
      */
     public function down() {
-        Schema::drop('assigned_roles');
+        Schema::dropIfExists('assigned_roles');
     }
 }

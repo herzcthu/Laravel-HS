@@ -22,56 +22,44 @@
      <li class="active">{!! link_to_route('admin.locations.create', 'Location Management') !!}</li>
 @stop
 
-@section('content')
-@if(count($organizations) <= 0) 
-<div class="alert alert-danger">
-    Create at least one organization before creating new project. <a href="{{route('admin.access.organizations.create')}}">Create Organization</a>
-</div>
-@endif   
+@section('content') 
 
-    {!! Form::open(['route' => 'admin.locations.store', 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'post']) !!}
-        @if(access()->can('manage_organization'))
+    {!! Form::model($locations,['route' => ['admin.locations.update', $locations->id], 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'PATCH']) !!}
+        
         <div class="form-group">
-            <label class="col-lg-2 control-label">Organization</label>
+            {!! Form::label('country', 'Country', ['class'=>'col-lg-2 control-label']) !!}
             <div class="col-lg-10">
-                {!! Form::select('org_id', $organizations->lists('name','id'),null, ['id' => 'org_id', 'class' => 'form-control', 'placeholder' => 'P117001']) !!}
-            </div>
-        </div><!--form control-->
-        @endif
-        <div class="form-group">
-            {!! Form::label('isocode', 'Country', ['class'=>'col-lg-2 control-label']) !!}
-            <div class="col-lg-10">
-            {!! Form::selectCountry('isocode', 'MM', ['class'=>'form-control location']) !!}
+            {!! Form::selectCountry('country', 'MM', ['class'=>'form-control']) !!}
             </div>
         </div>
         <div class="form-group">
             <label class="col-lg-2 control-label">State</label>
             <div class="col-lg-10">
-                {!! Form::text('state', null, ['id' => 'state', 'class' => 'form-control location', 'placeholder' => 'Ayeyawaddy']) !!}
+                {!! Form::text('state', null, ['id' => 'state', 'class' => 'form-control', 'placeholder' => 'Ayeyawaddy']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group">
             <label class="col-lg-2 control-label">District</label>
             <div class="col-lg-10">
-                {!! Form::text('district', null, ['id' => 'district', 'class' => 'form-control location', 'placeholder' => 'Pathein']) !!}
+                {!! Form::text('district', null, ['id' => 'district', 'class' => 'form-control', 'placeholder' => 'Pathein']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group">
             <label class="col-lg-2 control-label">Township</label>
             <div class="col-lg-10">
-                {!! Form::text('township', null, ['id' => 'township', 'class' => 'form-control location', 'placeholder' => 'Pathein']) !!}
+                {!! Form::text('township', null, ['id' => 'township', 'class' => 'form-control', 'placeholder' => 'Pathein']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group">
             <label class="col-lg-2 control-label">Village Tract</label>
             <div class="col-lg-10">
-                {!! Form::text('village_tract', null, ['id' => 'vtract', 'class' => 'form-control location', 'placeholder' => 'Ah Lel']) !!}
+                {!! Form::text('village_tract', null, ['id' => 'vtract', 'class' => 'form-control', 'placeholder' => 'Ah Lel']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group">
             <label class="col-lg-2 control-label">Village</label>
             <div class="col-lg-10">
-                {!! Form::text('village', null, ['id' => 'village', 'class' => 'form-control location', 'placeholder' => 'Leik Inn Kone']) !!}
+                {!! Form::text('village', null, ['id' => 'village', 'class' => 'form-control', 'placeholder' => 'Leik Inn Kone']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group">

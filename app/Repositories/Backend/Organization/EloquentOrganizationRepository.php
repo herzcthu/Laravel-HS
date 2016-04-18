@@ -319,6 +319,7 @@ class EloquentOrganizationRepository implements OrganizationContract {
 		$organization = new Organization;
 		$organization->name = $input['name'];
                 $organization->short = $input['short'];
+                $organization->country = $input['country']; // ISO 2 characters code
 		return $organization;
 	}
 }

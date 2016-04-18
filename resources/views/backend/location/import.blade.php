@@ -33,6 +33,16 @@
             </div>
             <div class="col-lg-3"></div>
         </div>
+        <div class="form-group">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-1">
+            {!! Form::label('country', 'Country', ['class'=>'control-label']) !!}
+            </div>
+            <div class="col-lg-5">
+            {!! Form::selectCountry('country', 'MM', ['class'=>'form-control']) !!}
+            </div>
+            <div class="col-lg-3"></div>
+        </div>
         @if (count($proles) > 0)
         
             <div class="form-group">
