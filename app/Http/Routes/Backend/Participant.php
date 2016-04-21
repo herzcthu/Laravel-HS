@@ -59,6 +59,8 @@ Route::group(['namespace' => 'Participant'], function ()
                     Route::match(['get','head'],'participants/create', ['as' => 'admin.participants.create', 'uses' => 'ParticipantController@create']);
                     Route::match(['patch','put'],'participants/{participants}', ['as' => 'admin.participants.update', 'uses' => 'ParticipantController@update']);
                     Route::delete('participants/{participants}', ['as' => 'admin.participants.destroy', 'uses' => 'ParticipantController@destroy']);
+                    Route::delete('participants/{participant}/location/{location}', ['as' => 'admin.participants.delocate', 'uses' => 'ParticipantController@delocate']);
+                    
                     Route::get('participants/{participants}/edit', ['as' => 'admin.participants.edit', 'uses' => 'ParticipantController@edit']);
                     //Route::resource('participants', 'ParticipantController', ['except' => ['show']]);                    
                     Route::get('participants/deleted', ['as' => 'admin.participants.deleted', 'uses' => 'ParticipantController@deleted']);

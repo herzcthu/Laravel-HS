@@ -59,7 +59,7 @@ interface ParticipantContract {
 	 * @param $roles
 	 * @return mixed
 	 */
-	public function update($id, $input, $phones);
+	public function update($id, $input, $pcode, $org, $role);
 
 	/**
 	 * @param $id

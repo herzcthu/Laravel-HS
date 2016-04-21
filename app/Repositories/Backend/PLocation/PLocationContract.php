@@ -99,10 +99,15 @@ interface PLocationContract {
 
 	/**
 	 * @param $input
-	 * @param $roles
+	 * @param $org_id
 	 * @return mixed
 	 */
 	public function create($input, $org_id);
+        
+        /**         * 
+         * @param type $input
+         */
+        public function firstOrCreate($input);
 
 	/**
 	 * @param $id

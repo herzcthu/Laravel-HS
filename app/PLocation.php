@@ -16,7 +16,7 @@ class PLocation extends Model
     
     protected $guarded = ['id'];
     
-    protected $with = ['participants']; 
+    protected $primaryKey = 'primaryid';
 
     public static function boot()
     {
@@ -45,7 +45,7 @@ class PLocation extends Model
      */
     
     public function participants() {
-        return $this->hasMany('App\Participant', 'pcode_id', 'primaryid');
+        return $this->belongsToMany('App\Participant', 'participant_pcode', 'pcode_id', 'participant_id');
     }
     
     public function organization() {

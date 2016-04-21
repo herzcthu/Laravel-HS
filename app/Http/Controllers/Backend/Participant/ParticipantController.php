@@ -63,7 +63,8 @@ class ParticipantController extends Controller {
 	public function index() {
 		return view('backend.participant.index')
 			->withParticipants($this->participants->getParticipantsPaginated(config('aio.participant.default_per_page'), 1))
-                        ->withRoles($this->roles->getAllRoles('id', 'asc', true));
+                        ->withRoles($this->roles->getAllRoles('id', 'asc', true))
+                        ->withArea(['village', 'village_tract', 'township', 'district', 'state', 'country']);
 	}
 
 	/**
@@ -103,11 +104,11 @@ class ParticipantController extends Controller {
 	public function edit($id, Request $request) {
             javascript()->put([
 			'url' => [//'state' => route('ajax.locations.allstates'),
-                            'state' => '',
-                            'district' => route('ajax.locations.districts_by_id'),
-                            'township' => route('ajax.locations.townships_by_id'),
-                            'villagetrack' => route('ajax.locations.villagetracks_by_id'),
-                            'village' => route('ajax.locations.villages_by_id')
+                            //'state' => '',
+                            //'district' => route('ajax.locations.districts_by_id'),
+                            //'township' => route('ajax.locations.townships_by_id'),
+                            //'villagetrack' => route('ajax.locations.villagetracks_by_id'),
+                            //'village' => route('ajax.locations.villages_by_id')
                             ]
 		]);
             $view = View::make('includes.partials.medialist_grid');
@@ -121,7 +122,11 @@ class ParticipantController extends Controller {
                 } else {
                     return view('backend.participant.edit')
                             ->withParticipant($participant)
-                            ->withRoles($this->roles->getAllRoles('id', 'asc', true));
+                            ->withLocations($participant->pcode)
+                            ->withArea(['village', 'village_tract', 'township', 'district', 'state', 'country'])
+                            ->withRoles($this->roles->getAllRoles('id', 'asc', true))
+                            ->withOrganizations($this->organizations->getAllOrganizations('name', 'asc'));
+	
                 }
 	}
 
@@ -130,13 +135,22 @@ class ParticipantController extends Controller {
 	 * @param UpdateParticipantRequest $request
 	 * @return mixed
 	 */
-	public function update($id, UpdateParticipantRequest $request) {            
-		$this->participants->update($id,
-			$request->except('phone'),
-                        $request->only('phone')
+	public function update($id, UpdateParticipantRequest $request) { 
+            //dd($request->all());
+		$participant = $this->participants->update(
+                        $id,
+			$request->except('plcode','org_id','role'),
+                        $request->only('plcode'),
+                        $request->only('org_id'),
+                        $request->only('role')
 		);
-		return redirect()->route('admin.participants.index')->withFlashSuccess('The user was successfully updated.');
-	}
+                if($participant){
+                    return redirect()->route('admin.participants.index')->withFlashSuccess('The participants was successfully updated.');
+                }else{
+                    return redirect()->route('admin.participants.edit', $id)->withFlashDanger('The location code not found.');                
+                }
+                
+        }
         
         public function showImport() {
             return view('backend.participant.import')

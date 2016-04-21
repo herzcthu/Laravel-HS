@@ -46,7 +46,34 @@ class Aio {
 	{
 		$this->app = $app;
 	}
-        
+        /**
+         * Temporary function to migrate old data
+         * @param type $pid
+         */
+        public function migrate($pid, $pcode, $org) {
+            //echo $org;
+            $pcode = substr($pcode, 0, -1);
+            
+            // get participant
+            $participant = \App\Participant::find($pid);
+
+            // attach participant to pcode
+            if(!empty($pcode)){
+                $location = \App\PLocation::where('org_id', $org)->where('pcode', $pcode)->first();
+                if(!empty($location)){
+                    $participant->pcode()->attach($location->primaryid); 
+                    $participant->save();
+                }else{
+                    return false;
+                }
+            }   
+            return;
+        }
+        /**
+         * 
+         * @param type $column
+         * @return string
+         */
         
         public function section($column) {
             

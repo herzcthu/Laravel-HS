@@ -4,6 +4,7 @@ use App\Exceptions\GeneralException;
 use App\PLocation;
 use App\Repositories\Backend\Location\LocationContract;
 use App\Repositories\Backend\Organization\OrganizationContract;
+use App\Repositories\Backend\Participant\ParticipantContract;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
 use App\Repositories\Frontend\Auth\AuthenticationContract;
 use Illuminate\Pagination\Paginator;
@@ -21,6 +22,8 @@ class EloquentPLocationRepository implements PLocationContract {
     
     protected $organizations;
     
+    protected $participants;
+
     protected $proles;
 
     /**
@@ -29,9 +32,11 @@ class EloquentPLocationRepository implements PLocationContract {
 	 */
 	public function __construct(LocationContract $locations, 
                                     OrganizationContract $organizations,
+                                    ParticipantContract $participants,
                                     RoleRepositoryContract $proles) {
             $this->locations = $locations;
             $this->organizations = $organizations;
+            $this->participants = $participants;
             $this->proles = $proles;
 	}
 
@@ -321,6 +326,14 @@ class EloquentPLocationRepository implements PLocationContract {
 		throw new GeneralException('There was a problem creating this media. Please try again.');
 	}
         
+        /** 
+         * @param array $input
+         * @return object
+         */
+        public function firstOrCreate($input) {
+            return PLocation::firstOrCreate($input);
+        }
+        
         /**
 	 * @param $id
 	 * @param $input
@@ -414,8 +427,9 @@ class EloquentPLocationRepository implements PLocationContract {
 	 */
 	private function createLocationStub($request, $org_id)
 	{
-		$location = PLocation::firstOrNew(['pcode' => $request['pcode'],'org_id' => $org_id]);
+		$location = PLocation::firstOrNew(['pcode' => $request['pcode'],'org_id' => $org_id['org_id']]);
                 $location->pcode = $request['pcode'];
+                $location->primaryid = $request['pcode'].'-'.$org_id['org_id'];
                 if(array_key_exists('ueccode', $request)){
                     $location->ueccode = $request['ueccode'];
                 }
@@ -578,7 +592,7 @@ class EloquentPLocationRepository implements PLocationContract {
             set_time_limit(0);
             $excel = Excel::filter('chunk')->load($file, 'UTF-8')->chunk(100, function($locations) use ($file, $org, $level){
                             // Loop through all rows
-                            //dd($location);
+                            //dd($locations);
                             $locations->each(function($row) use ($org, $level) {
                                 //$this->plocations->setPcode($org, $locations);
                                 $this->setPcode($row, $org, $level);

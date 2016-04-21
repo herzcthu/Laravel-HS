@@ -18,8 +18,9 @@ class CreatePcodeTable extends Migration {
     {
         Schema::create('pcode', function(Blueprint $table) 
         {
-            $table->increments('id')
-                  ->unsigned();
+            $table->string('primaryid')->unique()->primary();
+            $table->integer('org_id')
+                    ->unsigned();
             $table->string('pcode');
             $table->string('ueccode');
             $table->text('village');
@@ -34,9 +35,7 @@ class CreatePcodeTable extends Migration {
                   ->default(NULL);
             $table->float('lat')
                   ->nullable()
-                  ->default(NULL);
-            $table->integer('org_id')
-                    ->unsigned();
+                  ->default(NULL);            
         });
     }
 

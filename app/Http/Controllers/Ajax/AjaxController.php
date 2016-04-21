@@ -251,64 +251,7 @@ class AjaxController extends Controller
             }        
             return $datatables->make(true);
     }
-    public function getResponseBK($project, Request $request) {
-        $total_forms = PLocation::where('org_id', $project->org_id)->count();
-        $total_results = Result::where('project_id', $project->id)->count();
-        $locations = PLocation::where('org_id', $project->org_id)->groupBy('state')->get();
-        
-        foreach($locations as $state => $location){
-            
-            //skip the loop if $location->state is null
-            if(is_null($location->state)){
-                continue;
-            }
-            $result[$location->state]['group'] = $location->state;
-            $result[$location->state]['region'] = $location->primaryid;
-            $state = PLocation::where('org_id', $project->org_id)->where('state', $location->state)->count();
-            $statetotal = PLocation::where('org_id', $project->org_id)->where('state', $location->state)->has('results')->count();
-            foreach($project->sections as $section => $section_value){
-                
-                $result[$location->state][$section]['complete'] = PLocation::where('org_id', $project->org_id)
-                        ->where('state', $location->state)
-                        ->ofWithAndWhereHas('results', function($query) use($section){
-                            $query->where('section_id', $section)->where('information', 'complete');
-                        })->count();
-                $result[$location->state][$section]['incomplete'] = PLocation::where('org_id', $project->org_id)
-                        ->where('state', $location->state)
-                        ->ofWithAndWhereHas('results', function($query) use($section){
-                            $query->where('section_id', $section)->where('information', 'incomplete');
-                        })->count();
-                $result[$location->state][$section]['error'] = PLocation::where('org_id', $project->org_id)
-                        ->where('state', $location->state)
-                        ->ofWithAndWhereHas('results', function($query) use($section){
-                            $query->where('section_id', $section)->where('information', 'error');
-                        })->count();   
-                        
-                ${$location->state}{$section} = PLocation::where('org_id', $project->org_id)
-                        ->where('state', $location->state)
-                        ->ofWithAndWhereHas('results', function($query) use($section){
-                            $query->where('section_id', $section);
-                        })->count();
-                $result[$location->state][$section]['missing'] = $state - ${$location->state}{$section};
-            }
-            $result[$location->state]['totalmissing'] = $state - $statetotal;
-        }
-        $result['total']['group'] = 'total';
-        $result['total']['region'] = 'all';
-        foreach($project->sections as $section => $section_value){
-                
-                $total_results_by_section = Result::where('project_id', $project->id)->where('section_id', $section)->count();
-                
-                $result['total'][$section]['complete'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'complete')->count();
-                $result['total'][$section]['incomplete'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'incomplete')->count();
-                $result['total'][$section]['error'] = Result::where('project_id', $project->id)->where('section_id', $section)->where('information', 'error')->count();
-                $result['total'][$section]['missing'] = $total_forms - $total_results_by_section;
-        } 
-        
-        $result['total']['totalmissing'] = $total_forms - $total_results;
-        //dd(collect($result));
-        return Datatables::of(collect($result))->make(true);
-    }
+    
     
     public function getStatusCount($project, Request $request) {
         //$section = $request->get('section');
@@ -504,6 +447,8 @@ class AjaxController extends Controller
         // get sections as columns for next query
         //$column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT(\"MAX(IF(results.section_id = \",section_id,\", results.information, NULL)) AS s\", section_id)) AS sections  FROM results WHERE (project_id = $project->id);"));
         $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(results.section_id = ',results.section_id,', results.information, NULL)) AS s', results.section_id)) AS sections  FROM results WHERE (results.project_id = $project->id);"));
+        //$column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(section_id = ',section_id,', information, NULL)) AS s', section_id)) AS sections  FROM results;"));
+        
         /**
         $query = "SELECT pcode.pcode, pcode.state, pcode.district, pcode.township, pcode.village,";
         $query .= "GROUP_CONCAT(DISTINCT CONCAT(p.name,\"|\", p.participant_id,\"|\", p.phones) ORDER BY p.name) AS observers,";
@@ -521,7 +466,7 @@ class AjaxController extends Controller
             'pcode.district', 
             'pcode.township', 
             'pcode.village'];
-        $query[] = DB::raw('GROUP_CONCAT(DISTINCT "\"",p.name,"\":",CONCAT("{\"name\":\"",p.name,"\",\"id\":\"", p.participant_id,"\",\"phones\":", p.phones, "}") ORDER BY p.name) AS observers');
+        //$query[] = DB::raw('GROUP_CONCAT(DISTINCT "\"",p.name,"\":",CONCAT("{\"name\":\"",p.name,"\",\"id\":\"", p.participant_id,"\",\"phones\":", p.phones, "}") ORDER BY p.name) AS observers');
         if(!empty($column[0]->sections)){
             $query[] = DB::raw($column[0]->sections);
         }
@@ -530,13 +475,17 @@ class AjaxController extends Controller
         $org_id = $project->org_id;
         $status = PLocation::select($query)
                 ->where('pcode.org_id', $org_id)
-                ->leftjoin('participants as p', 'pcode.primaryid','=','p.pcode_id')
+                ->with(['participants'])
+                //->with(['participants', 'results' => function($q) use ($project_id){
+                //    $column = "SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(section_id = ',section_id,', information, NULL)) AS s', section_id)) AS sections  FROM results;";
+                //    $q->where('project_id','=', $project_id)->addSelect(new \Illuminate\Database\Query\Expression("DB::raw($column)"));
+                //}])
                 ->leftjoin('results',function($pcode) use ($project_id){
                     $pcode->on('pcode.primaryid','=','results.resultable_id')
                             ->where('results.project_id','=', $project_id);
                 })                
                 ->groupBy('pcode.primaryid')->get();
-                
+                //dd($status);
                 return Datatables::of($status)
                         ->filter(function($instance) use ($request){
                             if($request->has('pcode')){
@@ -601,9 +550,6 @@ class AjaxController extends Controller
                         ->editColumn('village', function ($modal) use ($project){
                             $village = (!is_null($modal->village))? $modal->village:'';
                             return _t($village);
-                        })
-                        ->editColumn('observers', function ($modal) use ($project) {
-                            return json_decode("{" . $modal->observers . "}", true);
                         })
                         ->make(true);            
     }
@@ -939,5 +885,11 @@ class AjaxController extends Controller
                     return $item;
                 });
         return response()->json($data);
+    }
+    
+    public function delocate($pid, $lid, Request $request){
+        $participant = $this->participant->findOrThrowException($pid);
+        $json['status'] = $participant->pcode()->detach($lid);
+        return json_encode($json);
     }
 }

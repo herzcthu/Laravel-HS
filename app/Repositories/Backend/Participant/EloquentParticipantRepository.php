@@ -2,7 +2,7 @@
 
 use App\Exceptions\GeneralException;
 use App\Participant;
-use App\Repositories\Backend\Location\LocationContract;
+use App\PLocation;
 use App\Repositories\Backend\Organization\OrganizationContract;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
 use App\Repositories\Backend\PLocation\PLocationContract;
@@ -16,15 +16,8 @@ use Maatwebsite\Excel\Facades\Excel;
  * @package App\Repositories\Participant
  */
 class EloquentParticipantRepository implements ParticipantContract {
-
-        /**
-         *
-         * @var LocationContract
-         */
-        protected $locations;
     
-        /**
-         *
+        /**         *
          * @var PLocationContract
          */
         protected $pcode;
@@ -33,8 +26,7 @@ class EloquentParticipantRepository implements ParticipantContract {
 	 */
 	protected $role;
         
-        /**
-         *
+        /**         *
          * @var OrganizationContract
          */
         protected $organization;
@@ -45,18 +37,14 @@ class EloquentParticipantRepository implements ParticipantContract {
 	protected $auth;
 
 	/**
-         * 
-         * @param LocationContract $locations
          * @param PLocationContract $plocation
          * @param RoleRepositoryContract $role
          * @param AuthenticationContract $auth
          */
-	public function __construct(LocationContract $locations,
-                                    PLocationContract $plocation,
+	public function __construct(PLocationContract $plocation,
                                     RoleRepositoryContract $role,
                                     OrganizationContract $organization,
                                     AuthenticationContract $auth) {
-                $this->locations = $locations;
                 $this->pcode = $plocation;
 		$this->role = $role;
                 $this->organization = $organization;
@@ -141,79 +129,29 @@ class EloquentParticipantRepository implements ParticipantContract {
          * @param array $input
          * @param mixed $roles
          * @param mixed $locations
-         * @return boolean
+         * @return object
          * @throws GeneralException
          */
 	public function create($input) {
-                // To Do: rewrite the whole function
-                $pcode_id = $input['pcode'].'-'.$org;
-                $organization = $this->organization->findOrThrowException($org);
-                if(array_key_exists('supervisor', $input)){
-                    $supervisor = Participant::firstOrCreate(['name' => $input['supervisor']['name'], 'base' => $input['supervisor']['base']]);
-                    /**
-                     * if participant is supervisor, look for highest role level in participant role table and assign. If not found, create.
-                     */
-                    
-                    $svrole = \App\ParticipantRole::where('level', 4)->first();
-                    if(is_null($svrole)){
-                        $svrole = \App\ParticipantRole::firstOrCreate(['name'=>'Supervisor', 'level' => 4]);
-                        $svrole->name = 'Supervisor';
-                        $svrole->level = 4;
-                        $svrole->save();
-                    }
-                    $supervisor->organization()->associate($organization);
-                    $supervisor->role()->associate($svrole);
-                    $supervisor->save();
-                    if(array_key_exists('spot_checker', $input)){
-                        $spotchecker = Participant::firstOrCreate(['name' => $input['spot_checker']['name'], 'base' => $input['spot_checker']['base']]);
-                        $spotchecker->supervisor()->associate($supervisor);
-                        $scrole = \App\ParticipantRole::where('level', 3)->first();
-                        if(is_null($scrole)){
-                            $scrole = \App\ParticipantRole::firstOrCreate(['name'=>'Spot Checker', 'level' => 3]);
-                            $scrole->name = 'Spot Checker';
-                            $scrole->level = 3;
-                            $scrole->save();
-                        }
-                        $spotchecker->organization()->associate($organization);
-                        $spotchecker->role()->associate($scrole);
-                        $spotchecker->save();
-                    }
-                }
-                $participant = $this->createParticipantStub($input, $pcode_id, $org); 
+                $organization = $this->organization->findOrThrowException($input['org_id']);
+                $role = $this->role->findOrThrowException($input['role']);
+                $area = ['village', 'village_tract', 'township', 'district', 'state', 'country'];
                 
-               
-                $pcode['pcode'] = $input['pcode'];
-                $pcode['uec_code'] = $input['uec_code'];
-                        
-                if(is_array($locate)){
-                    $location_id = $locate['locations'];
-                    $location = $this->pcode->findOrThrowException($location_id);
-                    
-                }elseif(is_object($locate)){
-                    $location = $locate;
-                }else{
-                    
-                }
-                $located = $participant->pcode()->associate($location);
-                
-                if(is_array($role)){
-                    $role_id = $role['role'];
-                    $prole = $this->role->findOrThrowException($role_id);
-                }
-
-                if(is_object($role)){
-                    $prole = $role;
-                }
-                //dd($plocation);
-                $participant->role()->associate($prole);
+                $location = PLocation::where('org_id', $input['org_id'])->where('pcode', $input['pcode'])->first();
+                // create participant instant from input
+                $participant = $this->createParticipantStub($input, $organization->id);
+                // associate with organization
                 $participant->organization()->associate($organization);
-                if($supervisor){
-                    $participant->supervisor()->associate($supervisor);
-                }
+                // associate with role
+                $participant->role()->associate($role);
+                // save participant to database
                 $participant->save();
-		if ($participant) {
-                        
-			return true;
+                
+                // attach participant to pcode
+                $participant->pcode()->attach($location->id);
+                
+		if ($participant) {                        
+			return $participant;
 		}
 
 		throw new GeneralException('There was a problem creating this participant. Please try again.');
@@ -228,14 +166,35 @@ class EloquentParticipantRepository implements ParticipantContract {
          * @return boolean
          * @throws GeneralException
          */
-	public function update($id, $input, $phones) {
-		$participant = $this->findOrThrowException($id);
+	public function update($id, $input, $pcode, $org, $role_id) {
+                $organization = $this->organization->findOrThrowException($org['org_id']);
+                $role = $this->role->findOrThrowException($role_id['role']);
+                $area = ['village', 'village_tract', 'township', 'district', 'state', 'country'];
                 
-                $participant->phones = $phones['phone'];
+                // get participant
+                $participant = $this->findOrThrowException($id);
                 
-		if ($participant->update($input)) {                     
-
-			//$participant->save();
+                // attach participant to pcode
+                if(!empty($pcode['plcode'])){
+                    $location = PLocation::where('org_id', $org['org_id'])->where('pcode', $pcode['plcode'])->first();
+                    if(!empty($location)){
+                        $participant->pcode()->attach($location->id); 
+                    }else{
+                        return false;
+                    }
+                }               
+                
+                // dissociate old organization
+                $participant->organization()->dissociate();
+                // associate with updated organization
+                $participant->organization()->associate($organization);
+                // dissociate old role
+                $participant->role()->dissociate();
+                // associate with updated role
+                $participant->role()->associate($role);
+                
+                
+		if ($participant->update($input)) {
 			return true;
 		}
 
@@ -312,7 +271,11 @@ class EloquentParticipantRepository implements ParticipantContract {
         
         public function arrayToNestedSet($p, $org, $role) {
             
-            
+            foreach ($p as $key => $value){
+                $keycount = preg_match_all('_', $key, $matches);
+                        
+            }
+            dd($keycount);
             if(isset($p->pcode)){
                 $observer['A']['pcode'] = (string) $p->pcode;
                 $observer['B']['pcode'] = (string) $p->pcode;
@@ -386,7 +349,7 @@ class EloquentParticipantRepository implements ParticipantContract {
                 $observer['B']['state'] = $p->state_region_english;
             }
             
-            $role = $this->role->findOrThrowException($role);
+            //$role = $this->role->findOrThrowException($role);
             if(isset($observer)){
                 foreach($observer as $key => $person){
                     $person['participant_id'] = $person['pcode'].$key;
@@ -408,8 +371,10 @@ class EloquentParticipantRepository implements ParticipantContract {
                         }
                         $person['spot_checker'] = isset($p->spot_checker_name)? $p->spot_checker_name:'No Name';
                     }
-                    $place = $this->pcode->findOrThrowException($person['pcode'].'-'.$org);
-                    $participant = $this->create($person, $place, $role, $org );
+                    $person['role'] = $role;
+                    $person['org_id'] = $org;
+                    //$place = $this->pcode->findOrThrowException($person['pcode'].'-'.$org);
+                    $participant = $this->create($person);
                 }
                     
             }else{
@@ -458,7 +423,7 @@ class EloquentParticipantRepository implements ParticipantContract {
 	 * @param $input
 	 * @return mixed
 	 */
-	private function createParticipantStub($input, $pcode_id, $org)
+	private function createParticipantStub($input, $org)
 	{   
 		$attributes['participant_id'] = (array_key_exists('participant_id', $input)? $input['participant_id']:null);
                 if(array_key_exists('nrc_id', $input)){
@@ -470,7 +435,7 @@ class EloquentParticipantRepository implements ParticipantContract {
                 }else{
                     $nrc_id = null;
                 }
-                $participant = Participant::firstOrNew(['participant_id' => $attributes['participant_id'], 'pcode_id' => $pcode_id, 'org_id' => $org, 'nrc_id' => $nrc_id]);
+                $participant = Participant::firstOrNew(['participant_id' => $attributes['participant_id'], 'org_id' => $org, 'nrc_id' => $nrc_id]);
                 
 		$participant->name = (array_key_exists('name', $input)? $input['name']:'No Name');
                 $participant->avatar = (array_key_exists('avatar', $input)? $input['avatar']:'');
@@ -485,8 +450,9 @@ class EloquentParticipantRepository implements ParticipantContract {
                     $participant->nrc_id = null;
                 }
                 $participant->dob = (array_key_exists('dob', $input)? $input['dob']:'');
-                $participant->phones = (array_key_exists('phone', $input)? $input['phone']:'');
-                $participant->base = (array_key_exists('base', $input)? $input['base']:'');
+                $array = [];
+                $participant->phones = (array_key_exists('phones', $input)? $input['phones']:$array);
+                //$participant->base = (array_key_exists('base', $input)? $input['base']:'');
                 $participant->gender = (array_key_exists('gender', $input)? $input['gender']:'Not Specified');
                 $participant->participant_id = (array_key_exists('participant_id', $input)? $input['participant_id']:null);
                 
@@ -496,8 +462,8 @@ class EloquentParticipantRepository implements ParticipantContract {
         public function cliImport($file, $org, $role) {
             set_time_limit(0);
             $excel = Excel::filter('chunk')->load($file, 'UTF-8')->chunk(250, function($participant) use ($file, $org, $role){
-                            //$this->makeNestedSetArray($participant, $org, $role);
-                            $participant->each(function($row) use ($role, $org) {
+                            dd($file);
+                            $participant->each(function($row) use ($role, $org) { dd($row);
                                 $this->arrayToNestedSet($row, $org, $role);
                             });
                         });

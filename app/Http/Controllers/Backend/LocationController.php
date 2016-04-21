@@ -229,7 +229,6 @@ class LocationController extends Controller
      * 
      */
     public function import(Request $request) {
-                //dd($request->all());
 		$file = $request->only('file')['file'];
                 $org = $request->only('organization')['organization'];
                 $codetype = $request->only('prole')['prole'];

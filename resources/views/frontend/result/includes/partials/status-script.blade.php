@@ -190,13 +190,13 @@
                     { "orderable": false, "targets": 2, "data": null, }, // Township column
                     { "orderable": false, "targets": 3, "data": null, }, // Station or village column
                     // To Do: need to format observer information
-                    { "orderable": false, "targets": [ 4 ], "width": "200px", "data": "observers",
+                    { "orderable": false, "targets": [ 4 ], "width": "200px", "data": "participants",
                         "render": function ( data, type, full, meta) {
                             var observer = "<dl>";
                             for (var key in data) {
                                 if (data.hasOwnProperty(key)) {
                                 observer += "<dt>" +data[key].name+ "</dt>";
-                                observer += "<dl>ID: " +data[key].id+ "</dl>";
+                                observer += "<dl>ID: " +data[key].participant_id+ "</dl>";
                                 observer += "<dl>Mobile: " +data[key].phones.mobile+ "</dl>";
                                 if(data[key].phones.emergency != 0){
                                 observer += "<dl>Emergency: " +data[key].phones.emergency+ "</dl>";
@@ -233,7 +233,7 @@
                     { data: 'state', name: 'region' },
                     { data: 'township', name: 'township' },
                     { data: 'village', name: 'station' },
-                    { data: 'observers', name: 'observers'},
+                    { data: 'participants', name: 'observers'},
                     @foreach($project->sections as $k => $section)
                     { data: 's{{$k}}', name: 'section{{$k}}'},
                     @endforeach

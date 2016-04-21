@@ -41,6 +41,12 @@
         </div><!--form control-->
         @endif
         <div class="form-group">
+            <label class="col-lg-2 control-label">ID Code</label>
+            <div class="col-lg-10">
+                {!! Form::text('participant_id', null, ['class' => 'form-control', 'placeholder' => '117001A']) !!}
+            </div>
+        </div><!--form control-->
+        <div class="form-group">
             <label class="col-lg-2 control-label">Name</label>
             <div class="col-lg-10">
                 {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
@@ -60,6 +66,41 @@
                 {!! Form::text('nrc_id', null, ['class' => 'form-control', 'placeholder' => 'NRC ID']) !!}
             </div>
         </div><!--form control-->
+        
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Date of Birth</label>
+            <div class="col-lg-10">
+                {!! Form::text('dob', null, ['class' => 'form-control', 'placeholder' => 'DD/MM/YYYY']) !!}
+            </div>
+        </div><!--form control-->
+        
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Gender</label>
+            <div class="col-lg-10">
+                {!! Form::select('gender',['Male'=>'Male', 'Female'=>'Female', 'Unspecified'=>'Unspecified'], 'Unspecified', ['class' => 'form-control']) !!}
+            </div>
+        </div><!--form control-->
+        
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Mobile Phones</label>
+            <div class="col-lg-10">
+                {!! Form::text('phones[mobile]', null, ['class' => 'form-control', 'placeholder' => '09796979696']) !!}
+            </div>
+        </div><!--form control-->
+        
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Home Phones</label>
+            <div class="col-lg-10">
+                {!! Form::text('phones[emergency]', null, ['class' => 'form-control', 'placeholder' => '09796979696']) !!}
+            </div>
+        </div><!--form control-->
+        
+        <div class="form-group">
+            <label class="col-lg-2 control-label">Address</label>
+            <div class="col-lg-10">
+                {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => 'Full address here']) !!}
+            </div>
+        </div><!--form control-->
 
         @if (count($roles) > 0)
         <div class="form-group">
@@ -73,42 +114,16 @@
                 
             </div>
         </div><!--form control-->
+        @else
+            <div class="alert alert-danger">
+                Create at least one participant role. <a href="{{route('admin.participants.proles.create')}}">Create Participant Role</a>
+            </div>
         @endif
         
         <div class="form-group">
-            {!! Form::label('isocode', 'Country', ['class'=>'col-lg-2 control-label']) !!}
+            <label for="pcode" class="col-lg-2 control-label">Location Code</label>
             <div class="col-lg-10">
-            {!! Form::selectCountry('isocode', 'MM', ['class'=>'form-control location']) !!}
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-lg-2 control-label">State</label>
-            <div class="col-lg-10">
-                {!! Form::text('state', null, ['id' => 'state', 'class' => 'form-control location', 'placeholder' => 'Ayeyawaddy']) !!}
-            </div>
-        </div><!--form control-->
-        <div class="form-group hide" id="level3">
-            <label class="col-lg-2 control-label">District</label>
-            <div class="col-lg-10">
-                {!! Form::text('district', null, ['id' => 'district', 'class' => 'form-control location', 'placeholder' => 'Pathein']) !!}
-            </div>
-        </div><!--form control-->
-        <div class="form-group hide" id="level2">
-            <label class="col-lg-2 control-label">Township</label>
-            <div class="col-lg-10">
-                {!! Form::text('township', null, ['id' => 'township', 'class' => 'form-control location', 'placeholder' => 'Pathein']) !!}
-            </div>
-        </div><!--form control-->
-        <div class="form-group hide" id="level1">
-            <label class="col-lg-2 control-label">Village Tract</label>
-            <div class="col-lg-10">
-                {!! Form::text('village_tract', null, ['id' => 'vtract', 'class' => 'form-control location', 'placeholder' => 'Ah Lel']) !!}
-            </div>
-        </div><!--form control-->
-        <div class="form-group hide" id="level0">
-            <label class="col-lg-2 control-label">Village</label>
-            <div class="col-lg-10">
-                {!! Form::text('village', null, ['id' => 'village', 'class' => 'form-control location', 'placeholder' => 'Leik Inn Kone']) !!}
+                {!! Form::text('pcode', null, ['id' => 'pcode', 'class' => 'form-control', 'placeholder' => '117001']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group" id="ajax_insert">

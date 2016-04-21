@@ -30,7 +30,8 @@ Route::group(['middleware' => 'auth'], function ()
         Route::post('project/{project}/question/new', ['as' => 'ajax.project.question.new', 'uses' => 'AjaxController@newQuestion']);
         Route::get('locations/search', ['as' => 'ajax.locations.searchname', 'uses' => 'AjaxController@searchLocationsOnlyName']);
         Route::match(['post','put', 'patch'],'language',['as' => 'ajax.language', 'uses' => 'AjaxController@updateTranslation']);
-        
+        Route::delete('participants/{participant}/location/{location}', ['as' => 'ajax.participants.delocate', 'uses' => 'AjaxController@delocate']);
+                    
     });
     Route::group(['prefix' => 'ajax/project/{project}'], function () {
         Route::get('/pcode/{pcode}', ['as' => 'ajax.project.pcode', 'uses' => 'AjaxController@formValidatePcode']);

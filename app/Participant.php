@@ -52,7 +52,7 @@ class Participant extends Model {
         }
         
         public function pcode() {
-            return $this->belongsTo('App\PLocation', 'pcode_id', 'primaryid');
+            return $this->belongsToMany('App\PLocation', 'participant_pcode', 'participant_id', 'pcode_id');
         }
         
         public function role() {
