@@ -5,7 +5,6 @@ use App\Participant;
 use App\PLocation;
 use App\Repositories\Backend\Organization\OrganizationContract;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
-use App\Repositories\Backend\PLocation\PLocationContract;
 use App\Repositories\Frontend\Auth\AuthenticationContract;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Input;
@@ -17,12 +16,8 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 class EloquentParticipantRepository implements ParticipantContract {
     
-        /**         *
-         * @var PLocationContract
-         */
-        protected $pcode;
         /**
-	 * @var RoleRepositoryContract
+         * @var RoleRepositoryContract
 	 */
 	protected $role;
         
@@ -41,11 +36,10 @@ class EloquentParticipantRepository implements ParticipantContract {
          * @param RoleRepositoryContract $role
          * @param AuthenticationContract $auth
          */
-	public function __construct(PLocationContract $plocation,
+	public function __construct(
                                     RoleRepositoryContract $role,
                                     OrganizationContract $organization,
                                     AuthenticationContract $auth) {
-                $this->pcode = $plocation;
 		$this->role = $role;
                 $this->organization = $organization;
 		$this->auth = $auth;
@@ -269,18 +263,14 @@ class EloquentParticipantRepository implements ParticipantContract {
 	}
         
         
-        public function arrayToNestedSet($p, $org, $role) {
+        public function participantsDataSet($p, $org, $role, \App\PLocation $location) {
             
-            foreach ($p as $key => $value){
-                $keycount = preg_match_all('_', $key, $matches);
-                        
-            }
-            dd($keycount);
+            
             if(isset($p->pcode)){
                 $observer['A']['pcode'] = (string) $p->pcode;
                 $observer['B']['pcode'] = (string) $p->pcode;
-                $observer['A']['uec_code'] = $p->uec_polling_station_code;
-                $observer['B']['uec_code'] = $p->uec_polling_station_code;
+                //$observer['A']['uec_code'] = $p->uec_polling_station_code;
+                //$observer['B']['uec_code'] = $p->uec_polling_station_code;
             }else{
                 throw new GeneralException('No valid location code found! Check your upload file!');
             }
@@ -297,10 +287,10 @@ class EloquentParticipantRepository implements ParticipantContract {
             }
             
             if(isset($p->observer_a_mobile) && isset ($p->observer_b_mobile)){
-                $observer['A']['phone']['mobile'] = (string) $p->observer_a_mobile;
-                $observer['B']['phone']['mobile'] = (string) $p->observer_b_mobile;
-                $observer['A']['phone']['emergency'] = (string) $p->emergency_contact_phone_observer_a;
-                $observer['B']['phone']['emergency'] = (string) $p->emergency_contact_phone_observer_b;
+                $observer['A']['phones']['mobile'] = (string) $p->observer_a_mobile;
+                $observer['B']['phones']['mobile'] = (string) $p->observer_b_mobile;
+                $observer['A']['phones']['emergency'] = (string) $p->emergency_contact_phone_observer_a;
+                $observer['B']['phones']['emergency'] = (string) $p->emergency_contact_phone_observer_b;
             }
             
             if(isset($p->observer_a_nrc_card) && isset ($p->observer_b_nrc_card)){
@@ -328,12 +318,12 @@ class EloquentParticipantRepository implements ParticipantContract {
                 $observer['B']['email'] = $p->observer_b_email;
             }
             
-            
+            /**
             if(isset($p->village_tractward_burmese)){
-                $observer['A']['village_tract'] = $p->village_tractward_burmese;
-                $observer['B']['village_tract'] = $p->village_tractward_burmese;
-                $observer['A']['base'] = $p->village_tractward_burmese;
-                $observer['B']['base'] = $p->village_tractward_burmese;
+                $observer['A']['villagetract'] = $p->village_tractward_burmese;
+                $observer['B']['villagetract'] = $p->village_tractward_burmese;
+                //$observer['A']['base'] = $p->village_tractward_burmese;
+                //$observer['B']['base'] = $p->village_tractward_burmese;
             }
             if(isset($p->township_english)){
                 $observer['A']['township'] = $p->township_english;
@@ -348,11 +338,14 @@ class EloquentParticipantRepository implements ParticipantContract {
                 $observer['A']['state'] = $p->state_region_english;
                 $observer['B']['state'] = $p->state_region_english;
             }
+             * 
+             */
             
-            //$role = $this->role->findOrThrowException($role);
+            $role = $this->role->findOrThrowException($role);
             if(isset($observer)){
                 foreach($observer as $key => $person){
-                    $person['participant_id'] = $person['pcode'].$key;
+                    $person['participant_code'] = $person['pcode'].$key;
+                    /**
                     if(isset($p->supervisor_name)){
                         if(!is_null($p->supervisor_id)){//dd($p);
                             $person['supervisor']['participant_id'] = $p->supervisor_id;
@@ -371,10 +364,18 @@ class EloquentParticipantRepository implements ParticipantContract {
                         }
                         $person['spot_checker'] = isset($p->spot_checker_name)? $p->spot_checker_name:'No Name';
                     }
-                    $person['role'] = $role;
+                     * 
+                     */
+                    $person['role_id'] = $role->id;
                     $person['org_id'] = $org;
                     //$place = $this->pcode->findOrThrowException($person['pcode'].'-'.$org);
-                    $participant = $this->create($person);
+                    $attr = ['participant_code' => $person['participant_code'], 'org_id' => $org];
+                    unset($person['pcode']);
+                    $participant = \App\Participant::updateOrCreate($attr,$person);
+                    // detach first to avoid duplicate
+                    $location->participants()->detach($participant->id);
+                    $location->participants()->attach($participant);
+                    $location->save();
                 }
                     
             }else{
@@ -462,13 +463,10 @@ class EloquentParticipantRepository implements ParticipantContract {
         public function cliImport($file, $org, $role) {
             set_time_limit(0);
             $excel = Excel::filter('chunk')->load($file, 'UTF-8')->chunk(250, function($participant) use ($file, $org, $role){
-                            dd($file);
+                           
                             $participant->each(function($row) use ($role, $org) { dd($row);
-                                $this->arrayToNestedSet($row, $org, $role);
+                                $this->participantsDataSet($row, $org, $role);
                             });
                         });
-             //dd($excel)->all();
-            //$excel = Excel::load($file, 'UTF-8')->all();
-            //$this->makeNestedSetArray($excel, $org, $role);
         }
 }

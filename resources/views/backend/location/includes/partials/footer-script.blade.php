@@ -22,11 +22,6 @@
 (function ($) {
     $(document).ready(function() {
           var area = {};
-          $(".location").each(function(index){
-              var key = $(this).attr('name');
-              var val = $(this).val();
-              area[key] = val;
-          });
           $( ".location" ).autocomplete({
             source: function (request, response)
             {
@@ -55,8 +50,12 @@
                 var input = document.getElementsByName(result.item.key);
                 input[0].value = result.item.value;
                 
-                //console.log(input);
+                console.log(input[0]);
             }
+          }).each(function(index){
+              var key = $(this).attr('name');
+              var val = $(this).val();
+              area[key] = val;
           });   
     });   
 }(jQuery)); 

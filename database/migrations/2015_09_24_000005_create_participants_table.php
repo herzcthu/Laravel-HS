@@ -23,7 +23,7 @@ class CreateParticipantsTable extends Migration {
                   ->default(NULL);
             $table->string('avatar', 255)->nullable();
             $table->string('name', 255)->nullable()->index();
-            $table->string('participant_id', 255)->index();
+            $table->string('participant_code', 255)->index();
             $table->string('nrc_id', 255)->nullable()->unique();
             $table->string('email', 255)
                   ->nullable()
@@ -32,7 +32,7 @@ class CreateParticipantsTable extends Migration {
             $table->string('gender')->nullable()->default('Unspecified');
             $table->json('phones')->nullable();
             $table->text('address');
-            $table->integer('pcode_id')->unsigned()->nullable();
+            $table->integer('org_id')->unsigned()->nullable();
             $table->json('locations');           
             $table->integer('role_id')->unsigned()->nullable();
             

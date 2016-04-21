@@ -116,6 +116,7 @@
         } );
     } );
     $(document).ready(function() {
+        
         function isEven(n) 
         {
            return isNumber(n) && (n % 2 == 0);
@@ -196,7 +197,7 @@
                             for (var key in data) {
                                 if (data.hasOwnProperty(key)) {
                                 observer += "<dt>" +data[key].name+ "</dt>";
-                                observer += "<dl>ID: " +data[key].participant_id+ "</dl>";
+                                observer += "<dl>ID: " +data[key].participant_code+ "</dl>";
                                 observer += "<dl>Mobile: " +data[key].phones.mobile+ "</dl>";
                                 if(data[key].phones.emergency != 0){
                                 observer += "<dl>Emergency: " +data[key].phones.emergency+ "</dl>";

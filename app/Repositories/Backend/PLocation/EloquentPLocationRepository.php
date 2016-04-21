@@ -2,7 +2,6 @@
 
 use App\Exceptions\GeneralException;
 use App\PLocation;
-use App\Repositories\Backend\Location\LocationContract;
 use App\Repositories\Backend\Organization\OrganizationContract;
 use App\Repositories\Backend\Participant\ParticipantContract;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
@@ -18,8 +17,6 @@ use Storage;
  */
 class EloquentPLocationRepository implements PLocationContract {
     
-    protected $locations;
-    
     protected $organizations;
     
     protected $participants;
@@ -30,11 +27,9 @@ class EloquentPLocationRepository implements PLocationContract {
 	 * @param UserRepositoryContract $role
 	 * @param AuthenticationContract $auth
 	 */
-	public function __construct(LocationContract $locations, 
+	public function __construct(ParticipantContract $participants,
                                     OrganizationContract $organizations,
-                                    ParticipantContract $participants,
                                     RoleRepositoryContract $proles) {
-            $this->locations = $locations;
             $this->organizations = $organizations;
             $this->participants = $participants;
             $this->proles = $proles;
@@ -270,16 +265,21 @@ class EloquentPLocationRepository implements PLocationContract {
 	public function searchLocations($q, $location, $area, $org_id, $order_by, $sort = 'asc') {
             
             $query = PLocation::select($location)->where('org_id','=',$org_id);                    
-                    
-            foreach($area as $key => $val){
-                if(!empty($val) && $key !== $location){
-                    $query->where($key, '=', $val);
-                }else{
-                    break;
+            if(is_array($area) && !empty($area)) {       
+                foreach($area as $key => $val){
+                    if(!empty($val) && $key !== $location){
+                        $query->where($key, '=', $val);
+                    }else{
+                        break;
+                    }
                 }
             }
-            $query->where($location, 'LIKE', "$q%");
-            return $query->orderBy($order_by, $sort)->get();
+            if($location != '*'){
+                $query->where($location, 'LIKE', "$q%")
+                        ->groupBy($location)
+                        ->orderBy($order_by, $sort);
+            }
+            return $query->get();
             
 	}
 
@@ -507,6 +507,7 @@ class EloquentPLocationRepository implements PLocationContract {
         }
 
         public function setPcode($location, $org, $level) {
+            
             $organization = $this->organizations->findOrThrowException($org);
             $prole = $this->proles->findOrThrowException($level);
             if(isset($location->pcode)){
@@ -520,16 +521,16 @@ class EloquentPLocationRepository implements PLocationContract {
             }
                 if(!empty($location->pcode)){
                     $trees = $this->makeTreeFromInput($location, $location->pcode, $org);
-
                     if(isset($location->pcode)){
                         $trees->pcode = (string) $location->pcode;
                     }
                     if(isset($location->uec_code)){
                         $trees->uec_code = (string) $location->uec_code;
                     }
-                    $trees->proles()->associate($prole);
+                    //$trees->proles()->associate($prole);
                     $trees->organization()->associate($organization);
-                    $trees->save();
+                    $trees->save();                    
+                    $this->participants->participantsDataSet($location, $level, $org, $trees);
                 }else{
                     throw new GeneralException('Location Code invalid!');
                 }
@@ -537,6 +538,11 @@ class EloquentPLocationRepository implements PLocationContract {
         private function makeTreeFromInput($location, $pcode, $org_id) {
             $trees = PLocation::firstOrNew(['primaryid' => $pcode.'-'.$org_id]);//dd($location);
             $trees->primaryid = $pcode.'-'.$org_id;
+            if(isset($location->isocode)){
+                $trees->isocode = $location->isocode;
+            }else{
+                $trees->isocode = 'MM';
+            }
             if(isset($location->stateregion_english)){
                     $trees->state = $location->stateregion_english;
                 }elseif(isset($location->state_region)){
@@ -590,7 +596,7 @@ class EloquentPLocationRepository implements PLocationContract {
         }
         public function cliImport($file, $org, $level) {
             set_time_limit(0);
-            $excel = Excel::filter('chunk')->load($file, 'UTF-8')->chunk(100, function($locations) use ($file, $org, $level){
+            Excel::filter('chunk')->load($file, 'UTF-8')->chunk(100, function($locations) use ($file, $org, $level){
                             // Loop through all rows
                             //dd($locations);
                             $locations->each(function($row) use ($org, $level) {

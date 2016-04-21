@@ -75,12 +75,9 @@
     </table>
         
 @stop   
-  
+@section('before-scripts-end')
+@endsection
 @push('scripts')
-<script>
-$(function() {
-    
-});
-</script>
+
 @endpush
 @include('frontend.result.includes.partials.status-script')  

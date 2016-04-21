@@ -516,7 +516,7 @@ class AjaxController extends Controller
                                 $code = $request->get('phone');
                                 $instance->collection = $instance->collection->filter(function ($row) use ($request) {
                                     //dd($row->toArray());
-                                    return Str::contains($row['observers'], $request->get('phone')) ? true : false;
+                                    return Str::contains($row['participants'], $request->get('phone')) ? true : false;
                                 });
                             }
                             
@@ -554,123 +554,6 @@ class AjaxController extends Controller
                         ->make(true);            
     }
     
-    public function getAllStatusBak($project, Request $request){
-
-        //$noresults = Plocation::OfWhereDoesntHaveResults($project);
-        
-        //return $noresults->get();
-        
-        $located = PLocation::where('org_id', $project->organization->id )
-                ->with('participants')
-                ->with('answers')
-                ->OfwithAndWhereHas('results', function($query) use ($project){
-                        $query->where('project_id', $project->id);
-                });
-        //$locations = $located->get();
-        /**
-        if(isset($filter)){
-            
-        $locations = $located->get();
-        }else{
-        $locations = PLocation::where('org_id', $project->organization->id )->OfwithAndWhereHas('results', function($query) use ($project){
-                        $query->where('project_id', $project->id);
-
-                })->orNotWithResults()->with('participants')->get();
-        }
-         * 
-         */
-        
-        $datatable = Datatables::of($located)
-                ->filter(function($query) use ($request, $project){
-
-                    $filter = false;
-                    if($request->get('pcode')){
-                        $code = $request->get('pcode');
-                        $query->where('pcode',$code);
-                    }
-
-                    if($request->get('region')){
-                        $state = $request->get('region');
-                        if($state != 'total'){
-                        $query->where('state',$state);
-                        }
-                    }
-                    if($request->get('township')){
-                        $township = $request->get('township');
-                        $query->where('township',$township);
-                    }
-                    if($request->get('station')){
-                        $station = $request->get('station');
-                        $query->where('village',$station);
-                    }
-                    if($request->get('phone')){
-                        $phone = $request->get('phone');
-                        $query->OfWithAndWhereHas('participants',function($query) use ($phone){
-                            $query->where('phones', 'like','%'.$phone.'%');
-                        });
-                    }                    
-
-                    if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
-                        $section = $request->get('section');
-                        $status = $request->get('status');
-                        if($status == 'missing'){
-                            $query->whereDoesntHave('results', function($query) use ($project, $section){
-                                $query->where('project_id', $project->id)->where('section_id', $section);
-                            });
-                        }else{
-
-                            $query->OfwithAndWhereHas('results', function($query) use ($project, $section, $status){
-                                    $query->where('project_id', $project->id)->where('information', $status)->where('section_id', (int)$section);
-                            })->with('results');
-                        }
-
-                        $filter = true;
-                    }
-                    
-                    if(!$filter){
-                        
-                        $query->OfOrNotWithResults($project);
-                    }
-                
-                })
-                ->editColumn('pcode', function ($model) use ($project){
-                    //if($model->results){
-                    return $model->pcode."<a href='".route('data.project.results.edit', [$project->id, $model->primaryid])."' title='Edit'> <i class='fa fa-edit'></i></a>";
-                    //}
-                })
-                ->editColumn('state', function ($model) use ($project){
-                    $state = (!is_null($model->state))? $model->state:'';
-                    return _t($state);
-                })
-                ->editColumn('township', function ($model) use ($project){
-                    $township = (!is_null($model->township))? $model->township:'';
-                    return _t($township);
-                })
-                ->editColumn('village', function ($model) use ($project){
-                    $village = (!is_null($model->village))? $model->village:'';
-                    return _t($village);
-                })
-                ->editColumn('observers', function ($model) use ($project) {
-                    $p = '<table class="table">';
-                    if($project->validate == 'pcode'){
-                        foreach($model->participants as $participant){
-                            $p .= '<tr><td>'.$participant->name.'</td>';
-                            $p .= '<td>';
-                            if(isset($participant->phones->mobile)){
-                            $p .=  ' M:'.$participant->phones->mobile.'<br>';                            
-                            }
-                            if(isset($participant->phones->emergency) && $participant->phones->emergency){
-                            $p .=  ' E:'.$participant->phones->emergency.'<br>';                            
-                            }
-                            $p .= '</td></tr>';
-                        }
-                    $p .= '</table>';    
-                    }
-                    return $p;
-                })
-                ->make(true);
-        return $datatable; 
-    }
     
     public function formValidatePerson($project, $person, Request $request) {
         $roles = $this->proles->getAllRoles();
@@ -871,7 +754,7 @@ class AjaxController extends Controller
     public function searchLocationsOnlyName(Request $request) {
         $term = $request->get('term');
         $area = $request->get('area');
-        $location = $request->get('location');
+        $location = ($request->has('location'))? $request->get('location'):'*';
         $org_id = $request->get('org');
         // find correct organization object
         $org = $this->organizations->findOrThrowException($org_id);

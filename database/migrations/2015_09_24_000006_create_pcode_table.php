@@ -29,7 +29,7 @@ class CreatePcodeTable extends Migration {
             $table->text('district');
             $table->text('state');
             $table->text('country');
-            $table->string('isocode')->nullable();
+            $table->string('isocode')->nullable()->default('MM');
             $table->float('lon')
                   ->nullable()
                   ->default(NULL);

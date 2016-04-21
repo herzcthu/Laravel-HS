@@ -23,9 +23,16 @@ class ForeignTable extends Migration
         });
         
         Schema::table('participants', function(Blueprint $table){
+            $table->foreign('org_id')
+                  ->references('id')
+                  ->on('organizations')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
             $table->foreign('role_id')
                   ->references('id')
-                  ->on('participant_roles');
+                  ->on('participant_roles')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
         }); 
     }
 
@@ -43,6 +50,7 @@ class ForeignTable extends Migration
         });
         Schema::table('participants', function(Blueprint $table){
             $table->dropForeign('participants_role_id_foreign');
+            $table->dropForeign('participants_org_id_foreign');
         }); 
         
     }
