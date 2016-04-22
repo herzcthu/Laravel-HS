@@ -89,7 +89,11 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="panel-title" id="{{$section_key}}">
+                        @if(!empty($section->text))
                          {!! _t($section->text) !!} 
+                        @else
+                         {!! $project->name !!}
+                        @endif
                          <span class="pull-right">
                             @if(isset($result[$section_key]))
                                 @if($result[$section_key] == 'complete')
@@ -135,7 +139,6 @@
                 @endif
                 @if(count($project->questions) > 0 )
                     @foreach($project->questions->sortBy('sort', SORT_NATURAL) as $question)
-                        @if(empty($question->related_data->q) && $question->related_data->type != 'parent')                            
                         
                             @if($section_key == $question->section)
 
@@ -214,7 +217,6 @@
                             </div>
 
                             @endif
-                        @endif
                     @endforeach        
                 @endif
                 @if($project->type == 'checklist')
@@ -249,7 +251,6 @@
     
             @if(count($project->questions) > 0 )
                 @foreach($project->questions as $question)
-                    @if(empty($question->related_data->q) && $question->related_data->type != 'parent') 
                     <div class="form-group">
 
                         <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
@@ -277,7 +278,6 @@
                             </div>
 
                     </div>
-                    @endif
                 @endforeach        
             @endif
             <div class="pull-right">

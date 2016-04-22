@@ -100,6 +100,7 @@
                 @endif
                 @if(count($project->questions) > 0 )
                     @foreach($project->questions->sortBy('sort', SORT_NATURAL) as $question)
+                    @if(!empty($question->related_data))
                         @if(empty($question->related_data->q) && $question->related_data->type != 'parent')                            
                         
                             @if($section_key == $question->section)
@@ -180,6 +181,7 @@
 
                             @endif
                         @endif
+                        @endif
                     @endforeach        
                 @endif
                 @if($project->type == 'checklist')
@@ -215,6 +217,7 @@
     
             @if(count($project->questions) > 0 )
                 @foreach($project->questions as $question)
+                @if(!empty($question->related_data))
                     @if(empty($question->related_data->q) && $question->related_data->type != 'parent') 
                     <div class="form-group">
 
@@ -245,6 +248,7 @@
                             </div>
 
                     </div>
+                    @endif
                     @endif
                 @endforeach        
             @endif

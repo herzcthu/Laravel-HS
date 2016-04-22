@@ -34,7 +34,7 @@
         <div class="btn-group">
             <!--a href='{{ route('admin.project.questions.create', [$project->id])}}' class="btn btn-md btn-primary"><i class="fa fa-question"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add New Question"></i> Add Question</a-->
         <!-- Button trigger modal -->
-        <button id="launch" type="button" class="btn btn-primary" data-toggle="modal" data-target="#formTemplate" data-backdrop="static">
+        <button id="launch" type="button" data-type="create" class="btn btn-primary" data-toggle="modal" data-target="#formTemplate" data-backdrop="static">
           <i class="fa fa-question"></i><i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add New Question"></i> Create Question
         </button>
         </div>
@@ -43,14 +43,16 @@
     </div>
 </div>    
 
-    <div class="clearfix"></div>   
-
-
+    <div class="clearfix"></div>
+    <div class="panel">
+        <div class="panel-body">
     {!! Form::open(['route' => ['admin.project.questions.editall', $project->id], 'class' => 'form-horizontal', 'question' => 'form', 'method' => 'PATCH']) !!}
         @if(is_array($project->sections))
             @foreach($project->sections as $section_key => $section)
             <fieldset id="fieldset{{ $section_key }}">
+                @if(!empty($section->text))
                 <legend>{!! $section->text !!}</legend>
+                @endif
                 @if(!empty($section->desc))
                 
                 <p class="text-bold text-muted">{!! $section->desc !!}</p>
@@ -222,94 +224,97 @@
         <div class="pull-right">
             <!--input type="submit" class="btn btn-success" value="Save" /-->
         </div>
-        <div class="clearfix"></div>
+        
 
     {!! Form::close() !!}
-    
+            </div>
+            </div>
+    <div class="clearfix"></div>
     <div class="modal fade" id="formTemplate" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <H2>Create Questions</H2>
-                      Fill the form, add answers and click "Create" to add question to project.
+                <H2 id="modal-title">Create Questions</H2>
+                      Fill the form, add answers and click "Save" to add question to project.
 
             </div><!-- Modal header -->
               <div class="modal-body">
-                  <FORM id="inputForm">
+                  <div class="row">
+                      <div class="col-xs-6">
+                  <FORM id="inputForm" class="form-vertical" role="form" autocomplete="off">
                         @if(is_array($project->sections))
-                        <div class="row form-group">
-                            <label class="col-xs-2 input-label">Section</label>
-                            <div class="col-xs-10">
-                                {!! Form::select('inputsect', (Aio()->createSelectBoxEntryFromArray($project->sections, 'text')),null, ['class' => 'input-sm', 'placeholder' => 'Section Number']) !!}
-                            </div>
+                        <div class="form-group">
+                            <label class="control-label">Section</label>
+                                {!! Form::select('inputsect', (Aio()->createSelectBoxEntryFromArray($project->sections, 'text')),null, ['class' => 'form-control', 'placeholder' => 'Section Number']) !!}
+                        
                         </div><!--form control-->
                         @endif
-                      <div class="row form-group">
-                      <LABEL class="control-label col-xs-2" for="num">Q No.: </LABEL>
-                      <div class="col-xs-10">
-                            <INPUT class="form-control" id="num" type="text" name="inputnum" value="" />
+                      <div class="form-group">
+                      <LABEL class="control-label" for="num">Q No.: </LABEL>
+                      <INPUT class="form-control" id="num" type="text" name="inputnum" value="" />
                       </div>
-                      </div>
-                      <div class="row form-group">
-                      <LABEL class="control-label col-xs-2" for="question">Question: </LABEL>
-                      <div class="col-xs-10">
-                            <INPUT class="form-control" type="text" name="inputq"  value="" />
-                      </div>
+                      <div class="form-group">
+                      <LABEL class="control-label" for="question">Question: </LABEL>
+                      <INPUT class="form-control" type="text" name="inputq"  value="" />
                       </div>
 
-                      <div class="row form-group">
+                      <div class="form-group">
+                          <LABEL  class="control-label" for="type">Answer: </LABEL>
+                        <button class="btn btn-sm btn-success"  id="add" type="button" value="Add" data-toggle="tooltip" data-placement="top" title="Add New Answer"/><i class="fa fa-plus"></i></button>
+                       
+                          <div class="col-xs-12">
+                              <div class="row">
                       <!--LABEL for="name">Name: </LABEL-->
-                      <div class="col-xs-2">
-                          <INPUT class="input-sm" type="hidden" name="fprefix" />
-                      <LABEL  class="input-label" for="type">Type: </LABEL>
-                      <SELECT id="ftype" class="input-sm" name="ftype">
-                          <OPTION value="text">Text</OPTION>
-                          <OPTION value="radio">Radio</OPTION>
-                          <OPTION value="textarea">Textarea</OPTION>
-                          <OPTION value="checkbox">Checkbox</OPTION>  
-                          <!-- select box need to fix to work in server side 
-                          <OPTION value="select">Select</OPTION>
-                          -->
-                      </SELECT>
+                      <div class="col-xs-6">
+                              <INPUT type="hidden" name="fprefix" />
+                              <LABEL  class="control-label" for="type">Type: </LABEL>
+                              <SELECT id="ftype" class="form-control" name="ftype">
+                                  <OPTION value="text">Text</OPTION>
+                                  <OPTION value="radio">Radio</OPTION>
+                                  <OPTION value="textarea">Textarea</OPTION>
+                                  <OPTION value="checkbox">Checkbox</OPTION>  
+                                  <!-- select box need to fix to work in server side 
+                                  <OPTION value="select">Select</OPTION>
+                                  -->
+                              </SELECT>
                       </div>
-                      <div class="col-xs-2">
+                      <div class="col-xs-6">
                         <LABEL class="control-label"  for="flabel">Label: </LABEL>
                         <INPUT class="form-control"  type="text" name="flabel" />
                       </div>
-                      <div class="col-xs-2">
+                      <div class="col-xs-6">
                         <LABEL class="control-label" for="fvalue">Value: </LABEL>
                         <INPUT class="form-control" type="text" name="fvalue" />
                       </div>
-                      <div class="col-xs-2 hide" id="optionlabel">
+                      <div class="col-xs-6 hide" id="optionlabel">
                         <LABEL class="control-label"  for="foption">Option Label: </LABEL>
                         <INPUT class="form-control"  type="text" name="foption" />
                       </div>
-                      <div class="col-xs-2">
-                        <LABEL class="control-label">&nbsp; </LABEL>
-                        <button class="btn btn-sm form-control"  id="add" type="button" value="Add" data-toggle="tooltip" data-placement="top" title="Add New Answer"/><i class="fa fa-plus"></i></button>
-                      </div>
+                              </div>
+                          </div>
                       </div>
                 </FORM>
-                <form id="qForm" name="qForm">
-                    <div class="row">
+                      
+                </div>
+                <div class="col-xs-6">
+                <form id="qForm" name="qForm" autocomplete="off">
                     <div id="qgroup" class="form-group">
                         <input type="hidden" value="" name="section" data-prefix="section" data-name="section" data-label="">
-                        <label class="control-label col-xs-1" for="qnum" id="qnum"></label>
+                        <label class="control-label col-xs-2" for="qnum" id="qnum"></label>
                         <input type="hidden" value="" name="qnum" data-prefix="qnum" data-name="qnum" data-label="">
-                        <label class="col-xs-11" for="question" id="question"></label>
+                        <label class="col-xs-10" for="question" id="question"></label>
                         <input type="hidden" value="" name="question" data-prefix="question" data-name="question" data-label="">
                     </div>
-                    </div>
-                    <div class="row">
                     <div id="answers" class="col-xs-offset-1 form-group">
                     </div> 
-                    </div>
                 </form>
+                </div>
+                </div>
 
             </div><!-- Modal body -->
             <div class="modal-footer">
-                <button class="btn btn-success pull-left" id="create" type="button" value="Create" data-dismiss="">Create</button>
+                <button class="btn btn-success pull-left" id="save" type="button" value="Save" data-dismiss="">Save</button>
                 <button class="btn btn-danger pull-left" id="resetall" type="button" class="btn btn-primary btn-xs">reset</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div><!-- Modal footer -->
@@ -317,13 +322,6 @@
         </div>
     </div><!-- #formTemplate -->
     
-    <div id="editForm" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-              <div class="modal-header"></div>
-          </div>
-        </div>        
-    </div>
     @push('scripts')
     
     <script type="text/javascript">
@@ -337,7 +335,14 @@
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		}
 	});
-    
+    /**
+     * type = input type
+     * value = input value
+     * prefix = input name prefix
+     * labeltext = input label
+     * foption = selectbox options
+     * index = input index
+     */
     function add(type, value, prefix, labeltext, foption, index) {
         //Create an input type dynamically.
         var element = document.createElement("input");
@@ -468,7 +473,7 @@
 
     }
 
-    function createQuestion(form) {
+    function saveQuestion(form, url = '') {
         var qna = {}, answers = {}, container;
         $.ajaxSetup({
                 headers: {
@@ -476,11 +481,15 @@
                 }
         });
         if (typeof ajaxQURL === 'undefined') {
-		var ajaxQURL = ems.add_question_url;
+                if(url == '') {
+                    var ajaxQURL = ems.add_question_url;
+                } else {
+                    var ajaxQURL = url;
+                }
 	}
         
             
-        console.log(form);
+        //console.log(form);
         var j = 0, op = {};
         for ( var i = 0; i < form.elements.length; i++ ) {
            var e = form.elements[i]; //console.log(e);
@@ -502,7 +511,7 @@
                    break;
                //javascript form object is "select-one" for single selection selectbox
                case "select-one":
-                   console.log(e);
+                  // console.log(e);
                    for(var o = 0; o < e.length; o++){
                        answers[ename + j + "#" +e.options[o].value] = {
                            "type" : "option",
@@ -582,17 +591,22 @@
                 var fvalue = inputForm.fvalue.value;
                 var flabel = inputForm.flabel.value;
                 var foption = inputForm.foption.value;
+                console.log(inputForm);
                 
                 if( fnum == '' || fq == '' ) return;
                 add(ftype, fvalue, fprefix, flabel, foption, index);
                 index++;
             }) 
-            .on("click", "#create", function(){
+            .on("click", "#save", function(){
                 var inputForm = document.getElementById("inputForm");
                 var fnum = inputForm.inputnum.value;
                 var fq = inputForm.inputq.value;
+                var qForm = document.getElementById("qForm");
+                var url = qForm.action;
+                console.log(qForm);
                 if( fnum == '' || fq == '' ) return;
-                createQuestion(document.forms["qForm"]);
+                saveQuestion(document.forms["qForm"], url);
+                
             })
             .on("click change", "#inputForm input[name='inputsect']", function(){
                 var sect = $(this).val();
@@ -645,6 +659,50 @@
                 //console.log(deldata);
                 $("." + deldata).remove();
                 //index--;
+            })// edit form modal contant
+            .on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); // Button that triggered the modal
+              var content = button.data('content'); // Extract info from data-* attributes
+              var ajaxurl = button.data('href');
+              var type = button.data('type');
+              // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+              // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+              var modal = $(this);
+                $("#qnum").text('');
+                $("#qForm input[name='qnum']").val('');
+                $("#question").text('');
+                $("#answers").text('');
+                $("#qForm input[name='question']").val('');
+                $("#inputForm input[name='fprefix']").val('');
+              if(typeof ajaxurl != 'undefined') {
+                    $("#qForm").attr('action', ajaxurl);
+                }else{
+                    $("#qForm").attr('action', ems.add_question_url);
+                }
+              switch(type){
+                  case "create":
+                    $('#modal-title').text('Create Question');
+                    break;
+                  case "edit":
+                    $('#modal-title').text('Edit Question');
+                    break;
+                }
+              if(typeof content == 'undefined') return;
+              
+              var answers = content.qanswers;
+              
+              $('#inputForm input[name=inputsect]').val(content.section);
+              $('#inputForm input[name=inputnum]').val(content.qnum);
+              $('#inputForm input[name=inputq]').val(content.question);
+              $("#qForm input[name='section']").val(content.section);
+              $("#qForm input[name='qnum']").val(content.qnum);
+              $("#qForm input[name='question']").val(content.question);
+              $("#qnum").text(content.qnum + ' : ');
+              $("#question").text(content.question);
+              
+              $.each(answers, function( index, answer ) {
+                  add(answer.type, answer.value, answer.akey, answer.text, answer.optional, index);
+                });
             });
             
             $( "#launch" ).on('click', function(){

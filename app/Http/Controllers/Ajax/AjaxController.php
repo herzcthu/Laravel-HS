@@ -97,6 +97,10 @@ class AjaxController extends Controller
         
     }
     
+    public function editQuestion($project, $question, Request $request){
+        
+    }
+    
     public function updateTranslation(Request $request) {
         $lang_id = $request->get('lang_id');//return $lang_id; die();
             
@@ -536,7 +540,7 @@ class AjaxController extends Controller
                         })
                         ->editColumn('pcode', function ($modal) use ($project){
                             //if($modal->results){
-                            return $modal->pcode."<a href='".route('data.project.results.edit', [$project->id, $modal->resultable_id])."' title='Edit'> <i class='fa fa-edit'></i></a>";
+                            return $modal->pcode."<a href='".route('data.project.results.edit', [$project->id, $modal->primaryid])."' title='Edit'> <i class='fa fa-edit'></i></a>";
                             //}
                         })
                         ->editColumn('state', function ($modal) use ($project){

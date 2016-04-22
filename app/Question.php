@@ -19,6 +19,8 @@ class Question extends Model
    */
   protected $guarded = ['id'];
   
+  protected $with = ['qanswers']; 
+  
   //protected $fillable = array('project_id','answers','qnum','question','related_data','answer_view', 'section', 'sameanswer', 'related_id');
   
   public function project() {
@@ -74,7 +76,8 @@ class Question extends Model
   * @return string
   */
   public function getEditButtonAttribute() {
-     return '<a href="'.route('admin.project.question.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#editForm" ><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"  ></i></a>';
+      $content = json_encode($this, true);
+     return '<a href="#" data-href="'.route('ajax.project.question.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary" data-content=\''.$content.'\' data-toggle="modal" data-target="#formTemplate" data-type="edit"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"  ></i></a>';
   }
   
   /**
