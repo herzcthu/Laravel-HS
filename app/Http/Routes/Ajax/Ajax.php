@@ -28,7 +28,7 @@ Route::group(['middleware' => 'auth'], function ()
         Route::get('project/{project}/results', ['as' => 'ajax.project.results', 'uses' => 'AjaxController@getAllResults']);
         Route::post('project/{project}/questions/sort', ['as' => 'ajax.project.questions.sort', 'uses' => 'AjaxController@sortQuestions']);
         Route::post('project/{project}/question/new', ['as' => 'ajax.project.question.new', 'uses' => 'AjaxController@newQuestion']);
-        Route::patch('project/{project}/question/{question}/edit', ['as' => 'ajax.project.question.edit', 'uses' => 'AjaxController@editQuestion']);        
+        Route::patch('project/{project}/question/{questions}/edit', ['as' => 'ajax.project.question.edit', 'uses' => 'AjaxController@editQuestion']);        
         Route::get('locations/search', ['as' => 'ajax.locations.searchname', 'uses' => 'AjaxController@searchLocationsOnlyName']);
         Route::match(['post','put', 'patch'],'language',['as' => 'ajax.language', 'uses' => 'AjaxController@updateTranslation']);
         Route::delete('participants/{participant}/location/{location}', ['as' => 'ajax.participants.delocate', 'uses' => 'AjaxController@delocate']);

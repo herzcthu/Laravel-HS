@@ -51,7 +51,7 @@ interface QuestionContract {
 	 * @param $roles
 	 * @return mixed
 	 */
-	public function create($input, $project);
+	public function create($input, $project, $ajax = false);
 
 	/**
 	 * @param $id
@@ -59,7 +59,7 @@ interface QuestionContract {
 	 * @param $roles
 	 * @return mixed
 	 */
-	public function update($id, $input, $project_id);
+	public function update($id, $input, $project_id, $ajax = false);
 
 	/**
 	 * @param $id

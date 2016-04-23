@@ -163,38 +163,40 @@ class EloquentQuestionRepository implements QuestionContract {
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function update($question, $input, $project) {
-		$related_id = $input['related_data']['q'];
+	public function update($question, $input, $project, $ajax = false) {
+            
+		$related_id = (isset($input['related_data'])) ? $input['related_data']['q']:'';
                 if(!empty($related_id)){
                     $this->flushParent($related_id, $question);
                 }
-                $question->section = $input['section'];
-                if($input['report'] == 'none' || empty($input['report'])) {
-                    $question->report = null;
-                } else {
-                    $question->report = $input['report'];
-                }
+                if(isset($input['report']) && ($input['report'] == 'none' || empty($input['report']))) {
+                    $input['report'] = null;
+                } 
                 //$question->answers = $input['answers'];
                 //$question->related_data = $input['related_data'];
                 //$question->answer_view = $input['answer_view'];
-                $question->sameanswer = isset($input['sameanswer']) ? 1 : 0;
+                $input['sameanswer'] = isset($input['sameanswer']) ? 1 : 0;
                 $input['display']['qnum'] = isset($input['display']['qnum'])? 1 : 0;
                 $input['display']['question'] = isset($input['display']['question'])? 1 : 0;
-                $question->display = $input['display'];
                 
-		if ($question->whereQnum($question->qnum)->whereProjectId($project['project_id'])->first()->update($input)) { 
+		if ($question->update($input)) { 
                     \App\QAnswers::where('qid', $question->id)->delete();
                     foreach($input['answers'] as $k => $av){
                         $qanswer = \App\QAnswers::firstOrNew(['qid' => $question->id, 'akey' => $k]);
                         $qanswer->akey = $k;
                         $qanswer->type = $av['type'];
-                        $qanswer->text = $av['text'];
+                        $qanswer->text =  htmlspecialchars($av['text'], ENT_QUOTES);
                         $qanswer->value = $av['value'];
-                        $qanswer->qarequire = $av['require'];
-                        $qanswer->css = $av['css'];
+                        $qanswer->qarequire = (isset($av['require']))?$av['require']:'';
+                        $qanswer->css = (isset($av['css']))?$av['css']:'';
                         $question->qanswers()->save($qanswer);
                     }
-                    return true;
+                    if($ajax == true){
+                    // need to return $question for ajax
+			return $question;
+                    }else{
+                        return true;
+                    }
 		}
 
 		throw new GeneralException('There was a problem updating this question. Please try again.');
@@ -353,7 +355,7 @@ class EloquentQuestionRepository implements QuestionContract {
                     $question->report = $input['report'];
                 
 		$question->qnum = $input['qnum'];
-		$question->question = $input['question'];
+		$question->question = htmlspecialchars($input['question'], ENT_QUOTES);
                 
                 if(isset($input['related_data']))
                     $question->related_data = $input['related_data'];

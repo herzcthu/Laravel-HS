@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class Question extends Model
 {
@@ -77,7 +78,36 @@ class Question extends Model
   */
   public function getEditButtonAttribute() {
       $content = json_encode($this, true);
-     return '<a href="#" data-href="'.route('ajax.project.question.edit', [$this->project->id, $this->id]).'" class="btn btn-xs btn-primary" data-content=\''.$content.'\' data-toggle="modal" data-target="#formTemplate" data-type="edit"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"  ></i></a>';
+      $content = str_replace("'", "&apos;", $content); // this is quick fix for single quote. need to remove later
+      // ajax route for creating new question
+        $question_url = route('ajax.project.question.edit', [$this->project->id, $this->id]);
+        // get ajax urlhash for project
+        $urlhash = $this->urlhash;
+        // check if rehash need or not
+        if (Hash::needsRehash($urlhash)) {
+            // rehash if urlhash column in project table empty or invalid
+            $urlhash = Hash::make($question_url);
+            // update project table in database with new or correct urlhash
+            $this->update(['urlhash' => $urlhash]);
+        }
+     return '<a id="'.$this->qnum.'-btn" href="#" data-hash="'.$urlhash.'" data-href="'.$question_url.'" class="btn btn-xs btn-primary '.$this->qnum.'-btn" data-content=\''.$content.'\' data-toggle="modal" data-target="#formTemplate" data-type="edit"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"  ></i></a>';
+  }
+  
+  /**
+  * @return string
+  */
+  public function getLogicButtonAttribute() {// ajax route for creating new question
+        $question_url = route('ajax.project.question.edit', [$this->project->id, $this->id]);
+        // get ajax urlhash for project
+        $urlhash = $this->urlhash;
+        // check if rehash need or not
+        if (Hash::needsRehash($urlhash)) {
+            // rehash if urlhash column in project table empty or invalid
+            $urlhash = Hash::make($question_url);
+            // update project table in database with new or correct urlhash
+            $this->update(['urlhash' => $urlhash]);
+        }
+     return '<a id=" '.$this->qnum.'-lgbtn" data-modal="'.$this->qnum.'-btn" href="#" class="btn btn-xs btn-primary '.$this->qnum.'-btn" data-toggle="modal" data-target="#logic" data-type="edit"><i class="fa fa-info" data-toggle="tooltip" data-placement="top" title="Add Logic"  ></i></a>';
   }
   
   /**
@@ -88,7 +118,8 @@ class Question extends Model
   }
   
   public function getActionButtonsAttribute() {
-      return $this->getEditButtonAttribute().
+      return $this->getEditButtonAttribute().' '.
+              $this->getLogicButtonAttribute().' '.
       $this->getDeleteButtonAttribute();
   }
   

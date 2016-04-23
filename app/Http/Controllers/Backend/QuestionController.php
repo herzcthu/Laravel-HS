@@ -175,7 +175,7 @@ class QuestionController extends Controller
     {
         $this->questions->update($question,
 			$request->except('project_id', 'organization'),
-                        $request->only('project_id')
+                        $project
                         
 		);
 		return redirect()->route('admin.project.questions.editall',[$project->id])->withFlashSuccess('The question was successfully updated.');

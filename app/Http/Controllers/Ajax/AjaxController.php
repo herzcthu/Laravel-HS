@@ -98,7 +98,23 @@ class AjaxController extends Controller
     }
     
     public function editQuestion($project, $question, Request $request){
-        
+        if($request->ajax()){
+            $ajax = true;
+        }
+        $input = $request->all();
+        // get urlhash from request header
+        $request_urlhash = $request->header('X-URLHASH');
+        if(empty($request_urlhash)) {
+            return response()->json(array('success'=>false, 'message' => $urlhash));
+        }else{
+            if (Hash::check($request->url(),$request_urlhash)) {
+                // url match with hash...
+                $question = $this->question->update($question, $input, $project, $ajax);
+                return $question;
+            } else {
+                return response()->json(array('success'=>false, 'reqhash' => $request_urlhash));
+            }
+        }
     }
     
     public function updateTranslation(Request $request) {

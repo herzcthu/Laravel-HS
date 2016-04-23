@@ -83,7 +83,7 @@
                                         </div>
                                         @endif
                                         
-                                        <div class="col-xs-1">
+                                        <div class="col-xs-1" style="padding-left:0px; padding-right: 0px;">
                                         {!! $question->action_buttons !!}
                                         </div>
                                       </div>
@@ -241,12 +241,12 @@
             </div><!-- Modal header -->
               <div class="modal-body">
                   <div class="row">
-                      <div class="col-xs-6">
+                      <div class="col-xs-5">
                   <FORM id="inputForm" class="form-vertical" role="form" autocomplete="off">
                         @if(is_array($project->sections))
                         <div class="form-group">
                             <label class="control-label">Section</label>
-                                {!! Form::select('inputsect', (Aio()->createSelectBoxEntryFromArray($project->sections, 'text')),null, ['class' => 'form-control', 'placeholder' => 'Section Number']) !!}
+                                {!! Form::select('inputsect', (Aio()->createSelectBoxEntryFromArray($project->sections, 'text')),null, ['id' => 'inputsect', 'class' => 'form-control', 'placeholder' => 'Section Number']) !!}
                         
                         </div><!--form control-->
                         @endif
@@ -269,9 +269,10 @@
                       <div class="col-xs-6">
                               <INPUT type="hidden" name="fprefix" />
                               <LABEL  class="control-label" for="type">Type: </LABEL>
-                              <SELECT id="ftype" class="form-control" name="ftype">
-                                  <OPTION value="text">Text</OPTION>
+                              <SELECT id="ftype" class="form-control" name="ftype">                                  
                                   <OPTION value="radio">Radio</OPTION>
+                                  <OPTION value="text">Text</OPTION>
+                                  <OPTION value="number">Number</OPTION>
                                   <OPTION value="textarea">Textarea</OPTION>
                                   <OPTION value="checkbox">Checkbox</OPTION>  
                                   <!-- select box need to fix to work in server side 
@@ -297,16 +298,16 @@
                 </FORM>
                       
                 </div>
-                <div class="col-xs-6">
+                <div class="col-xs-7">
                 <form id="qForm" name="qForm" autocomplete="off">
                     <div id="qgroup" class="form-group">
                         <input type="hidden" value="" name="section" data-prefix="section" data-name="section" data-label="">
-                        <label class="control-label col-xs-2" for="qnum" id="qnum"></label>
+                        <label style="padding-left: 0px;padding-right: 0px;" class="control-label col-xs-2" for="qnum" id="qnum"></label>
                         <input type="hidden" value="" name="qnum" data-prefix="qnum" data-name="qnum" data-label="">
-                        <label class="col-xs-10" for="question" id="question"></label>
+                        <label style="padding-left: 0px;"class="col-xs-10" for="question" id="question"></label>
                         <input type="hidden" value="" name="question" data-prefix="question" data-name="question" data-label="">
                     </div>
-                    <div id="answers" class="col-xs-offset-1 form-group">
+                    <div id="answers" class="col-xs-offset-2 form-group">
                     </div> 
                 </form>
                 </div>
@@ -314,7 +315,7 @@
 
             </div><!-- Modal body -->
             <div class="modal-footer">
-                <button class="btn btn-success pull-left" id="save" type="button" value="Save" data-dismiss="">Save</button>
+                <button class="btn btn-success pull-left" id="save" type="button" value="Save" data-dismiss="modal">Save</button>
                 <button class="btn btn-danger pull-left" id="resetall" type="button" class="btn btn-primary btn-xs">reset</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div><!-- Modal footer -->
@@ -322,14 +323,75 @@
         </div>
     </div><!-- #formTemplate -->
     
+    <div class="modal fade" id="logic" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <H2 id="modal-title">Add Logic</H2>
+                      
+
+            </div><!-- Modal header -->
+              <div class="modal-body">
+                  <div class="row">
+                    <FORM id="logicForm" class="form-vertical" role="form" autocomplete="off">
+                            <div class="col-xs-5">
+                                <h3>Left Side</h3>
+                            </div>
+                        <div class="col-xs-2"><h3>Operator</h3></div>
+                        <div class="col-xs-5"><h3>Right Side</h3></div>
+                            <div class="col-xs-5">
+                                <label for="lftans" class="control-label">Answer</label>
+                                <select id="lftselect" name="lftans" class="form-control"></select>
+                                <label for="lftval" class="control-label diffques">Optional Value</label>
+                                <input type="text" name="lftval" class="form-control diffques"></input>
+                            </div>
+                            <div class="col-xs-2">
+                            <label for="operator" class="control-label">Select</label>
+                            <select id="operator" name="operator" class="form-control">
+                                <option value="=">Equal to (=)</option>
+                                <option value=">">Greater than (>)</option>
+                                <option value="<">Less than (<)</option>
+                                <option value="true">Selected</option>
+                            </select>                                
+                            </div>
+                            <div class="col-xs-5">
+                                
+                                <label for="rftques" class="control-label diffques">Question</label>
+                                <select id="rftquess" name="rftquess" class="form-control diffques"><option value="">None</option></select>                                
+                                <label for="rftans" class="control-label diffques">Answer</label>
+                                <select id="rftans" name="rftans" class="form-control diffques"><option value="">None</option></select>
+                                
+                                <label for="rftval" class="control-label">Value</label>
+                                <input type="text" name="rftval" class="form-control"></input>
+                                <div class="checkbox">
+                                <label for="rftdiff" class="control-label">
+                                    <input id="rftdiff" type="checkbox" name="rftdiff"></input>
+                                    Different question
+                                </label>
+                                </div>
+                            </div>
+                    </FORM>                      
+                  </div>
+            </div><!-- Modal body -->
+            <div class="modal-footer">
+                <button class="btn btn-success pull-left" id="savelogic" type="button" value="Save" data-dismiss="modal">Save</button>
+                <button class="btn btn-danger pull-left" id="resetlogic" type="button" class="btn btn-primary btn-xs">reset</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div><!-- Modal footer -->
+          </div><!-- Modal content -->
+        </div>
+    </div><!-- #logic -->
     @push('scripts')
-    
     <script type="text/javascript">
-        var index = 0;
         {{-- 
             <!-- reassign javascript global object variable name from config file for later use -->
         --}}
         var ems = {{ config('javascript.js_namespace') }};
+    </script>
+    <script type="text/javascript">
+        var index = 0;
+        
 	$.ajaxSetup({
 		headers: {
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -358,59 +420,78 @@
         element.setAttribute("class", prefix + index);
 
         var label = document.createElement("label");
-        label.setAttribute("for", prefix);
+        label.setAttribute("for", prefix + index);
         label.setAttribute("data-label", prefix + index);
-        label.setAttribute("class", prefix + index + " control-label " + type);
+        label.setAttribute("class", prefix + index + " control-label ");
         
         var del = document.createElement("button");
-        del.setAttribute("class", "del col-xs-1 " + prefix + index);
+        del.setAttribute("class", "del btn btn-sm btn-danger " + prefix + index);
         del.setAttribute("type", "button");
         del.setAttribute("data-del", prefix + index);
         del.innerHTML = "X";
-        
+        var deldiv = document.createElement("div");
+            deldiv.setAttribute("class", " col-xs-1 ")
         var answerdiv = document.getElementById("answers");
 
         var br = document.createElement("br");
         
         var inputgroup = document.createElement("div");
-            inputgroup.setAttribute("class", "row form-group");
+            inputgroup.setAttribute("class", "form-group");
             
         var wrapper = document.createElement("div");
+        
+        var typewrap = document.createElement("div");
         
         //console.log(wrapper);
 
         //Append the element in page (in span).
         switch(type) {
             case "radio":
+                // add inputgroup div to answer div
                 answerdiv.appendChild(inputgroup);
+                // add wrapper div to inputgroup
                 inputgroup.appendChild(wrapper);
-                wrapper.setAttribute("class", type + " col-xs-10");
-                wrapper.appendChild(label);
+                wrapper.setAttribute("class", " col-xs-11");
+                // add typewrap div to wrapper
+                wrapper.appendChild(typewrap);
+                // add label to typewrap
+                typewrap.appendChild(label);
+                typewrap.setAttribute("class", " radio ");
+                // add element to label
                 label.appendChild(element);
                 label.innerHTML += " " + labeltext + " (" + value + ")";
-                inputgroup.appendChild(del);
+                // add del to deldiv
+                deldiv.appendChild(del);
+                // add deldiv to inputgroup
+                inputgroup.appendChild(deldiv);
                 break;
             case "checkbox":
                 answerdiv.appendChild(inputgroup);
                 inputgroup.appendChild(wrapper);
-                wrapper.setAttribute("class", type + " col-xs-10");
-                wrapper.appendChild(label);
+                wrapper.setAttribute("class", type + " col-xs-11");
+                wrapper.appendChild(typewrap);
+                typewrap.appendChild(label);
+                typewrap.setAttribute("class", " checkbox ");
                 label.appendChild(element);
                 label.innerHTML += " " + labeltext + " (" + value + ")";
-                inputgroup.appendChild(del);
+                deldiv.appendChild(del);
+                inputgroup.appendChild(deldiv);
                 break;
             case "textarea":
                 var textarea = document.createElement("textarea");
                 textarea.setAttribute("name", prefix + index);
                 textarea.setAttribute("data-prefix", prefix);
                 textarea.setAttribute("data-label", labeltext);
-                textarea.className += " col-xs-8 " + prefix + index;
-                label.className += " col-xs-2";
+                textarea.className += " form-control " + prefix + index;
+                label.className += "  ";
                 label.innerHTML += " " + labeltext + " ";
                 answerdiv.appendChild(inputgroup);
-                inputgroup.appendChild(label);
-                inputgroup.appendChild(textarea);
-                inputgroup.appendChild(del);
+                wrapper.appendChild(label);
+                wrapper.appendChild(textarea);
+                wrapper.setAttribute("class", " col-xs-11");
+                inputgroup.appendChild(wrapper);
+                deldiv.appendChild(del);
+                inputgroup.appendChild(deldiv);
 
                 break;
             case "select":
@@ -435,12 +516,13 @@
                     selectbox.setAttribute("data-label", labeltext);                
                     selectbox.className += " input-sm col-xs-8";
 
-                    label.className += " col-xs-2";
+                    label.className += " col-xs-3";
                     label.innerHTML += " " + labeltext + " ";
 
                     selectdiv.appendChild(label);
                     selectdiv.appendChild(selectbox);
-                    selectdiv.appendChild(del);
+                    deldiv.appendChild(del);
+                    selectdiv.appendChild(deldiv);
 
                     answerdiv.appendChild(selectdiv);
 
@@ -454,16 +536,20 @@
                 option.innerHTML = foption;
                 selectbox.appendChild(option);
                 break;
+            case "hidden":
+                answerdiv.appendChild(element);
+                break;
             default:
                 answerdiv.appendChild(inputgroup);
                 inputgroup.appendChild(label);
-                label.className += " col-xs-2";
+                label.className += " col-xs-3";
                 inputgroup.appendChild(wrapper);
                 element.className += " form-control";
                 wrapper.setAttribute("class", "col-xs-8");
                 wrapper.appendChild(element);
                 label.innerHTML += " " + labeltext + " ";
-                inputgroup.appendChild(del);
+                deldiv.appendChild(del);
+                inputgroup.appendChild(deldiv);
                 break;
         }
         
@@ -473,11 +559,11 @@
 
     }
 
-    function saveQuestion(form, url = '') {
+    function saveQuestion(form, url = '', method = 'post', hash) {
         var qna = {}, answers = {}, container;
         $.ajaxSetup({
                 headers: {
-                        'X-URLHASH': ems.urlhash
+                        'X-URLHASH': hash // if empty this is ems.urlhash
                 }
         });
         if (typeof ajaxQURL === 'undefined') {
@@ -543,7 +629,7 @@
            
         }
         qna["answers"] = answers;
-
+        qna["_method"] = method;
         //send ajax request
         $.ajax({
                 url    : ajaxQURL,
@@ -551,13 +637,8 @@
                 dataType:"json",
                 data   : qna,
                 success: function (data) {
-                        if(data.success){
-                                $("#message").html('Sorted');
-                                $("#message").addClass('text-green');
-                        }else{
-                                $("#message").html('Something wrong');
-                                $("#message").addClass('text-red');
-                        }
+                        //console.log(data);
+                        location.reload(); // To Do: need to remove this function.
                 }
 
         });
@@ -575,6 +656,7 @@
         }
         //console.log(container);
         console.log(JSON.stringify(qna));
+        
     }
     
     
@@ -582,6 +664,31 @@
 		var ajaxURL = ems.url;
 	}
 	$(document).ready(function ($) {
+            $( "#logic" ).on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); // Button that triggered the modal
+              var dataid = button.data('modal'); // get id for data
+              var data = $('#'+dataid).data('content');
+              var options = '';
+              var select = document.getElementById('lftselect');
+              // remove all options from select box
+              while (select.firstChild) {
+                    select.removeChild(select.firstChild);
+                }
+              console.log(data.qanswers);
+              $.each(data.qanswers, function( index, answer ) {
+                  var option = document.createElement("option");
+                    option.setAttribute("value", answer.akey );
+                    option.setAttribute("data-type", answer.type );
+                    option.innerHTML = answer.text + ' (' + answer.type + ')';
+                    select.appendChild(option);
+              });
+                    
+                
+              console.log(data);
+            });
+            $('#rftdiff').on('change', function(){
+                $('.diffques').toggle(this.checked);
+            }).change();
             $( "#formTemplate" ).on("click", "#add", function(){                
                 var inputForm = document.getElementById("inputForm");
                 var fnum = inputForm.inputnum.value;
@@ -603,19 +710,19 @@
                 var fq = inputForm.inputq.value;
                 var qForm = document.getElementById("qForm");
                 var url = qForm.action;
-                console.log(qForm);
+                var hash = qForm.dataset.hash;
+                var type = $(this).data('type');
                 if( fnum == '' || fq == '' ) return;
-                saveQuestion(document.forms["qForm"], url);
                 
+                saveQuestion(document.forms["qForm"], url, type, hash);
             })
-            .on("click change", "#inputForm input[name='inputsect']", function(){
-                var sect = $(this).val();
+            .on("select click change", "#inputsect", function(){
+                var sect = $(this).val();//console.log(sect);
                 if(sect !== ''){
                     $("#qForm input[name='section']").val(sect);
                 }else{
                     $("#qForm input[name='section']").val('');
                 }
-                console.log( $(this).val() );
             }) 
             .on("keyup change", "#inputForm input[name='inputnum']", function(){
                 var num = $(this).val();
@@ -629,7 +736,6 @@
                     $("#inputForm input[name='fprefix']").val('');
                     //$("#inputForm").trigger("reset");
                 }
-                console.log( $(this).val() );
             })            
             .on("keyup change", "#inputForm input[name='inputq']", function(){
                 var question = $(this).val();
@@ -664,6 +770,7 @@
               var button = $(event.relatedTarget); // Button that triggered the modal
               var content = button.data('content'); // Extract info from data-* attributes
               var ajaxurl = button.data('href');
+              var urlhash = button.data('hash');
               var type = button.data('type');
               // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
               // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
@@ -674,6 +781,11 @@
                 $("#answers").text('');
                 $("#qForm input[name='question']").val('');
                 $("#inputForm input[name='fprefix']").val('');
+              if(typeof urlhash != 'undefined') {
+                    $("#qForm").attr('data-hash', urlhash);
+                }else{
+                    $("#qForm").attr('data-hash', ems.urlhash);
+                }
               if(typeof ajaxurl != 'undefined') {
                     $("#qForm").attr('action', ajaxurl);
                 }else{
@@ -682,9 +794,11 @@
               switch(type){
                   case "create":
                     $('#modal-title').text('Create Question');
+                    $('#save').attr('data-type', 'post');
                     break;
                   case "edit":
                     $('#modal-title').text('Edit Question');
+                    $('#save').attr('data-type', 'patch');
                     break;
                 }
               if(typeof content == 'undefined') return;
@@ -694,14 +808,16 @@
               $('#inputForm input[name=inputsect]').val(content.section);
               $('#inputForm input[name=inputnum]').val(content.qnum);
               $('#inputForm input[name=inputq]').val(content.question);
+              $('#inputForm input[name=fprefix]').val(content.qnum + '_a');
               $("#qForm input[name='section']").val(content.section);
               $("#qForm input[name='qnum']").val(content.qnum);
               $("#qForm input[name='question']").val(content.question);
               $("#qnum").text(content.qnum + ' : ');
               $("#question").text(content.question);
-              
+              //console.log(content.qanswers); return;
               $.each(answers, function( index, answer ) {
-                  add(answer.type, answer.value, answer.akey, answer.text, answer.optional, index);
+                  var prefix = $('#inputForm input[name=fprefix]').val();
+                  add(answer.type, answer.value, prefix, answer.text, answer.optional, index);
                 });
             });
             
