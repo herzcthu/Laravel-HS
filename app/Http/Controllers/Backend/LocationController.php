@@ -231,12 +231,11 @@ class LocationController extends Controller
     public function import(Request $request) {
 		$file = $request->only('file')['file'];
                 $org = $request->only('organization')['organization'];
-                $codetype = $request->only('prole')['prole'];
 		if (!empty($file)) {
 			$file = $file->getRealPath();
                         
                         $exitCode = Artisan::call('emsdb:import', [
-                                        '--file' => $file, '--org' => $org, '--filetype' => 'pcode', '--level' => $codetype
+                                        '--file' => $file, '--org' => $org, '--filetype' => 'pcode'
                                     ]);
                         
 			$message = 'Location List imported!';

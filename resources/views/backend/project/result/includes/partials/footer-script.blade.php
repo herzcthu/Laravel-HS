@@ -21,6 +21,7 @@
 <script type="text/javascript">
 (function ($) {
     $(document).ready(function() {
+        
         //reset input values
         $('.reset').on('click',function(){alert('clicked');
             $(this).parent().find('input').each(function() {

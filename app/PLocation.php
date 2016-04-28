@@ -16,7 +16,7 @@ class PLocation extends Model
     
     protected $guarded = ['id'];
     
-    protected $primaryKey = 'primaryid';
+    //protected $primaryKey = 'primaryid';
 
     public static function boot()
     {

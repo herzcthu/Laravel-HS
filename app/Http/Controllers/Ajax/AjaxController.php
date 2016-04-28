@@ -101,7 +101,13 @@ class AjaxController extends Controller
         if($request->ajax()){
             $ajax = true;
         }
-        $input = $request->all();
+        if($request->has('logicdata')){
+            $logic = $question->logic;
+            $logic[$request->get('lftans')] = $request->except('_method','logicdata');
+            $input['logic'] = $logic;
+        }else{
+            $input = $request->all();
+        }
         // get urlhash from request header
         $request_urlhash = $request->header('X-URLHASH');
         if(empty($request_urlhash)) {
@@ -115,6 +121,96 @@ class AjaxController extends Controller
                 return response()->json(array('success'=>false, 'reqhash' => $request_urlhash));
             }
         }
+    }
+    
+    public function addLogic($project,$question, Request $request) {
+        if($request->ajax()){
+            $ajax = true;
+        }
+        if($request->has('logicdata')){
+            //$logic = $question->logic;
+            $input = $request->except('_method','_hash','logicdata');
+        } else {
+            return response()->json(array('success'=>false));           
+        }
+        // get urlhash from request header
+        $request_urlhash = $request->get('_hash');
+        if(empty($request_urlhash)) {
+            return response()->json(array('success'=>false, 'message' => $urlhash));
+        }else{
+            if (Hash::check($request->url(),$request_urlhash)) {
+                //return $input;
+                // url match with hash...
+                $question = $this->question->addLogic($project, $question, $input, $ajax);
+                return $question;
+            } else {
+                return response()->json(array('success'=>false, 'reqhash' => $request_urlhash));
+            }
+        }
+    }
+    
+    /**
+     * 
+     * @param type $project
+     */
+    public function getProject($project, Request $request){
+        
+    }
+    
+    /**
+     * Get all questions in a project
+     * @param type $project
+     * @param array $column
+     */
+    public function getQuestions($project, Request $request){
+        if($request->get('columns')){
+            $columns = $request->get('columns');
+            //$key = $columns['key'];
+            //$value = $columns['value'];
+            //$columns = ['id','qnum','question'];
+            $questions = $project->questions->map(function ($item, $key) use ($columns) {
+                return array_intersect_key($item->toArray(), array_flip ($columns));
+            });
+        }else{
+            $questions = $project->questions;
+        }
+        
+        return json_encode($questions);
+    }
+    
+    public function getQuestion($project, $question, Request $request) {
+        
+        if($request->get('columns')){
+            $columns = $request->get('columns');
+            $q = $question->get()->map(function ($item, $key) use ($columns) {
+                return array_intersect_key($item->toArray(), array_flip ($columns));
+            });
+        }else{
+            $q = $question;
+        }
+      
+        return json_encode($q);
+    }
+    
+    /**
+     * Get all answers in a question
+     * @param type $project
+     * @param type $question
+     * @param array $column
+     */
+    public function getAnswers($project, $question, Request $request){
+        if($request->get('columns')){
+            $columns = $request->get('columns');
+            //$key = $columns['key'];
+            //$value = $columns['value'];
+            $answers = $question->qanswers->map(function ($item, $key) use ($columns) {
+                return array_intersect_key($item->toArray(), array_flip ($columns));
+            });
+        }else{
+            $answers = $question->qanswers;
+        }
+        
+        return json_encode($answers);
     }
     
     public function updateTranslation(Request $request) {

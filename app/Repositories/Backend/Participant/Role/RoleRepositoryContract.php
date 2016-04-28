@@ -14,6 +14,8 @@ interface RoleRepositoryContract {
 	public function findOrThrowException($id, $withPermissions = false);
 
         public function getRoleLevel($id);
+        
+        public function findRoleByName($name);
 	/**
 	 * @param $per_page
 	 * @param string $order_by
@@ -32,10 +34,9 @@ interface RoleRepositoryContract {
 
 	/**
 	 * @param $input
-	 * @param $permissions
 	 * @return mixed
 	 */
-	public function create($input, $permissions);
+	public function create($input);
 
 	/**
 	 * @param $id

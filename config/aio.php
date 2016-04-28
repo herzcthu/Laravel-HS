@@ -24,6 +24,7 @@ return array(
         'locations_table' => 'locations',
         'participant_in_location_table' => 'locations_participants',
         'default_per_page' => 30,
+        'unique' => true // to set unique validation in participant association
         ],
     'participant' => [
         'model' => 'App\Participant',
@@ -34,6 +35,7 @@ return array(
         'rolemodel' => 'App\ParticipantRole',
         'default_role' => '',
         'default_per_page' => 30,
+        'unique' => false // to set unique validation in location association
         ],
     'media' => [
         'media_table' => 'media',

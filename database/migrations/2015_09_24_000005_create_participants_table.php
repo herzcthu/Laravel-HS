@@ -23,9 +23,19 @@ class CreateParticipantsTable extends Migration {
                   ->default(NULL);
             $table->string('avatar', 255)->nullable();
             $table->string('name', 255)->nullable()->index();
-            $table->string('participant_code', 255)->index();
+            $table->string('participant_code', 255)->nullable()->index();
             $table->string('nrc_id', 255)->nullable()->unique();
             $table->string('email', 255)
+                  ->nullable()
+                  ->index();
+            $table->string('race', 255)
+                  ->nullable()
+                  ->index();
+            $table->string('education', 255)
+                  ->nullable()
+                  ->index();
+            $table->text('bank_info');
+            $table->string('occupation', 255)
                   ->nullable()
                   ->index();
             $table->date('dob')->nullable();

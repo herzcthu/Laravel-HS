@@ -86,7 +86,7 @@ interface ParticipantContract {
 	 */
 	public function mark($id, $status);
 
-	public function participantsDataSet($participant, $role, $org, \App\PLocation $location);
+	public function participantsDataSet($participant, $org, \App\PLocation $location);
         
         public function cliImport($file, $org, $role);
 }

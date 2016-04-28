@@ -134,7 +134,10 @@ class QuestionController extends Controller
     public function editall($project)
     {        
         // ajax route for sorting
-        $route = route('ajax.project.questions.sort', [$project->id]);
+        $sorturl = route('ajax.project.questions.sort', [$project->id]);
+        
+        // ajax route for project
+        $projecturl = route('ajax.project.base', [$project->id]);
         
         // ajax route for creating new question
         $add_question_url = route('ajax.project.question.new', [$project->id]);
@@ -155,9 +158,10 @@ class QuestionController extends Controller
          * That variable can only be changed in config/javascript.php
          */
         javascript()->put([
-			'url' => $route,
+			'sorturl' => $sorturl,
                         'add_question_url' => $add_question_url,
                         'urlhash' => $urlhash,
+                        'projecturl' => $projecturl
                         //'org' => 
 		]);
         return view('backend.project.questions.editall')

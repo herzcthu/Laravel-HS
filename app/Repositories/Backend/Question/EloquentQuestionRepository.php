@@ -180,16 +180,18 @@ class EloquentQuestionRepository implements QuestionContract {
                 $input['display']['question'] = isset($input['display']['question'])? 1 : 0;
                 
 		if ($question->update($input)) { 
-                    \App\QAnswers::where('qid', $question->id)->delete();
-                    foreach($input['answers'] as $k => $av){
-                        $qanswer = \App\QAnswers::firstOrNew(['qid' => $question->id, 'akey' => $k]);
-                        $qanswer->akey = $k;
-                        $qanswer->type = $av['type'];
-                        $qanswer->text =  htmlspecialchars($av['text'], ENT_QUOTES);
-                        $qanswer->value = $av['value'];
-                        $qanswer->qarequire = (isset($av['require']))?$av['require']:'';
-                        $qanswer->css = (isset($av['css']))?$av['css']:'';
-                        $question->qanswers()->save($qanswer);
+                    if(array_key_exists('answers', $input)) {
+                        \App\QAnswers::where('qid', $question->id)->delete();
+                        foreach($input['answers'] as $k => $av){
+                            $qanswer = \App\QAnswers::firstOrNew(['qid' => $question->id, 'akey' => $k]);
+                            $qanswer->akey = $k;
+                            $qanswer->type = $av['type'];
+                            $qanswer->text =  htmlspecialchars($av['text'], ENT_QUOTES);
+                            $qanswer->value = $av['value'];
+                            $qanswer->qarequire = (isset($av['require']))?$av['require']:'';
+                            $qanswer->css = (isset($av['css']))?$av['css']:'';
+                            $question->qanswers()->save($qanswer);
+                        }
                     }
                     if($ajax == true){
                     // need to return $question for ajax
@@ -202,6 +204,14 @@ class EloquentQuestionRepository implements QuestionContract {
 		throw new GeneralException('There was a problem updating this question. Please try again.');
 	}
 
+        public function addLogic($project,$question,$input, $ajax = false) {
+            $qans = $question->qanswers;
+            foreach($qans as $ans){
+                if($ans->akey == $input['lftans']){
+                    $ans->update(['logic' => $input]);
+                }
+            }
+        }
 	
 	/**
 	 * @param $id

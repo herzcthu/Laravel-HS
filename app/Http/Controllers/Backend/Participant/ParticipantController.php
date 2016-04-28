@@ -101,7 +101,7 @@ class ParticipantController extends Controller {
 	 * @param $id
 	 * @return mixed
 	 */
-	public function edit($id, Request $request) {
+	public function edit($participant, Request $request) {
             javascript()->put([
 			'url' => [//'state' => route('ajax.locations.allstates'),
                             //'state' => '',
@@ -112,7 +112,7 @@ class ParticipantController extends Controller {
                             ]
 		]);
             $view = View::make('includes.partials.medialist_grid');
-		$participant = $this->participants->findOrThrowException($id, true);
+		//$participant = $this->participants->findOrThrowException($id, true);
                 if ($request->ajax()) {
                     
                    $sections = $view->renderSections(); 
@@ -139,15 +139,15 @@ class ParticipantController extends Controller {
             //dd($request->all());
 		$participant = $this->participants->update(
                         $id,
-			$request->except('plcode','org_id','role'),
-                        $request->only('plcode'),
+			$request->except('pcode_id','org_id','role'),
+                        $request->only('pcode_id'),
                         $request->only('org_id'),
                         $request->only('role')
 		);
                 if($participant){
                     return redirect()->route('admin.participants.index')->withFlashSuccess('The participants was successfully updated.');
                 }else{
-                    return redirect()->route('admin.participants.edit', $id)->withFlashDanger('The location code not found.');                
+                    return redirect()->route('admin.participants.edit', $id)->withFlashDanger('The location code not found in database.');                
                 }
                 
         }

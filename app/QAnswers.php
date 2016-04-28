@@ -26,4 +26,12 @@ class QAnswers extends Model
   public function answers(){
       return $this->hasMany('App\Answers', 'qid', 'qid');
   }
+  
+  public function getLogicAttribute() {
+     return json_decode($this->attributes['logic'], true);
+  }
+  
+  public function setLogicAttribute(Array $val) {
+      $this->attributes['logic'] = json_encode($val);
+  }
 }

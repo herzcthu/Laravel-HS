@@ -21,6 +21,7 @@ class QAnswersTable extends Migration
             $table->string('akey');
             $table->string('qarequire');
             $table->string('css');
+            $table->text('logic');
             $table->string('optional');
             $table->timestamps();
             $table->unique(['qid','akey']);

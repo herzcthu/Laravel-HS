@@ -21,6 +21,34 @@
 <script type="text/javascript">
 (function ($) {
     $(document).ready(function() {
+        $('.quest').mouseenter(function(){
+            var input = $(this).find('input');
+            var select = $(this).find('select'); // need to implement later
+            var textarea = $(this).find('textarea');
+            $.each(input,function(index,value){
+                if(typeof value.dataset.logic !== 'undefined' && value.dataset.logic !== 'null'){
+                    var logic = JSON.parse(value.dataset.logic);
+                    var operator = logic.operator;
+                    if(operator === 'skip') {
+                        $("#"+logic.lftans).on('click',function(e){
+  
+                           if(this.checked){
+                                if(confirm('Skip to ' + logic.rftquess)){
+                                    location.href = "#"+logic.rftquess;
+                                }
+                            }
+                        });
+                        
+                    }
+                }
+            });
+            //$(this).css("border-radius", "25px");
+            
+            //$(this).addClass('blue');
+        }).on('mouseleave',function(){
+            
+            //$(this).removeClass('blue');
+        });
         //reset input values
         $('.reset').on('click',function(){
             $(this).parents('.quest').find(':input').each(function() {console.log(this)

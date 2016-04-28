@@ -20,12 +20,40 @@ class UpdateParticipantRequest extends Request {
 	 * @return array
 	 */
 	public function rules()
-	{
+	{       
 		return [
-			'email'	=>  'required|email',
 			'name'	=>  'required',
-                        'nrc_id' => 'required',
                         'avatar' => 'string',
+                        'pcode_id' => ''
 		];
 	}
+        
+        // Here we can do more with the validation instance...
+        /**
+         * This method implement validator method in Request class
+         * @param type $validator
+         */
+        public function dataentryValidation($validator) {
+
+            // Use an "after validation hook" (see laravel docs)
+            $validator->after(function ($validator) {
+               $location = $this->input('pcode_id');
+               $participant = $this->route('participants');
+               $pcode_id = $location.'-'.$participant->organization->id;
+               $pivot = \Illuminate\Support\Facades\DB::table('participant_pcode')
+                       ->where('pcode_id','=',$pcode_id)
+                       //->where('participant_id','!=',$participant->id)
+                       ->get();
+               /**
+                * This rule for unique location check
+                * a participant can have 2 or more location
+                * but location cannot be assigned to 2 participants.
+                */
+               if ($pivot && config('aio.location.unique')) {
+
+                    $validator->errors()->add('pcode_id', 'Location code already assigned to participant.');
+
+                }
+            });
+        }
 }

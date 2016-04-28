@@ -73,7 +73,7 @@ interface PLocationContract {
 	 */
 	public function getLocationsPaginatedTable($per_page, $org_id, $withOrg, $order_by = 'id', $sort = 'asc');
         
-        public function setPcode($org, $location, $level);
+        public function setPcode($org, $location);
         
         /**
 	 * @param $per_page
@@ -148,5 +148,5 @@ interface PLocationContract {
         
         public function makeTree($array);
         
-        public function cliImport($file, $org, $level);
+        public function cliImport($file, $org);
 }

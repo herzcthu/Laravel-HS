@@ -25,7 +25,7 @@
 @stop
 
 @section('content')
-    @include('backend.participant.includes.partials.header-buttons')
+    
 
     {!! Form::model($participant, ['route' => ['admin.participants.update', $participant->id], 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'PATCH']) !!}
         <div class="panel panel-default">
@@ -59,7 +59,7 @@
         <div class="form-group">
             <label class="col-xs-2 control-label">ID Code</label>
             <div class="col-xs-10">
-                {!! Form::text('participant_id', null, ['class' => 'form-control', 'placeholder' => '117001A']) !!}
+                {!! Form::text('participant_code', null, ['class' => 'form-control', 'placeholder' => '117001A']) !!}
             </div>
         </div><!--form control-->
         <div class="form-group">
@@ -141,11 +141,11 @@
                 <div class="row">
                     <span class="alert text-red flash"></span>
                     @foreach($locations as $pcode)
-                    <div class="col-xs-1 {{ str_slug($pcode->{$area[$participant->role->level]}) }}"> 
+                    <div style="padding-right: 0px;" class="col-xs-2 p{{ str_slug($pcode->pcode) }}"> 
                         <div class="input-group"> 
-                            <p class="input-group-addon">{{ $pcode->{$area[$participant->role->level]} }}</p> 
+                            <p class="input-group-addon">{{ $pcode->pcode }}</p> 
                             <span class="input-group-btn"> 
-                                <button data-href="{{ route('ajax.participants.delocate',['participant' => $participant->id, 'location' => $pcode->id]) }}" class="btn btn-danger btn-area" type="button" data-group="{{ str_slug($pcode->{$area[$participant->role->level]}) }}">X</button> 
+                                <button data-href="{{ route('ajax.participants.delocate',['participant' => $participant->id, 'location' => $pcode->primaryid]) }}" class="btn btn-danger btn-area" type="button" data-group="p{{ str_slug($pcode->pcode) }}">X</button> 
                             </span> 
                         </div> 
                     </div>
@@ -161,7 +161,7 @@
         <div class="form-group">
             <label class="col-xs-2 control-label">Location Code</label>
             <div class="col-xs-10">
-                {!! Form::text('plcode', null, ['id' => 'pcode', 'class' => 'form-control', 'placeholder' => '117001']) !!}
+                {!! Form::text('pcode_id', null, ['id' => 'pcode', 'class' => 'form-control', 'placeholder' => '117001']) !!}
             </div>
         </div><!--form control-->
         </div>

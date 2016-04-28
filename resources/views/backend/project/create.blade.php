@@ -43,7 +43,7 @@
         <div class="form-group">
             <label class="col-lg-2 control-label">Project Type</label>
             <div class="col-lg-10">
-                {!! Form::select('type', ['checklist' => 'Check List', 'incident' => 'Incident Form'], null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
+                {!! Form::select('type', ['checklist' => 'Check List', 'incident' => 'Incident Form', 'survey' => 'Survey Form'], null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
             </div>
         </div><!--form control--> 
         <div class="form-group">

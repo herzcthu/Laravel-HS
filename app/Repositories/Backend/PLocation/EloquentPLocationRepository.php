@@ -429,7 +429,7 @@ class EloquentPLocationRepository implements PLocationContract {
 	{
 		$location = PLocation::firstOrNew(['pcode' => $request['pcode'],'org_id' => $org_id['org_id']]);
                 $location->pcode = $request['pcode'];
-                $location->primaryid = $request['pcode'].'-'.$org_id['org_id'];
+                //$location->primaryid = $request['pcode'].'-'.$org_id['org_id'];
                 if(array_key_exists('ueccode', $request)){
                     $location->ueccode = $request['ueccode'];
                 }
@@ -506,38 +506,53 @@ class EloquentPLocationRepository implements PLocationContract {
             return Location::makeTree($array);
         }
 
-        public function setPcode($location, $org, $level) {
+        /**
+         * To Do: this function need to rewrite to know columns by itself
+         * @param type $location
+         * @param type $org
+         * @param type $level
+         * @throws GeneralException
+         */
+        public function setPcode($location, $org) {
             
             $organization = $this->organizations->findOrThrowException($org);
-            $prole = $this->proles->findOrThrowException($level);
-            if(isset($location->pcode)){
-                $location->pcode = (string) $location->pcode;
-            }elseif(isset($location->no)){
-                $location->pcode = (string) $location->no;
-            }elseif(isset($location->custom_location_code)){
-                $location->pcode = (string) $location->custom_location_code;
+            //$prole = $this->proles->findOrThrowException($level);
+            //dd($location);
+            $pcode = '';
+            $pcode = (isset($location->location_id))? $location->location_id:$pcode;
+            $pcode = (isset($location->pcode))? $location->pcode:$pcode;
+            $pcode = (isset($location->no))? $location->no:$pcode;
+            $pcode = (isset($location->custom_location_code))? $location->custom_location_code:$pcode;
+            
+            if(!empty($pcode)){
+                $location->pcode = $pcode;
             }else{
                 throw new GeneralException('No valid location code found! Check your upload file!');
             }
-                if(!empty($location->pcode)){
-                    $trees = $this->makeTreeFromInput($location, $location->pcode, $org);
-                    if(isset($location->pcode)){
-                        $trees->pcode = (string) $location->pcode;
-                    }
-                    if(isset($location->uec_code)){
-                        $trees->uec_code = (string) $location->uec_code;
-                    }
-                    //$trees->proles()->associate($prole);
-                    $trees->organization()->associate($organization);
-                    $trees->save();                    
-                    $this->participants->participantsDataSet($location, $level, $org, $trees);
-                }else{
-                    throw new GeneralException('Location Code invalid!');
+            
+            
+            if(!empty($location->pcode)){
+                $location_trees = $this->makeTreeFromInput($location, $location->pcode, $org);
+                if(isset($location->pcode)){
+                    $location_trees->pcode = (string) $location->pcode;
                 }
+                if(isset($location->uec_code)){
+                    $location_trees->uec_code = (string) $location->uec_code;
+                }
+                //$trees->proles()->associate($prole);
+                $location_trees->organization()->associate($organization);
+                $location_trees->save(); 
+                if($location_trees) {                  
+                $this->participants->participantsDataSet($location, $org, $location_trees);
+                }
+            }else{
+                throw new GeneralException('Location Code invalid!');
+            }
         }
+        
         private function makeTreeFromInput($location, $pcode, $org_id) {
-            $trees = PLocation::firstOrNew(['primaryid' => $pcode.'-'.$org_id]);//dd($location);
-            $trees->primaryid = $pcode.'-'.$org_id;
+            $trees = PLocation::firstOrNew(['org_id' => $org_id, 'pcode' => $pcode]);//dd($location);
+            //$trees->primaryid = $org_id.$pcode;
             if(isset($location->isocode)){
                 $trees->isocode = $location->isocode;
             }else{
@@ -594,14 +609,14 @@ class EloquentPLocationRepository implements PLocationContract {
                 }
                 return $trees;
         }
-        public function cliImport($file, $org, $level) {
+        public function cliImport($file, $org) {
             set_time_limit(0);
-            Excel::filter('chunk')->load($file, 'UTF-8')->chunk(100, function($locations) use ($file, $org, $level){
+            Excel::filter('chunk')->load($file, 'UTF-8')->chunk(100, function($locations) use ($file, $org){
                             // Loop through all rows
                             //dd($locations);
-                            $locations->each(function($row) use ($org, $level) {
+                            $locations->each(function($row) use ($org) {
                                 //$this->plocations->setPcode($org, $locations);
-                                $this->setPcode($row, $org, $level);
+                                $this->setPcode($row, $org);
                             });
                             
                         });

@@ -54,11 +54,6 @@ class EmsDbImport extends Command
         }else{
             throw new GeneralException('Not enough options! Please specify org ID.');
         }
-        if(!is_null($this->option('level'))){
-            $level = $this->option('level');
-        }else{
-            throw new GeneralException('Not enough options! Please specify import type (participant or pcode)');
-        }
         if(!is_null($this->option('filetype'))){
             $type = $this->option('filetype');
         }else{
@@ -68,7 +63,7 @@ class EmsDbImport extends Command
             $this->participant->cliImport($file, $org, $level);
         }
         if($type == 'pcode'){
-            $this->plocation->cliImport($file, $org, $level);
+            $this->plocation->cliImport($file, $org);
         }
     }
 }

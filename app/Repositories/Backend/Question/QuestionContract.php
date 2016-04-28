@@ -61,6 +61,7 @@ interface QuestionContract {
 	 */
 	public function update($id, $input, $project_id, $ajax = false);
 
+        public function addLogic($project,$question,$input, $ajax = false);
 	/**
 	 * @param $id
 	 * @return mixed

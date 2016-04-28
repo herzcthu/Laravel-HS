@@ -37,8 +37,8 @@
             @foreach ($participants as $participant)
                 <tr>
                     <td><input type='checkbox' class='checkall checkbox' name='participants[{!! $participant->id !!}]'></td>
-                    <td>{!! $participant->participant_id !!}</td>
-                    {{-- Aio()->migrate($participant->id, $participant->participant_id, $participant->organization->id) --}}
+                    <td>{!! $participant->participant_code !!}</td>
+                    {!! Aio()->migrate($participant->id, $participant->participant_id, $participant->organization->id) !!}
                     <td>
                         @if(!empty($participant->avatar))
                         <img width="30" height="30" src="{!! (!empty($participant->avatar)? $participant->avatar: asset('img/backend/participant2-160x160.png')) !!}" alt="{!! $participant->name !!}" title="{!! $participant->name !!}"> {!! $participant->name !!}
@@ -48,11 +48,11 @@
                     </td>
                     <td>
                         @if($participant->phones)
-                        M: {!! $participant->phones->mobile !!} <br>
-                        E: {!! $participant->phones->emergency !!}
+                        M: {!! $participant->phones->primary !!} <br>
+                        E: {!! $participant->phones->secondary !!}
                         @endif
                     </td>
-                    <td>{{ $participant->pcode->implode('pcode') }}</td>
+                    <td>{{ $participant->pcode->implode('pcode',', ') }}</td>
                     <td>
                         @if(!is_null($participant->role))
                             {!! $participant->role->name !!}

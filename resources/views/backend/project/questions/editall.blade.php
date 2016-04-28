@@ -258,11 +258,27 @@
                       <LABEL class="control-label" for="question">Question: </LABEL>
                       <INPUT class="form-control" type="text" name="inputq"  value="" />
                       </div>
-
+                        <div class="form-group col-xs-6">
+                            <label class="control-label">Answer View: </label>
+                            <select id="ansview" class="form-control" name="answer_view">
+                                <option value="none">None</option>
+                                <option value="two-column">Two Column</option>
+                                <option value="three-column">Three Column</option>
+                                <option value="horizontal">Horizontal</option>
+                                <option value="vertical">Vertical</option>
+                                <option value="table-horizontal">Table Horizontal</option>
+                                <option value="table-vertical">Table Vertical</option>
+                            </select>
+                        </div>
                       <div class="form-group">
-                          <LABEL  class="control-label" for="type">Answer: </LABEL>
-                        <button class="btn btn-sm btn-success"  id="add" type="button" value="Add" data-toggle="tooltip" data-placement="top" title="Add New Answer"/><i class="fa fa-plus"></i></button>
-                       
+                          <div class="row">
+                              <div class="col-xs-12">
+                            <LABEL  class="control-label" for="type">Answer: </LABEL>
+                            <button class="btn btn-sm btn-success"  id="add" type="button" value="Add" data-toggle="tooltip" data-placement="top" title="Add New Answer"/><i class="fa fa-plus"></i></button>
+                              </div>
+                          </div>
+                      </div>
+                        <div class="form-group">
                           <div class="col-xs-12">
                               <div class="row">
                       <!--LABEL for="name">Name: </LABEL-->
@@ -302,6 +318,7 @@
                 <form id="qForm" name="qForm" autocomplete="off">
                     <div id="qgroup" class="form-group">
                         <input type="hidden" value="" name="section" data-prefix="section" data-name="section" data-label="">
+                        <input type="hidden" value="" name="answer_view" data-prefix="answer_view" data-name="answer_view" data-label="">
                         <label style="padding-left: 0px;padding-right: 0px;" class="control-label col-xs-2" for="qnum" id="qnum"></label>
                         <input type="hidden" value="" name="qnum" data-prefix="qnum" data-name="qnum" data-label="">
                         <label style="padding-left: 0px;"class="col-xs-10" for="question" id="question"></label>
@@ -334,12 +351,20 @@
             </div><!-- Modal header -->
               <div class="modal-body">
                   <div class="row">
-                    <FORM id="logicForm" class="form-vertical" role="form" autocomplete="off">
-                            <div class="col-xs-5">
+                    <FORM name="logicForm" data-hash="" id="logicForm" class="form-vertical" role="form" autocomplete="off">
+                        <input type="hidden" id="hash" name="_hash"></input>
+                        <div class="col-xs-5">
                                 <h3>Left Side</h3>
                             </div>
                         <div class="col-xs-2"><h3>Operator</h3></div>
-                        <div class="col-xs-5"><h3>Right Side</h3></div>
+                        <div class="col-xs-5"><h3>Right Side</h3>
+                            <div class="checkbox">
+                                <label for="rftdiff" class="control-label">
+                                    <input id="rftdiff" type="checkbox" name="rftdiff"></input>
+                                    Select Question
+                                </label>
+                            </div>
+                        </div>
                             <div class="col-xs-5">
                                 <label for="lftans" class="control-label">Answer</label>
                                 <select id="lftselect" name="lftans" class="form-control"></select>
@@ -348,8 +373,9 @@
                             </div>
                             <div class="col-xs-2">
                             <label for="operator" class="control-label">Select</label>
-                            <select id="operator" name="operator" class="form-control">
+                            <select id="operator" name="operator" class="form-control">                                
                                 <option value="=">Equal to (=)</option>
+                                <option value="skip">Skip to</option>
                                 <option value=">">Greater than (>)</option>
                                 <option value="<">Less than (<)</option>
                                 <option value="true">Selected</option>
@@ -359,23 +385,25 @@
                                 
                                 <label for="rftques" class="control-label diffques">Question</label>
                                 <select id="rftquess" name="rftquess" class="form-control diffques"><option value="">None</option></select>                                
-                                <label for="rftans" class="control-label diffques">Answer</label>
-                                <select id="rftans" name="rftans" class="form-control diffques"><option value="">None</option></select>
+                                
+                                <div class="checkbox diffques">
+                                <label for="showans" class="control-label">
+                                    <input id="showans" type="checkbox" name="showans"></input>
+                                    Answer and Value
+                                </label>
+                                </div>
+                                <label for="rftans" class="control-label showans">Answer</label>
+                                <select id="rftans" name="rftans" class="form-control showans"><option value="">None</option></select>
                                 
                                 <label for="rftval" class="control-label">Value</label>
                                 <input type="text" name="rftval" class="form-control"></input>
-                                <div class="checkbox">
-                                <label for="rftdiff" class="control-label">
-                                    <input id="rftdiff" type="checkbox" name="rftdiff"></input>
-                                    Different question
-                                </label>
-                                </div>
+                                
                             </div>
                     </FORM>                      
                   </div>
             </div><!-- Modal body -->
             <div class="modal-footer">
-                <button class="btn btn-success pull-left" id="savelogic" type="button" value="Save" data-dismiss="modal">Save</button>
+                <button class="btn btn-success pull-left" id="savelogic" type="submit" value="Save" data-dismiss="modal">Save</button>
                 <button class="btn btn-danger pull-left" id="resetlogic" type="button" class="btn btn-primary btn-xs">reset</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div><!-- Modal footer -->
@@ -397,6 +425,9 @@
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		}
 	});
+        if (typeof projectURL === 'undefined') {
+		var projectURL = ems.projecturl;
+	}
     /**
      * type = input type
      * value = input value
@@ -572,8 +603,7 @@
                 } else {
                     var ajaxQURL = url;
                 }
-	}
-        
+	}       
             
         //console.log(form);
         var j = 0, op = {};
@@ -624,9 +654,6 @@
                    j++;
                    break;
            }
-           
-           
-           
         }
         qna["answers"] = answers;
         qna["_method"] = method;
@@ -637,8 +664,8 @@
                 dataType:"json",
                 data   : qna,
                 success: function (data) {
-                        //console.log(data);
-                        location.reload(); // To Do: need to remove this function.
+                        console.log(data);
+                        //location.reload(); // To Do: need to remove this function.
                 }
 
         });
@@ -660,35 +687,158 @@
     }
     
     
-	if (typeof ajaxURL === 'undefined') {
-		var ajaxURL = ems.url;
-	}
-	$(document).ready(function ($) {
-            $( "#logic" ).on('show.bs.modal', function (event) {
-              var button = $(event.relatedTarget); // Button that triggered the modal
-              var dataid = button.data('modal'); // get id for data
-              var data = $('#'+dataid).data('content');
-              var options = '';
-              var select = document.getElementById('lftselect');
-              // remove all options from select box
-              while (select.firstChild) {
-                    select.removeChild(select.firstChild);
+    
+    function getData(url, columns) {
+        var mydata;
+        $.ajax({
+                url    : url,
+                type: 'GET',
+                async:false,
+                data: {columns},
+                success: function (data) {
+                        mydata = data;
                 }
-              console.log(data.qanswers);
-              $.each(data.qanswers, function( index, answer ) {
+
+        });
+        return JSON.parse(mydata);
+    }
+    
+	$(document).ready(function ($) {
+            
+            $( "#logic" )
+            .on('click','#savelogic', function(e){
+                
+                var logicForm = $("#logicForm");                
+                if(!$("#rftdiff").is(":checked")) {
+                    $("#lftval").val('');
+                    $("#rftquess").val('');
+                    $("#rftans").val('');
+                }
+                var container,        
+                url = logicForm.attr('action'),
+                hash = logicForm.data('hash'),
+                method = logicForm.data('type'),
+                logicdata = logicForm.serializeArray();
+
+                if (typeof ajaxLURL === 'undefined') {
+                        if(url == '') {
+                            return;
+                        } else {
+                            var ajaxLURL = url;
+                        }
+                }
+                if(typeof method === 'undefined')
+                    var method = 'PATCH';
+
+                logicdata.push({name: '_method', value: method},{name: 'logicdata', value: true});
+                //send ajax request
+                console.log(logicdata);
+                $.ajax({
+                        url    : ajaxLURL,
+                        type: 'POST',
+                        async:false,
+                        data: logicdata,
+                        success: function (data) {
+                                $("#logicForm")[0].reset();
+                                //console.log(data);
+                                location.reload(); // reload page after logic added.
+                        }
+
+                });
+                e.preventDefault();
+            })
+            .on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget); // Button that triggered the modal
+              console.log(button);
+              var dataid = button.data('modal'); // get id for data
+              var ajaxurl = button.data('href');
+              
+              var data = $('#'+dataid);
+              var content = getData(data.data('href'), ['urlhash','qanswers']);   console.log(content);  
+              var type = data.data('type');
+              var lftselect = document.getElementById('lftselect');
+              var rftquess = document.getElementById('rftquess');
+              var rftans = document.getElementById('rftans');
+              var cols = ['id','qnum','question'];
+              var questions = getData(projectURL+'/questions',cols); console.log(questions);
+              
+              //if(typeof urlhash != 'undefined') {
+                    $("#logicForm").attr('data-hash', content[0].urlhash.logic);
+                    $("#hash").val(content[0].urlhash.logic);
+              //  }
+              if(typeof ajaxurl != 'undefined') {
+                    $("#logicForm").attr('action', ajaxurl);
+                }
+              // console.log(questions);
+              // remove all options from select box
+              while (lftselect.firstChild) {
+                    lftselect.removeChild(lftselect.firstChild);
+                }
+              //console.log(content.qanswers);
+              $.each(content[0].qanswers, function( index, answer ) {
                   var option = document.createElement("option");
                     option.setAttribute("value", answer.akey );
                     option.setAttribute("data-type", answer.type );
-                    option.innerHTML = answer.text + ' (' + answer.type + ')';
-                    select.appendChild(option);
+                    option.innerHTML = answer.text + ' (' + answer.akey + ' ' + answer.type + ')';
+                    lftselect.appendChild(option);
               });
-                    
-                
-              console.log(data);
+              
+              
+              if(typeof questions !== 'undefined') {
+                  // remove all options from select box
+                while (rftquess.firstChild) {
+                    rftquess.removeChild(rftquess.firstChild);
+                }
+                  $.each(questions, function( index, question ) {
+                      var option = document.createElement("option");
+                        option.setAttribute("value", question.qnum );
+                        option.setAttribute("data-qid", question.id );
+                        option.innerHTML = question.qnum;
+                        rftquess.appendChild(option);
+                  });
+                  var anscols = ['akey','text'];
+                  var qid = rftquess.options[rftquess.selectedIndex].getAttribute("data-qid");
+                  var answers = getData(projectURL+'/question/'+qid+'/answers',anscols);
+                  if(typeof answers !== 'undefined') {
+                      // remove all options from select box
+                      while (rftans.firstChild) {
+                      rftans.removeChild(rftans.firstChild);
+                      }
+                      $.each(answers, function( index, answer ) {
+                          var option = document.createElement("option");
+                            option.setAttribute("value", answer.akey );
+                            option.innerHTML = answer.text;
+                            rftans.appendChild(option);
+                      });
+                  }
+                  $("#logicForm")[0].reset();
+                }
+            })
+            .on('load click change','#rftquess', function(e){
+                var anscols = ['akey','text'];
+                  var qid = rftquess.options[rftquess.selectedIndex].getAttribute("data-qid");
+                  var answers = getData(projectURL+'/question/'+qid+'/answers',anscols);
+                  if(typeof answers !== 'undefined') {
+                      // remove all options from select box
+                    while (rftans.firstChild) {
+                    rftans.removeChild(rftans.firstChild);
+                    }
+                  $.each(answers, function( index, answer ) {
+                      var option = document.createElement("option");
+                        option.setAttribute("value", answer.key );
+                        option.innerHTML = answer.text;
+                        rftans.appendChild(option);
+                  });
+                  }
             });
             $('#rftdiff').on('change', function(){
                 $('.diffques').toggle(this.checked);
             }).change();
+            
+            $('#showans').on('change', function(){
+                $('.showans').toggle(this.checked);
+            }).change();
+            
             $( "#formTemplate" ).on("click", "#add", function(){                
                 var inputForm = document.getElementById("inputForm");
                 var fnum = inputForm.inputnum.value;
@@ -698,7 +848,6 @@
                 var fvalue = inputForm.fvalue.value;
                 var flabel = inputForm.flabel.value;
                 var foption = inputForm.foption.value;
-                console.log(inputForm);
                 
                 if( fnum == '' || fq == '' ) return;
                 add(ftype, fvalue, fprefix, flabel, foption, index);
@@ -708,13 +857,13 @@
                 var inputForm = document.getElementById("inputForm");
                 var fnum = inputForm.inputnum.value;
                 var fq = inputForm.inputq.value;
-                var qForm = document.getElementById("qForm");
+                var qForm = document.forms["qForm"];
                 var url = qForm.action;
                 var hash = qForm.dataset.hash;
-                var type = $(this).data('type');
+                var type = $(this).data('type'); //submit button method
                 if( fnum == '' || fq == '' ) return;
                 
-                saveQuestion(document.forms["qForm"], url, type, hash);
+                saveQuestion(qForm, url, type, hash);
             })
             .on("select click change", "#inputsect", function(){
                 var sect = $(this).val();//console.log(sect);
@@ -722,6 +871,14 @@
                     $("#qForm input[name='section']").val(sect);
                 }else{
                     $("#qForm input[name='section']").val('');
+                }
+            })
+            .on("select click change", "#ansview", function(){
+                var view = $(this).val();//console.log(sect);
+                if(view !== ''){
+                    $("#qForm input[name='answer_view']").val(view);
+                }else{
+                    $("#qForm input[name='answer_view']").val('');
                 }
             }) 
             .on("keyup change", "#inputForm input[name='inputnum']", function(){
@@ -768,9 +925,9 @@
             })// edit form modal contant
             .on('show.bs.modal', function (event) {
               var button = $(event.relatedTarget); // Button that triggered the modal
-              var content = button.data('content'); // Extract info from data-* attributes
+              console.log(button);
               var ajaxurl = button.data('href');
-              var urlhash = button.data('hash');
+              console.log(ajaxurl);
               var type = button.data('type');
               // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
               // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
@@ -781,6 +938,16 @@
                 $("#answers").text('');
                 $("#qForm input[name='question']").val('');
                 $("#inputForm input[name='fprefix']").val('');
+                
+              if(typeof ajaxurl != 'undefined') {
+                   /**
+                    * get content using ajax
+                    * return array
+                    */
+                  var content = getData(ajaxurl, ['urlhash','section','qnum','question','qanswers','answer_view']);
+                  
+                  var urlhash = content[0].urlhash.edit;
+              }  
               if(typeof urlhash != 'undefined') {
                     $("#qForm").attr('data-hash', urlhash);
                 }else{
@@ -801,19 +968,23 @@
                     $('#save').attr('data-type', 'patch');
                     break;
                 }
+              
+              
               if(typeof content == 'undefined') return;
               
-              var answers = content.qanswers;
+              var answers = content[0].qanswers;
               
-              $('#inputForm input[name=inputsect]').val(content.section);
-              $('#inputForm input[name=inputnum]').val(content.qnum);
-              $('#inputForm input[name=inputq]').val(content.question);
-              $('#inputForm input[name=fprefix]').val(content.qnum + '_a');
-              $("#qForm input[name='section']").val(content.section);
-              $("#qForm input[name='qnum']").val(content.qnum);
-              $("#qForm input[name='question']").val(content.question);
-              $("#qnum").text(content.qnum + ' : ');
-              $("#question").text(content.question);
+              $('#inputForm input[name=inputsect]').val(content[0].section);
+              $('#inputForm input[name=inputnum]').val(content[0].qnum);
+              $('#inputForm input[name=inputq]').val(content[0].question);
+              $('#inputForm input[name=fprefix]').val(content[0].qnum + '_a');
+              $('#inputForm select[name=answer_view]').val(content[0].answer_view);
+              $("#qForm input[name='answer_view']").val(content[0].answer_view);
+              $("#qForm input[name='section']").val(content[0].section);
+              $("#qForm input[name='qnum']").val(content[0].qnum);
+              $("#qForm input[name='question']").val(content[0].question);
+              $("#qnum").text(content[0].qnum + ' : ');
+              $("#question").text(content[0].question);
               //console.log(content.qanswers); return;
               $.each(answers, function( index, answer ) {
                   var prefix = $('#inputForm input[name=fprefix]').val();
@@ -826,6 +997,9 @@
                 $("#qForm").trigger("reset");
             });
             
+            if (typeof sortURL === 'undefined') {
+		var sortURL = ems.sorturl;
+            }
             $("#accordion").sortable({
 			cursor: 'move',
 			axis: 'y',
@@ -835,7 +1009,7 @@
 
 				//send ajax request
 				$.ajax({
-					url    : ajaxURL,
+					url    : sortURL,
 					type   : 'POST',
 					data   : order,
 					success: function (data) {
@@ -861,7 +1035,7 @@
 
 				//send ajax request
 				$.ajax({
-					url    : ajaxURL,
+					url    : sortURL,
 					type   : 'POST',
 					data   : order,
 					success: function (data) {

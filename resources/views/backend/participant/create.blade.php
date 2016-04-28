@@ -22,7 +22,6 @@
 @stop
 
 @section('content')
-    @include('backend.participant.includes.partials.header-buttons')
 
     {!! Form::open(['route' => 'admin.participants.store', 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'post']) !!}
         @if(access()->can('manage_organization'))

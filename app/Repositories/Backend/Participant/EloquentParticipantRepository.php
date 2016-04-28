@@ -160,19 +160,25 @@ class EloquentParticipantRepository implements ParticipantContract {
          * @return boolean
          * @throws GeneralException
          */
-	public function update($id, $input, $pcode, $org, $role_id) {
+	public function update($participant, $input, $pcode, $org, $role_id) {
                 $organization = $this->organization->findOrThrowException($org['org_id']);
                 $role = $this->role->findOrThrowException($role_id['role']);
                 $area = ['village', 'village_tract', 'township', 'district', 'state', 'country'];
-                
+                if(!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
+                    // valid address
+                    unset($input['email']);
+                }
+                if(empty($input['nrc_id'])){
+                    $input['nrc_id'] = null;
+                }
                 // get participant
-                $participant = $this->findOrThrowException($id);
+                //$participant = $this->findOrThrowException($id);
                 
                 // attach participant to pcode
-                if(!empty($pcode['plcode'])){
-                    $location = PLocation::where('org_id', $org['org_id'])->where('pcode', $pcode['plcode'])->first();
+                if(!empty($pcode['pcode_id'])){
+                    $location = PLocation::where('org_id', $org['org_id'])->where('pcode', $pcode['pcode_id'])->first();
                     if(!empty($location)){
-                        $participant->pcode()->attach($location->id); 
+                        $participant->pcode()->attach($location); 
                     }else{
                         return false;
                     }
@@ -263,120 +269,111 @@ class EloquentParticipantRepository implements ParticipantContract {
 	}
         
         
-        public function participantsDataSet($p, $org, $role, \App\PLocation $location) {
-            
-            
+        public function participantsDataSet($p, $org, \App\PLocation $location) {
+            //dd($p);
+            /**
+            $obpair = [];
+            foreach ($p as $keys => $val){
+                preg_match_all('/([[:alnum:]]+)(?:_)?/', $keys, $match);
+                
+                if(isset($match[1][1])){
+                    if(preg_match('/^[a-zA-Z]$/',$match[1][1])){
+                        
+                        $obpair[$match[1][0].$match[1][1]]['type'] = $match[1][0];
+                        $obpair[$match[1][0].$match[1][1]]['key'] = $match[1][1];
+                    }else{
+                        $obpair[$match[1][0]]['type'] = $match[1][0];
+                        $obpair[$match[1][0]]['key'] = $match[1][1];
+                    }
+                }
+            }
+            print_r($obpair);
+            die();
+             * 
+             */
+            if(isset($p->supervisor_name)){
+                $spv['name'] = $p->supervisor_name;
+                $spv['id'] = $p->supervisor_id;
+                $spvrole = $this->role->findRoleByName('Supervisor');
+                if(is_null($spvrole)) {
+                    $sinput['name'] = 'Supervisor';
+                    $sinput['level'] = 4;
+                    $spvrole = $this->role->create($sinput);
+                }
+                $spv['role_id'] = $spvrole->id;
+                $spv['org_id'] = $org;
+                $sattr = ['participant_code' => $p->supervisor_id, 'org_id' => $org, 'name' => $p->supervisor_name];    
+                $supervisor = \App\Participant::updateOrCreate($sattr,$spv);
+            }
             if(isset($p->pcode)){
-                $observer['A']['pcode'] = (string) $p->pcode;
-                $observer['B']['pcode'] = (string) $p->pcode;
+                $pcode = (string) $p->pcode;
+                //$observer['B']['pcode'] = (string) $p->pcode;
                 //$observer['A']['uec_code'] = $p->uec_polling_station_code;
                 //$observer['B']['uec_code'] = $p->uec_polling_station_code;
             }else{
                 throw new GeneralException('No valid location code found! Check your upload file!');
             }
             
-            if(isset($p->observer_a_name_burmese)){
-                $observer['A']['name'] = $p->observer_a_name_burmese;
+            if(isset($p->enumerator_name_english)){
+                $observer['name'] = $p->enumerator_name_english;
             } else {
-                $observer['A']['name'] = 'No Name';
+                $observer['name'] = 'No Name';
             }
-            if(isset($p->observer_b_name_burmese)){                
-                $observer['B']['name'] = $p->observer_b_name_burmese;
+            
+            if(isset($p->phone_no_primary)){
+                $observer['phones']['primary'] = (string) $p->phone_no_primary;                
+            }
+            if(isset($p->phone_no_primary)){
+                $observer['phones']['secondary'] = (string) $p->phone_no_secondary;                
+            }
+            
+            if(isset($p->enumerators_nrc_card)){
+                $observer['nrc_id'] = $p->enumerators_nrc_card;
             }else{
-                $observer['B']['name'] = 'No Name';
+                $observer['nrc_id'] = null;
             }
             
-            if(isset($p->observer_a_mobile) && isset ($p->observer_b_mobile)){
-                $observer['A']['phones']['mobile'] = (string) $p->observer_a_mobile;
-                $observer['B']['phones']['mobile'] = (string) $p->observer_b_mobile;
-                $observer['A']['phones']['emergency'] = (string) $p->emergency_contact_phone_observer_a;
-                $observer['B']['phones']['emergency'] = (string) $p->emergency_contact_phone_observer_b;
+            if(isset($p->dob)){
+                $observer['dob'] = $p->dob;
             }
             
-            if(isset($p->observer_a_nrc_card) && isset ($p->observer_b_nrc_card)){
-                $observer['A']['nrc_id'] = $p->observer_a_nrc_card;
-                $observer['B']['nrc_id'] = $p->observer_b_nrc_card;
+            if(isset($p->gender)){
+                $observer['gender'] = (is_null($p->gender)? 'Not Specified':$p->gender);
             }
             
-            if(isset($p->observer_a_birthdate) && isset ($p->observer_b_birthdate)){
-                $observer['A']['dob'] = $p->observer_a_birthdate;
-                $observer['B']['dob'] = $p->observer_b_birthdate;
+            if(isset($p->address)){
+                $observer['address'] = $p->address;
             }
             
-            if(isset($p->observer_a_gender) && isset ($p->observer_b_gender)){
-                $observer['A']['gender'] = (is_null($p->observer_a_gender)? 'Not Specified':$p->observer_a_gender);
-                $observer['B']['gender'] = (is_null($p->observer_b_gender)? 'Not Specified':$p->observer_b_gender);
-            }
+            if(isset($p->email)){
+                $observer['email'] = $p->email;
+            }                       
             
-            if(isset($p->observer_a_addres) && isset ($p->observer_b_address)){
-                $observer['A']['address'] = $p->observer_a_address;
-                $observer['B']['address'] = $p->observer_b_address;
-            }
             
-            if(isset($p->observer_a_email) && isset ($p->observer_b_email)){
-                $observer['A']['email'] = $p->observer_a_email;
-                $observer['B']['email'] = $p->observer_b_email;
-            }
-            
-            /**
-            if(isset($p->village_tractward_burmese)){
-                $observer['A']['villagetract'] = $p->village_tractward_burmese;
-                $observer['B']['villagetract'] = $p->village_tractward_burmese;
-                //$observer['A']['base'] = $p->village_tractward_burmese;
-                //$observer['B']['base'] = $p->village_tractward_burmese;
-            }
-            if(isset($p->township_english)){
-                $observer['A']['township'] = $p->township_english;
-                $observer['B']['township'] = $p->township_english;
-            }
-            if(isset($p->district_english)){
-                $observer['A']['district'] = $p->district_english;
-                $observer['B']['district'] = $p->district_english;
-            }
-            
-            if(isset($p->state_region_english)){
-                $observer['A']['state'] = $p->state_region_english;
-                $observer['B']['state'] = $p->state_region_english;
-            }
-             * 
-             */
-            
-            $role = $this->role->findOrThrowException($role);
-            if(isset($observer)){
-                foreach($observer as $key => $person){
-                    $person['participant_code'] = $person['pcode'].$key;
-                    /**
-                    if(isset($p->supervisor_name)){
-                        if(!is_null($p->supervisor_id)){//dd($p);
-                            $person['supervisor']['participant_id'] = $p->supervisor_id;
-                        }else{
-                            $person['supervisor']['participant_id'] = 'SV'.substr($p->pcode, 0, 3);
-                        }
-                        $person['supervisor']['location'] = $p->supervisor_location;
-                        $person['supervisor']['name'] = $p->supervisor_name;
-                        $person['supervisor']['base'] = (!is_null($p->supervisor_location)? $p->supervisor_location:$p->state_region_english);
+            if(isset($p->enumerator_id)){
+                    $role = $this->role->findRoleByName('Enumerator');
+                    if(is_null($role)) {
+                        $input['name'] = 'Enumerator';
+                        $input['level'] = 0;
+                        $role = $this->role->create($input);
                     }
-                    if(isset($p->spot_checker_name)){
-                        if(!is_null($p->spot_checker_id)){
-                            $person['spot_checker']['participant_id'] = $p->spot_checker_id;
-                        }else{
-                            $person['spot_checker']['participant_id'] = 'SC'.substr($p->pcode, 0, 3);
-                        }
-                        $person['spot_checker'] = isset($p->spot_checker_name)? $p->spot_checker_name:'No Name';
+                //foreach($observer as $key => $person){
+                    $participant_code = (string) $p->enumerator_id;                    
+                    $observer['role_id'] = $role->id;
+                    $observer['org_id'] = $org;
+                    //$place = $this->pcode->findOrThrowException($observer['pcode'].'-'.$org);
+                    $attr = ['participant_code' => $participant_code, 'org_id' => $org, 'nrc_id' => $observer['nrc_id']];
+                    
+                    $participant = \App\Participant::updateOrCreate($attr,$observer);
+                    if(isset($supervisor)){
+                        $participant->supervisor()->associate($supervisor);
+                        $participant->save();
                     }
-                     * 
-                     */
-                    $person['role_id'] = $role->id;
-                    $person['org_id'] = $org;
-                    //$place = $this->pcode->findOrThrowException($person['pcode'].'-'.$org);
-                    $attr = ['participant_code' => $person['participant_code'], 'org_id' => $org];
-                    unset($person['pcode']);
-                    $participant = \App\Participant::updateOrCreate($attr,$person);
                     // detach first to avoid duplicate
-                    $location->participants()->detach($participant->id);
+                    $location->participants()->detach($participant);
                     $location->participants()->attach($participant);
                     $location->save();
-                }
+                //}
                     
             }else{
                 throw new GeneralException('No valid participant found!');

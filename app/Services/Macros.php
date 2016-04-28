@@ -175,6 +175,7 @@ class Macros extends FormBuilder {
             }
             $options['class'] = $css;
             $options['id'] = $cssId; //dd($options);
+            $options['data-logic'] = json_encode($answer->logic);
             /*
              * To Do: need to fix select box answer
              */

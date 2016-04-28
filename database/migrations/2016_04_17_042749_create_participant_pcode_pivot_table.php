@@ -15,8 +15,8 @@ class CreateParticipantPcodePivotTable extends Migration
         Schema::create('participant_pcode', function (Blueprint $table) {
             $table->integer('participant_id')->unsigned()->index();
             $table->foreign('participant_id')->references('id')->on('participants')->onDelete('cascade');
-            $table->string('pcode_id')->index();
-            $table->foreign('pcode_id')->references('primaryid')->on('pcode')->onDelete('cascade');
+            $table->integer('pcode_id')->unsigned()->index();
+            $table->foreign('pcode_id')->references('id')->on('pcode')->onDelete('cascade');
             $table->primary(['participant_id', 'pcode_id']);
         });
     }

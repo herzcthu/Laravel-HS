@@ -36,7 +36,7 @@
                     <td><input type='checkbox' class='checkall checkbox' name='projects[{!! $project->id !!}]'></td>                    
                     <td>
                         <a class="text text-lg text-uppercase" href="{{ route('admin.project.analysis', $project->id) }}" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>{!! $project->name !!}</h5><p>Click here to go to analysis</p>" >{!! $project->name !!}</a><br>
-                        @if($project->type == 'incident')
+                        @if($project->type == 'incident' || $project->type == 'survey')
                             {!! $project->incident_action_buttons !!}
                         @else
                             {!! $project->checklist_action_buttons !!}

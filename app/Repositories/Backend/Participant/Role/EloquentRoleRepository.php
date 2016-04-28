@@ -23,6 +23,10 @@ class EloquentRoleRepository implements RoleRepositoryContract {
 		throw new GeneralException('That role does not exist.');
 	}
         
+        public function findRoleByName($name) {
+                return Role::where('name','=',$name)->first();
+        }
+        
         public function getRoleLevel($id) {
             $role = $this->findOrThrowException($id);
             
@@ -51,11 +55,10 @@ class EloquentRoleRepository implements RoleRepositoryContract {
 
 	/**
 	 * @param $input
-	 * @param $permissions
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function create($input, $permissions) {
+	public function create($input) {
 		if (Role::where('name', '=', $input['name'])->where('level', '=', $input['level'])->first())
 			throw new GeneralException('That role already exists. Please choose a different name.');
 
@@ -66,7 +69,7 @@ class EloquentRoleRepository implements RoleRepositoryContract {
 
 		if ($role->save()) {
 			//Attach permissions
-			return true;
+			return $role;
 		}
 
 		throw new GeneralException("There was a problem creating this role. Please try again.");

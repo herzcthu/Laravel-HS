@@ -44,13 +44,11 @@ class ForeignTable extends Migration
     public function down()
     {
         Schema::table('pcode', function(Blueprint $table){
-            $table->dropForeign('pcode_org_id_foreign');
-            $table->dropForeign('pcode_pid_foreign');
-            $table->dropForeign('pcode_lid_foreign');
+            //$table->dropForeign('pcode_org_id_foreign');
         });
         Schema::table('participants', function(Blueprint $table){
-            $table->dropForeign('participants_role_id_foreign');
-            $table->dropForeign('participants_org_id_foreign');
+            //$table->dropForeign('participants_role_id_foreign');
+            //$table->dropForeign('participants_org_id_foreign');
         }); 
         
     }
