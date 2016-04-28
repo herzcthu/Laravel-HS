@@ -17,6 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 ?>
+
+    <div class="modal fade" id="notice" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <H2 id="modal-title">Notice</H2>
+                      
+
+            </div><!-- Modal header -->
+            <div class="modal-body">
+                <div id="logicmessage">
+                    This is message
+                </div>  
+            </div><!-- Modal body -->
+            <div class="modal-footer">
+                <button id="mdok" class="btn btn-success pull-left" type="button" data-dismiss="modal">Ok</button>
+                <button id="mdcl" type="button" class="btn btn-default" data-dismiss="modal">Cancle</button>
+            </div><!-- Modal footer -->
+          </div><!-- Modal content -->
+        </div>
+    </div><!-- #logic -->
 @section('after-scripts-end')
 <script type="text/javascript">
 (function ($) {
@@ -31,11 +53,20 @@
                     var operator = logic.operator;
                     if(operator === 'skip') {
                         $("#"+logic.lftans).on('click',function(e){
-  
+                           //e.preventDefault();
                            if(this.checked){
-                                if(confirm('Skip to ' + logic.rftquess)){
+                               var that = this;
+                                $("#logicmessage").html("Skip to "+logic.rftquess);
+                                $("#notice").modal('show');
+                                $("#mdok").click(function(){
                                     location.href = "#"+logic.rftquess;
-                                }
+                                });
+                                $("#mdcl").click(function(){                                    
+                                    that.checked = false;
+                                    $("#notice").modal('hide');
+                                });
+                            } else {
+                                return false;
                             }
                         });
                         
