@@ -594,6 +594,8 @@ class EloquentPLocationRepository implements PLocationContract {
                     $trees->village_tract = $location->village_tract_burmese;
                 }elseif(isset($location->village_tractward_burmese)){
                     $trees->village_tract = $location->village_tractward_burmese;
+                }elseif(isset($location->town_village_tract_name)){
+                    $trees->village_tract = $location->town_village_tract_name;
                 }
                 else{
 
@@ -604,6 +606,8 @@ class EloquentPLocationRepository implements PLocationContract {
                     $trees->village = $location->village_mya_mmr3;
                 }elseif(isset($location->polling_station_location_burmese)){
                     $trees->village = $location->polling_station_location_burmese;
+                }elseif(isset($location->ward_village_name_eng)){
+                    $trees->village = $location->ward_village_name_eng;
                 }else{
 
                 }
