@@ -207,9 +207,32 @@ class EloquentQuestionRepository implements QuestionContract {
         public function addLogic($project,$question,$input, $ajax = false) {
             $qans = $question->qanswers;
             foreach($qans as $ans){
-                if($ans->akey == $input['lftans']){
-                    $ans->update(['logic' => $input]);
+                switch($input['operator']) {
+                    case 'skip':
+                        // skip
+                        if($ans->akey == $input['lftans']){
+                            $ans->update(['logic' => $input]);
+                        }
+                        break;
+                    case 'selected':
+                        // selected
+                        if($ans->akey == $input['lftans']){
+                            $ans->update(['logic' => $input]);
+                        }
+                        break;
+                    default:
+                        if($input['rftdiff']) {
+                            if($ans->akey == $input['rftans']){
+                                $ans->update(['logic' => $input]);
+                            } 
+                        } else {
+                            if($ans->akey == $input['lftans']){
+                                $ans->update(['logic' => $input]);
+                            } 
+                        } 
+                        break;
                 }
+                
             }
         }
 	
