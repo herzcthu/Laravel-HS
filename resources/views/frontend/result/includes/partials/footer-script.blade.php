@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 ?>
-
+@section('footer')
     <div class="modal fade" id="notice" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-sm" role="document">
           <div class="modal-content">
@@ -39,6 +39,7 @@
           </div><!-- Modal content -->
         </div>
     </div><!-- #logic -->
+@endsection
 @section('after-scripts-end')
 <script type="text/javascript">
 (function ($) {

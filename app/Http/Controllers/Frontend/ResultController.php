@@ -44,45 +44,7 @@ class ResultController extends Controller
      */
     public function index($project, Request $request)
     {
-        /**
-        $located = PLocation::where('org_id', $project->organization->id );
         
-        
-        if($request->get('region')){
-            $state = $request->get('region');
-            
-            $located->where('state',$state);
-        }
-        if($request->get('district')){
-            $district = $request->get('district');
-            $located->where('district',$district);
-        }
-        if($request->get('station')){
-            $station = $request->get('station');
-            $located->where('village',$station);
-        }
-        
-        if($request->get('section') >= 0){
-            $section = $request->get('section');
-            $status = $request->get('status');
-            if($status == 'missing'){
-
-                $located->OfwithAndWhereHas('results', function($query) use ($section, $status){
-                        $query->where('section_id', (int)$section)
-                                ->whereNotIn('information',['complete', 'incomplete', 'error']);
-                })->orNotWithResults();
-            }else{
-                
-                $located->OfwithAndWhereHas('results', function($query) use ($section, $status){
-                        $query->where('information', $status)->where('section_id', (int)$section);
-                });
-            }
-            
-        }
-        
-        $locations = $located->get();
-         * 
-         */
         $sections = $project->sections;
         $alocations = PLocation::where('org_id', $project->organization->id )->get();
         return view('frontend.result.index-locations')
@@ -107,7 +69,9 @@ class ResultController extends Controller
         }elseif($project->validate == 'pcode'){
             $route = route('ajax.project.pcode', [$project->id, '{pcode}-'.$project->organization->id]);
         }elseif($project->validate == 'uec_code'){
-            
+            $route = '';
+        }else{
+            $route = '';
         }
         javascript()->put([
 			'url' => $route,

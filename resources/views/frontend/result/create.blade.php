@@ -4,7 +4,7 @@
 
 @section ('before-styles-end')
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
-@stop
+@endsection
 
 @section('page-header')
     <h1>
@@ -17,7 +17,7 @@
      <li><a href="{!!route('frontend.dashboard')!!}"><i class="fa fa-dashboard"></i> {{ _t('Dashboard') }}</a></li>
      <li>{!! link_to_route('data.projects.index', _t('Project Management')) !!}</li>
      <li>{!! link_to_route('data.project.results.create', _t('Create ').$project->name. _t(' Results'), $project->id) !!}</li>
-@stop
+@endsection
 
 @section('content')
         <div class="row">
@@ -27,6 +27,9 @@
                 @endif
                 @if($project->type == 'incident')
                     <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to incident list.') }}</a>
+                @endif
+                @if($project->type == 'survey')
+                    <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to survey list.') }}</a>
                 @endif
             </div>
         </div>
@@ -62,7 +65,7 @@
                         <div class="col-xs-5 col-lg-5">
                             @if(is_array($project->sections))
                                 @foreach($project->sections as $section_key => $section)
-                                <a href="#linkto{{$section_key}}">{!! _t($section->text) !!}</a><br>
+                                <a href="#linktosection{{$section_key}}">{!! _t($section->text) !!}</a><br>
                                 @endforeach
                             @endif    
                         </div>
@@ -74,10 +77,10 @@
                 <div class="panel-footer">
                     
                 </div>
-            </div>
+            </div><!-- end of validation section -->
         @if(is_array($project->sections))
             @foreach($project->sections as $section_key => $section)
-            <div class="panel panel-default" id="linkto{{$section_key}}">
+            <div class="panel panel-default" id="linktosection{{$section_key}}">
                 <div class="panel-heading">
                     <div class="panel-title">
                          {!! $section->text !!}
@@ -104,7 +107,7 @@
                 @if(count($project->questions) > 0 )
                     @foreach($project->questions->sortBy('sort', SORT_NATURAL) as $question)
                     @if(!empty($question->related_data))
-                        @if(empty($question->related_data->q) && $question->related_data->type != 'parent')                            
+                        @if(!empty($question->related_data->q) && $question->related_data->type != 'parent')                            
                         
                             @if($section_key == $question->section)
 
@@ -287,7 +290,7 @@
                     {!! Form::close() !!}
                 @endif
                 </div>
-                </div>    
+                   
                 <div class="panel-footer">
                     {!! $section->text !!} (Section End)
                 </div>
@@ -344,8 +347,7 @@
         <div class="clearfix"></div>
 
     
-@stop
-@include('frontend.result.includes.partials.footer-script') 
+@endsection
 @push('scripts')
 <script type="text/javascript">
 (function ($) {
@@ -448,3 +450,5 @@
 }(jQuery));
 </script>
 @endpush
+@include('frontend.result.includes.partials.footer-script') 
+

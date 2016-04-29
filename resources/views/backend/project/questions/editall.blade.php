@@ -661,11 +661,12 @@
         $.ajax({
                 url    : ajaxQURL,
                 type   : 'POST',
+                async:false,
                 dataType:"json",
                 data   : qna,
                 success: function (data) {
-                        //console.log(data);
-                        location.reload(); // To Do: need to remove this function.
+                        console.log(data);
+                        //location.reload(); // To Do: need to remove this function.
                 }
 
         });
@@ -948,6 +949,7 @@
                   
                   var urlhash = content[0].urlhash.edit;
               }  
+              console.log(urlhash);
               if(typeof urlhash != 'undefined') {
                     $("#qForm").attr('data-hash', urlhash);
                 }else{
