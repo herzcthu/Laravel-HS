@@ -196,7 +196,7 @@
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
                                 @if((isset($question->display->question) && $question->display->question == 0) || empty($question->display))
-                                <div class="col-xs-1 col-lg-11">
+                                <div class="col-xs-11 col-lg-11">
                                     <div class="form-control-static">
                                     {!! _t($question->question) !!}
                                     </div>
@@ -204,7 +204,7 @@
                                 @endif                            
 
                                     <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
-                                    <div class="col-xs-1 col-lg-11">
+                                    <div class="col-xs-11 col-lg-11">
                                         @if($question->qanswers->count() > 0 )
                                            <?php $key = 0; ?> 
                                             @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $answer)
@@ -281,11 +281,15 @@
                     {!! Form::close() !!}
                 @endif
                 @if($project->type == 'incident' || $project->type == 'survey')
+                <div class="row">
+                    <div class="col-xs-12">
                 <div class="pull-left">                                        
                     <input type="reset" class="btn btn-warning" value="Reset All" />                
                 </div>
                 <div class="pull-right">
                     <input type="submit" class="btn btn-success" value="Save" />
+                </div>
+                    </div>
                 </div>
                     {!! Form::close() !!}
                 @endif
