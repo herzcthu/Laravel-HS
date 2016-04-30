@@ -57,7 +57,8 @@
                            //e.preventDefault();
                            if(this.checked){
                                var that = this;
-                                $("#logicmessage").html("Skip to "+logic.rftquess);
+                               var qnum = $("#"+logic.rftquess+" label:first").text();
+                                $("#logicmessage").html("Skip to "+qnum);
                                 $("#notice").modal('show');
                                 $("#mdok").click(function(){
                                     location.href = "#"+logic.rftquess;
