@@ -666,7 +666,7 @@
                 data   : qna,
                 success: function (data) {
                         console.log(data);
-                        //location.reload(); // To Do: need to remove this function.
+                        location.reload(); // To Do: need to remove this function.
                 }
 
         });
