@@ -112,6 +112,7 @@
                             @if($section_key == $question->section)
                             <div class="row">
                             <div id="{!! $question->slug !!}" class="form-group quest {!! aio()->section($section->column) !!}">
+                                <div class="row col-xs-offset-0">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
@@ -122,9 +123,11 @@
                                     </div>
                                 </div>
                                 @endif                            
-
+                                </div>
+                                <div class="row col-xs-offset-0">
                                     <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
                                     <div class="col-lg-11">
+                                        <div class="row col-xs-offset-0">
                                         @if($question->qanswers->count() > 0 )
                                         <?php $key = 0 ?>
                                             @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $answer)
@@ -181,8 +184,9 @@
                                                 <?php $key++ ?>
                                             @endforeach                        
                                         @endif
+                                        </div>
                                     </div>
-
+                                </div>
                             </div>
                             </div>
                             @endif
@@ -192,6 +196,7 @@
                             @if($section_key == $question->section)
                             <div class="row">
                             <div id="{!! $question->slug !!}" class="form-group quest {!! aio()->section($section->column) !!}">
+                                <div class="row col-xs-offset-0">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
@@ -202,9 +207,11 @@
                                     </div>
                                 </div>
                                 @endif                            
-
+                                </div>
+                                <div class="row col-xs-offset-0">
                                     <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
                                     <div class="col-xs-11 col-lg-11">
+                                        <div class="row col-xs-offset-0">
                                         @if($question->qanswers->count() > 0 )
                                            <?php $key = 0; ?> 
                                             @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $answer)
@@ -261,8 +268,9 @@
                                                 <?php $key++ ?>
                                             @endforeach                        
                                         @endif
+                                        </div>
                                     </div>
-
+                                </div>
                             </div>
                             </div>
                             @endif
