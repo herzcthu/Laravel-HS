@@ -179,10 +179,11 @@ class AjaxController extends Controller
     }
     
     public function getQuestion($project, $question, Request $request) {
-        
+        // Still don't sure why should I query like this
+        //dd($question->where('id','=',$question->id)->get());
         if($request->get('columns')){
             $columns = $request->get('columns');
-            $q = $question->get()->map(function ($item, $key) use ($columns) {
+            $q = $question->where('id','=',$question->id)->get()->map(function ($item, $key) use ($columns) {
                 return array_intersect_key($item->toArray(), array_flip ($columns));
             });
         }else{

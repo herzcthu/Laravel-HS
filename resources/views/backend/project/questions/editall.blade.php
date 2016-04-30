@@ -661,7 +661,7 @@
         $.ajax({
                 url    : ajaxQURL,
                 type   : 'POST',
-                async:false,
+                //async:false,
                 dataType:"json",
                 data   : qna,
                 success: function (data) {
@@ -926,9 +926,9 @@
             })// edit form modal contant
             .on('show.bs.modal', function (event) {
               var button = $(event.relatedTarget); // Button that triggered the modal
-              console.log(button);
+              //console.log(button);
               var ajaxurl = button.data('href');
-              console.log(ajaxurl);
+              //console.log(ajaxurl);
               var type = button.data('type');
               // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
               // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
@@ -945,11 +945,12 @@
                     * get content using ajax
                     * return array
                     */
+                   console.log(ajaxurl);
                   var content = getData(ajaxurl, ['urlhash','section','qnum','question','qanswers','answer_view']);
-                  
+                  console.log(content);
                   var urlhash = content[0].urlhash.edit;
               }  
-              console.log(urlhash);
+              //console.log(urlhash);
               if(typeof urlhash != 'undefined') {
                     $("#qForm").attr('data-hash', urlhash);
                 }else{
@@ -988,7 +989,7 @@
               $("#qnum").text(content[0].qnum + ' : ');
               $("#question").text(content[0].question);
               //console.log(content.qanswers); return;
-              $.each(answers, function( index, answer ) {
+              $.each(content[0].qanswers, function( index, answer ) {
                   var prefix = $('#inputForm input[name=fprefix]').val();
                   add(answer.type, answer.value, prefix, answer.text, answer.optional, index);
                 });

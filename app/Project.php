@@ -150,7 +150,7 @@ class Project extends Model
   public function getIncidentActionButtonsAttribute() {
       return $this->getEditButtonAttribute().' '.
               $this->getDeleteButtonAttribute().' '.
-              $this->getAddQuestionButtonAttribute().' '.
+              //$this->getAddQuestionButtonAttribute().' '.
               $this->getEditQuestionsButtonAttribute().' '.
               $this->getAddResultsFrontendButtonAttribute().' '.
               $this->getViewIresponseFrontendButtonAttribute().' '.
@@ -161,7 +161,7 @@ class Project extends Model
   public function getChecklistActionButtonsAttribute() {
       return $this->getEditButtonAttribute().' '.
               $this->getDeleteButtonAttribute().' '.
-              $this->getAddQuestionButtonAttribute().' '.
+              //$this->getAddQuestionButtonAttribute().' '.
               $this->getEditQuestionsButtonAttribute().' '.
               $this->getViewResponseFrontendButtonAttribute().' '.
               $this->getViewStatusFrontendButtonAttribute().' '.
