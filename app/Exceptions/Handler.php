@@ -47,6 +47,14 @@ class Handler extends ExceptionHandler {
 		{
 			return redirect()->route('admin.access.users.edit', $e->userID())->withInput()->withFlashDanger($e->validationErrors());
 		}
+                
+                if ($e instanceof \Illuminate\Session\TokenMismatchException)
+                {
+                    return redirect()
+                            ->back()
+                            ->withInput($request->except('password'))
+                            ->withFlashDanger($e->getMessage());
+                }   
 
 		//Catch all
 		return parent::render($request, $e);
