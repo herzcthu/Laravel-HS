@@ -977,11 +977,11 @@
               
               var answers = content[0].qanswers;
               
-              $('#inputForm input[name=inputsect]').val(content[0].section);
-              $('#inputForm input[name=inputnum]').val(content[0].qnum);
-              $('#inputForm input[name=inputq]').val(content[0].question);
-              $('#inputForm input[name=fprefix]').val(content[0].qnum + '_a');
-              $('#inputForm select[name=answer_view]').val(content[0].answer_view);
+              $("#inputForm select[name='inputsect']").val(content[0].section);
+              $("#inputForm input[name='inputnum']").val(content[0].qnum);
+              $("#inputForm input[name='inputq']").val(content[0].question);
+              $("#inputForm input[name='fprefix']").val(content[0].qnum + '_a');
+              $("#inputForm select[name='answer_view']").val(content[0].answer_view);
               $("#qForm input[name='answer_view']").val(content[0].answer_view);
               $("#qForm input[name='section']").val(content[0].section);
               $("#qForm input[name='qnum']").val(content[0].qnum);
