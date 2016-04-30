@@ -10,7 +10,7 @@
     ]
     )
     ->modify('pcode', function($plocations){
-    $link = ' <a href="'.route("admin.locations.edit", $plocations->primaryid).'"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
+    $link = ' <a href="'.route("admin.locations.edit", $plocations->id).'"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>';
         return $plocations->pcode. $link;
     })
     
