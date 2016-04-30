@@ -192,6 +192,8 @@ class EloquentQuestionRepository implements QuestionContract {
                             $qanswer->css = (isset($av['css']))?$av['css']:'';
                             $question->qanswers()->save($qanswer);
                         }
+                    } else {
+                        \App\QAnswers::where('qid', $question->id)->delete();
                     }
                     if($ajax == true){
                     // need to return $question for ajax

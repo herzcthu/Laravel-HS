@@ -470,7 +470,7 @@
 
         var br = document.createElement("br");
         var inputrow = document.createElement("div");
-            inputrow.setAttribute("class", "row");
+            inputrow.setAttribute("class", "row"+ " del"+index);
         var inputgroup = document.createElement("div");
             inputgroup.setAttribute("class", "form-group");
             
