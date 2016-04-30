@@ -142,7 +142,7 @@
                         
                             @if($section_key == $question->section)
 
-                            <div class="form-group quest {!! aio()->section($section->column) !!}">
+                            <div id="{!! $question->slug !!}" class="form-group quest {!! aio()->section($section->column) !!}">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
@@ -251,7 +251,8 @@
     
             @if(count($project->questions) > 0 )
                 @foreach($project->questions as $question)
-                    <div class="form-group">
+                <div class="row">
+                    <div id="{!! $question->slug !!}" class="form-group">
 
                         <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                         <div class="col-xs-1 col-lg-11">
@@ -278,6 +279,7 @@
                             </div>
 
                     </div>
+                </div>
                 @endforeach        
             @endif
             <div class="pull-right">

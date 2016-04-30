@@ -32,12 +32,7 @@ class CreateParticipantRolesTable extends Migration {
      * @return void
      */
     public function down() {
-        Schema::table('participants', function(Blueprint $table){
-            $table->dropForeign('participants_role_id_foreign');
-        });
-        Schema::table('pcode', function(Blueprint $table){
-            $table->dropForeign('pcode_role_id_foreign');
-        });
+        
         Schema::dropIfExists('participant_roles');
     }
 }

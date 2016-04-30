@@ -110,8 +110,8 @@
                         @if(!empty($question->related_data->q) && $question->related_data->type != 'parent')                            
                         
                             @if($section_key == $question->section)
-
-                            <div id="{!! $question->qnum !!}" class="form-group quest {!! aio()->section($section->column) !!}">
+                            <div class="row">
+                            <div id="{!! $question->slug !!}" class="form-group quest {!! aio()->section($section->column) !!}">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
@@ -184,14 +184,14 @@
                                     </div>
 
                             </div>
-
+                            </div>
                             @endif
                         @endif
                     @else                        
                          {{-- if no related or parent questions --}}
                             @if($section_key == $question->section)
-
-                            <div id="{!! $question->qnum !!}" class="form-group quest {!! aio()->section($section->column) !!}">
+                            <div class="row">
+                            <div id="{!! $question->slug !!}" class="form-group quest {!! aio()->section($section->column) !!}">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
@@ -264,7 +264,7 @@
                                     </div>
 
                             </div>
-
+                            </div>
                             @endif
                     @endif
                     @endforeach        
@@ -308,7 +308,7 @@
                 @foreach($project->questions as $question)
                 @if(!empty($question->related_data))
                     @if(empty($question->related_data->q) && $question->related_data->type != 'parent') 
-                    <div class="form-group" id="{!! $question->qnum !!}">
+                    <div class="form-group" id="{!! $question->slug !!}">
 
                         <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                         <div class="col-xs-11 col-lg-11">

@@ -111,6 +111,9 @@ class Question extends Model
             
             $this->update(['urlhash' => $hash]);
         }
+        if(empty($this->slug)){
+            $this->update(['slug' => str_slug($this->qnum)]);
+        }
         $id = str_slug("$this->qnum -btn");
      return '<a id="'.$id.'" href="#" data-href="'.$question_url.'" class="btn btn-xs btn-primary '.$id.'" data-toggle="modal" data-target="#formTemplate" data-type="edit"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"  ></i></a>';
   }

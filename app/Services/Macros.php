@@ -63,6 +63,10 @@ class Macros extends FormBuilder {
             $akey = isset($answer->akey) ? $answer->akey:$answer_key;
             $css = $answer->css;
             $qnum = $question->qnum;
+            
+            if(empty($answer->slug)){
+                $answer->update(['slug' => str_slug($answer->akey)]);
+            }
             if(in_array($type, ['radio'])){
                 $default = isset($answer->akey) ? $answer->akey:null;
             }else{
@@ -174,7 +178,7 @@ class Macros extends FormBuilder {
                 
             }
             $options['class'] = $css;
-            $options['id'] = $cssId; //dd($options);
+            $options['id'] = $answer->slug; //dd($options);
             $options['data-logic'] = json_encode($answer->logic);
             /*
              * To Do: need to fix select box answer

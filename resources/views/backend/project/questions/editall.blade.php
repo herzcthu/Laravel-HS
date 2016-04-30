@@ -734,18 +734,22 @@
                 logicdata.push({name: '_method', value: method},{name: 'logicdata', value: true});
                 //send ajax request
                 console.log(logicdata);
+                var saved;
                 $.ajax({
                         url    : ajaxLURL,
                         type: 'POST',
                         async:false,
                         data: logicdata,
                         success: function (data) {
-                                $("#logicForm")[0].reset();
-                                //console.log(data);
-                                location.reload(); // reload page after logic added.
+                                saved = data;
+                                console.log(data);
+                                //location.reload(); // reload page after logic added.
                         }
 
                 });
+                if(saved){
+                    $("#logicForm")[0].reset();
+                }
                 e.preventDefault();
             })
             .on('show.bs.modal', function (event) {
@@ -760,7 +764,7 @@
               var lftselect = document.getElementById('lftselect');
               var rftquess = document.getElementById('rftquess');
               var rftans = document.getElementById('rftans');
-              var cols = ['id','qnum','question'];
+              var cols = ['id','qnum','question','slug'];
               var questions = getData(projectURL+'/questions',cols); console.log(questions);
               
               //if(typeof urlhash != 'undefined') {
@@ -778,7 +782,7 @@
               //console.log(content.qanswers);
               $.each(content[0].qanswers, function( index, answer ) {
                   var option = document.createElement("option");
-                    option.setAttribute("value", answer.akey );
+                    option.setAttribute("value", answer.slug );
                     option.setAttribute("data-type", answer.type );
                     option.innerHTML = answer.text + ' (' + answer.akey + ' ' + answer.type + ')';
                     lftselect.appendChild(option);
@@ -792,12 +796,12 @@
                 }
                   $.each(questions, function( index, question ) {
                       var option = document.createElement("option");
-                        option.setAttribute("value", question.qnum );
+                        option.setAttribute("value", question.slug );
                         option.setAttribute("data-qid", question.id );
                         option.innerHTML = question.qnum;
                         rftquess.appendChild(option);
                   });
-                  var anscols = ['akey','text'];
+                  var anscols = ['akey','text','slug'];
                   var qid = rftquess.options[rftquess.selectedIndex].getAttribute("data-qid");
                   var answers = getData(projectURL+'/question/'+qid+'/answers',anscols);
                   if(typeof answers !== 'undefined') {
@@ -807,7 +811,7 @@
                       }
                       $.each(answers, function( index, answer ) {
                           var option = document.createElement("option");
-                            option.setAttribute("value", answer.akey );
+                            option.setAttribute("value", answer.slug );
                             option.innerHTML = answer.text;
                             rftans.appendChild(option);
                       });
@@ -816,7 +820,7 @@
                 }
             })
             .on('load click change','#rftquess', function(e){
-                var anscols = ['akey','text'];
+                var anscols = ['akey','text','slug'];
                   var qid = rftquess.options[rftquess.selectedIndex].getAttribute("data-qid");
                   var answers = getData(projectURL+'/question/'+qid+'/answers',anscols);
                   if(typeof answers !== 'undefined') {
@@ -826,7 +830,7 @@
                     }
                   $.each(answers, function( index, answer ) {
                       var option = document.createElement("option");
-                        option.setAttribute("value", answer.key );
+                        option.setAttribute("value", answer.slug );
                         option.innerHTML = answer.text;
                         rftans.appendChild(option);
                   });
