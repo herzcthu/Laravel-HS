@@ -118,7 +118,7 @@ class AjaxController extends Controller
                 $question = $this->question->update($question, $input, $project, $ajax);
                 return $question;
             } else {
-                return response()->json(array('success'=>false, 'reqhash' => $request_urlhash));
+                return response()->json(array('success'=>false, 'reqhash' => $request_urlhash, 'requesturl' => $request->url()));
             }
         }
     }
