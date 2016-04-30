@@ -626,7 +626,7 @@
         //console.log(form);
         var j = 0, op = {};
         for ( var i = 0; i < form.elements.length; i++ ) {
-           var e = form.elements[i]; //console.log(e);
+           var e = form.elements[i]; console.log(e);
            var ename = e.getAttribute("data-prefix"); //console.log(e.type);
            switch(e.type) {
                case "hidden":
@@ -635,7 +635,7 @@
                case "radio":                   
                    e.setAttribute("name", ename + "radio");
                    e.setAttribute("data-name", ename + j);
-                   answers[ename + j] = {   "type": e.getAttribute("type"),
+                   answers[ename + j] = {   "type": e.type,
                                         "name" : e.getAttribute("name"),
                                         "value" : e.getAttribute("value"),
                                         "data-name" : e.getAttribute("data-name"),
@@ -663,7 +663,7 @@
                    e.setAttribute("name", ename + j);
                    e.setAttribute("data-name", ename + j);
                    //console.log(e.getAttribute("data-name"));
-                   answers[ename + j] = {   "type": e.getAttribute("type"),
+                   answers[ename + j] = {   "type": e.type,
                                         "name": e.getAttribute("name"),
                                         "value": e.getAttribute("value"),
                                         "data-name": e.getAttribute("data-name"),
@@ -684,7 +684,7 @@
                 data   : qna,
                 success: function (data) {
                         console.log(data);
-                        location.reload(); // To Do: need to remove this function.
+                        //location.reload(); // To Do: need to remove this function.
                 }
 
         });
@@ -976,6 +976,7 @@
               if(typeof urlhash != 'undefined') {
                     $("#qForm").attr('data-hash', urlhash);
                 }else{
+                    console.log(ems.urlhash);
                     $("#qForm").attr('data-hash', ems.urlhash);
                 }
               if(typeof ajaxurl != 'undefined') {

@@ -91,7 +91,7 @@ class AjaxController extends Controller
                 
                 return response()->json(array('success'=>true, 'message'=>$question));
             } else {
-                return response()->json(array('success'=>false));
+                return response()->json(array('success'=>false, 'urlhash' => $urlhash, 'requrl' => $request->url()));
             }
         }        
         
