@@ -316,6 +316,7 @@
                 </div>
                 <div class="col-xs-7">
                 <form id="qForm" name="qForm" autocomplete="off">
+                    <div class="row">
                     <div id="qgroup" class="form-group">
                         <input type="hidden" value="" name="section" data-prefix="section" data-name="section" data-label="">
                         <input type="hidden" value="" name="answer_view" data-prefix="answer_view" data-name="answer_view" data-label="">
@@ -324,8 +325,11 @@
                         <label style="padding-left: 0px;"class="col-xs-10" for="question" id="question"></label>
                         <input type="hidden" value="" name="question" data-prefix="question" data-name="question" data-label="">
                     </div>
-                    <div id="answers" class="col-xs-offset-2 form-group">
-                    </div> 
+                    </div>
+                    <div class="row">
+                    <div id="answers" class="col-xs-offset-2">
+                    </div>                        
+                    </div>
                 </form>
                 </div>
                 </div>
@@ -448,24 +452,25 @@
         element.setAttribute("data-prefix", prefix);
         element.setAttribute("data-name", prefix + index);
         element.setAttribute("data-label", labeltext);
-        element.setAttribute("class", prefix + index);
+        element.setAttribute("class", prefix + index + " del"+index);
 
         var label = document.createElement("label");
         label.setAttribute("for", prefix + index);
         label.setAttribute("data-label", prefix + index);
-        label.setAttribute("class", prefix + index + " control-label ");
+        label.setAttribute("class", prefix + index + " control-label "+ " del"+index);
         
         var del = document.createElement("button");
-        del.setAttribute("class", "del btn btn-sm btn-danger " + prefix + index);
+        del.setAttribute("class", "del btn btn-sm btn-danger " + prefix + index+ " del"+index);
         del.setAttribute("type", "button");
-        del.setAttribute("data-del", prefix + index);
+        del.setAttribute("data-del", "del"+index);
         del.innerHTML = "X";
         var deldiv = document.createElement("div");
             deldiv.setAttribute("class", " col-xs-1 ")
         var answerdiv = document.getElementById("answers");
 
         var br = document.createElement("br");
-        
+        var inputrow = document.createElement("div");
+            inputrow.setAttribute("class", "row");
         var inputgroup = document.createElement("div");
             inputgroup.setAttribute("class", "form-group");
             
@@ -478,11 +483,13 @@
         //Append the element in page (in span).
         switch(type) {
             case "radio":
-                // add inputgroup div to answer div
-                answerdiv.appendChild(inputgroup);
+                // add inputrow div to answer div
+                answerdiv.appendChild(inputrow);
+                // add inputgroup div to row div
+                inputrow.appendChild(inputgroup);
                 // add wrapper div to inputgroup
                 inputgroup.appendChild(wrapper);
-                wrapper.setAttribute("class", " col-xs-11");
+                wrapper.setAttribute("class", " col-xs-10");
                 // add typewrap div to wrapper
                 wrapper.appendChild(typewrap);
                 // add label to typewrap
@@ -497,9 +504,12 @@
                 inputgroup.appendChild(deldiv);
                 break;
             case "checkbox":
-                answerdiv.appendChild(inputgroup);
+                // add inputrow div to answer div
+                answerdiv.appendChild(inputrow);
+                // add inputgroup div to row div
+                inputrow.appendChild(inputgroup);
                 inputgroup.appendChild(wrapper);
-                wrapper.setAttribute("class", type + " col-xs-11");
+                wrapper.setAttribute("class", type + " col-xs-10");
                 wrapper.appendChild(typewrap);
                 typewrap.appendChild(label);
                 typewrap.setAttribute("class", " checkbox ");
@@ -516,10 +526,13 @@
                 textarea.className += " form-control " + prefix + index;
                 label.className += "  ";
                 label.innerHTML += " " + labeltext + " ";
-                answerdiv.appendChild(inputgroup);
+                // add inputrow div to answer div
+                answerdiv.appendChild(inputrow);
+                // add inputgroup div to row div
+                inputrow.appendChild(inputgroup);
                 wrapper.appendChild(label);
                 wrapper.appendChild(textarea);
-                wrapper.setAttribute("class", " col-xs-11");
+                wrapper.setAttribute("class", " col-xs-10");
                 inputgroup.appendChild(wrapper);
                 deldiv.appendChild(del);
                 inputgroup.appendChild(deldiv);
@@ -534,7 +547,7 @@
                 // create new div if selectdiv is null and assign ID attribute and class
                 if(null === selectdiv){
                     selectdiv = document.createElement("div");
-                    selectdiv.setAttribute("class", "row form-group");
+                    selectdiv.setAttribute("class", "row form-group sortable");
                     selectdiv.setAttribute("id", prefix + "div");
                 }
 
@@ -545,7 +558,7 @@
                     selectbox.setAttribute("name", prefix + index);
                     selectbox.setAttribute("data-prefix", prefix);                
                     selectbox.setAttribute("data-label", labeltext);                
-                    selectbox.className += " input-sm col-xs-8";
+                    selectbox.className += " input-sm col-xs-7";
 
                     label.className += " col-xs-3";
                     label.innerHTML += " " + labeltext + " ";
@@ -554,8 +567,10 @@
                     selectdiv.appendChild(selectbox);
                     deldiv.appendChild(del);
                     selectdiv.appendChild(deldiv);
-
-                    answerdiv.appendChild(selectdiv);
+                    // add inputrow div to answer div
+                    answerdiv.appendChild(inputrow);
+                    // add inputgroup div to row div
+                    inputrow.appendChild(selectdiv);
 
                 }
 
@@ -571,12 +586,15 @@
                 answerdiv.appendChild(element);
                 break;
             default:
-                answerdiv.appendChild(inputgroup);
+                // add inputrow div to answer div
+                answerdiv.appendChild(inputrow);
+                // add inputgroup div to row div
+                inputrow.appendChild(inputgroup);
                 inputgroup.appendChild(label);
                 label.className += " col-xs-3";
                 inputgroup.appendChild(wrapper);
                 element.className += " form-control";
-                wrapper.setAttribute("class", "col-xs-8");
+                wrapper.setAttribute("class", "col-xs-7");
                 wrapper.appendChild(element);
                 label.innerHTML += " " + labeltext + " ";
                 deldiv.appendChild(del);
@@ -1032,6 +1050,7 @@
 				});
 			}
 		});
+             $("#answers").sortable();   
             @foreach($project->sections as $section_key => $section)
 		$("#accordion{{$section_key}}").sortable({
 			cursor: 'move',
