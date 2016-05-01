@@ -49,15 +49,19 @@
             </div>
         </div><!--form control-->
         <div class="form-group">
+            <label class="col-lg-2 control-label">Submit Type</label>
+            <div class="col-lg-10">
+                {!! Form::select('submit', ['section' => 'Section by Section','full' => 'Full form'], null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
+            </div>
+        </div><!--form control-->
+        <div class="form-group">
             <label class="col-lg-2 control-label">Form Sections</label>
             <div class="col-lg-10">
                 <div class="row">
                     <div class="col-xs-2"><label class="control-label">Section Name</label></div>
                     <div class="col-xs-1"><label class="control-label">Column</label></div>
-                    <div class="col-xs-2"><label class="control-label">Formula</label></div>
                     <div class="col-xs-3"><label class="control-label">Descriptions</label></div>
                     <div class="col-xs-1"><label class="control-label">Report</label></div>
-                    <div class="col-xs-1"><label class="control-label">Show Submit</label></div>
                     <div class="col-xs-2"></div>
                 </div>
                 <div id="sectForm">
@@ -76,17 +80,11 @@
                                                                     '5' => '5',
                                                                     '6' => '6'], (isset($section->column)? $section->column:null), ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                         </div>
-                        <div class="col-xs-2">
-                            {!! Form::text("sections[$key][formula]", (isset($section->formula)? $section->formula:null), ['class' => 'form-control', 'placeholder' => 'DA>(BE+BF)']) !!}                     
-                        </div>
                         <div class="col-xs-3">
                             {!! Form::textarea("sections[$key][desc]", (isset($section->desc)? $section->desc:null), ['rows' => '3', 'class' => 'form-control', 'placeholder' => 'Some text to display on the top of section.']) !!}
                         </div>
                         <div class="col-xs-1">
                             {!! Form::checkbox("sections[$key][report]", 1, (isset($section->report)? true:null), ['class' => 'checkbox']) !!}
-                        </div>
-                        <div class="col-xs-1">
-                            {!! Form::checkbox("sections[$key][submit]", 1, (isset($section->submit)? true:null), ['class' => 'checkbox']) !!}
                         </div>
                         @if($key == 0)
                         <div class="col-xs-2">
@@ -112,18 +110,14 @@
                                                                 '5' => '5',
                                                                 '6' => '6'], null, ['class' => 'form-control', 'placeholder' => 'Input Type']) !!}  
                     </div>
-                    <div class="col-xs-2">
-                        {!! Form::text("sections[0][formula]", (isset($section->formula)? $section->formula:null), ['class' => 'form-control', 'placeholder' => 'DA>(BE+BF)']) !!}                     
-                    </div>
+                    
                     <div class="col-xs-3">
                         {!! Form::textarea("sections[0][desc]", null, ['rows' => '3', 'class' => 'form-control', 'placeholder' => 'Some text to display on the top of section.']) !!}
                     </div>
                     <div class="col-xs-1">
                         {!! Form::checkbox("sections[0][report]", 1, null, ['class' => 'checkbox']) !!}
                     </div>
-                    <div class="col-xs-1">
-                        {!! Form::checkbox("sections[0][submit]", 1, true, ['class' => 'checkbox']) !!}
-                    </div>
+                    
                     <div class="col-xs-2">
                         <button type="button" class="btn btn-default addSectButton"><i class="fa fa-plus"></i></button>                    
                     </div>

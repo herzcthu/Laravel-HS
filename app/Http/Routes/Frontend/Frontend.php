@@ -23,31 +23,21 @@ Route::group(['middleware' => 'auth'], function ()
             
             Route::get('project/{project}/iresponse', ['as' => 'data.project.iresponse.index', 'uses' => 'StatusController@iresponse']);
             
-            Route::group(['prefix' => 'project'], function(){
-                
-                        
-                        Route::group([
-                            'prefix' => '{project}'
-                        ], function(){
-                            //Route::get('/results', ['as' => 'data.project.results', 'uses' => 'ResultController@index']);
-                            Route::get('/results/{pcode}/edit',['as' => 'data.project.results.edit', 'uses' => 'ResultController@edit']);
-                            Route::post('/results/section/{section}/store', ['as' => 'data.project.results.section.store', 'uses' => 'ResultController@store']);
-                            Route::patch('/results/section/{section}/update', ['as' => 'data.project.results.section.update', 'uses' => 'ResultController@update']);
-                        });
-
-            });
+            
             /* Result Management */
             Route::group([
                     'middleware' => 'access.routeNeedsPermission',
+                    'prefix' => 'project/{project}',
                     'permission' => ['add_result'], 
                     'redirect'   => '/',
                     'with'       => ['flash_danger', 'You do not have access to do that.']
             ], function ()
             {
-            Route::get('project/{project}/results', ['as' => 'data.project.results.index', 'uses' => 'ResultController@index']);
-            Route::get('project/{project}/results/create', ['as' => 'data.project.results.create', 'uses' => 'ResultController@create']);
-            Route::get('project/{project}/results/{result}/edit', ['as' => 'data.project.results.edit', 'uses' => 'ResultController@edit']);
-            Route::get('project/{project}/results/{result}/store', ['as' => 'data.project.results.store', 'uses' => 'ResultController@store']);
+            Route::get('/results', ['as' => 'data.project.results.index', 'uses' => 'ResultController@index']);
+            Route::get('/results/create', ['as' => 'data.project.results.create', 'uses' => 'ResultController@create']);
+            Route::get('/results/{result}/edit', ['as' => 'data.project.results.edit', 'uses' => 'ResultController@edit']);
+            Route::post('/results/store', ['as' => 'data.project.results.store', 'uses' => 'ResultController@store']);
+            Route::patch('/results/update', ['as' => 'data.project.results.update', 'uses' => 'ResultController@update']);
             //Route::resource('project.results', 'ResultController', ['except' => ['show','edit']]); 
             });
         });

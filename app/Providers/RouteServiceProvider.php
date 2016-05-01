@@ -44,14 +44,13 @@ class RouteServiceProvider extends ServiceProvider {
                         }else{
                             $pcode = \App\Result::find($value);
                         }
-                    }elseif($route->project->type == 'checklist'){
+                    }else{
                         if($route->project->validate == 'person'){
                             $pcode = \App\Participant::find($value);
                         }elseif($route->project->validate == 'pcode'){
-                            $pcode = \App\PLocation::find($value);
+                            $pcode = \App\PLocation::where('org_id', $route->project->organization->id)
+                                    ->where('pcode',$value)->first();
                         }
-                    }else{
-                        
                     }
                     if(!is_null($pcode)){
                         return $pcode;

@@ -9,7 +9,7 @@
 @section('page-header')
     <h1>
         Result Management
-        <small>Add Incident</small>
+        <small></small>
     </h1>
 @endsection
 
@@ -34,7 +34,7 @@
                     <input type="text" name="pcode" style="width:80px;" class="form-control" id="input-code">
                 </th>
                 <th id="incident">
-                   {!! _t('Incident') !!}
+                   {!! _t(ucfirst($project->type)) !!}
                 </th>
                 <th id="cq">
                    {!! _t('Checklist Q') !!}

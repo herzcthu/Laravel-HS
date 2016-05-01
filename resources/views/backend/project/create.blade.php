@@ -53,6 +53,12 @@
             </div>
         </div><!--form control-->
         <div class="form-group">
+            <label class="col-lg-2 control-label">Submit Type</label>
+            <div class="col-lg-10">
+                {!! Form::select('submit', ['section' => 'Section by Section','full' => 'Full form'], null, ['class' => 'form-control', 'placeholder' => 'Full Name']) !!}
+            </div>
+        </div><!--form control-->
+        <div class="form-group">
             <label class="col-lg-2 control-label">Form Sections</label>
             <div class="col-lg-10">
                 <div class="row">

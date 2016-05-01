@@ -51,7 +51,7 @@ interface ResultContract {
 	 * @param $roles
 	 * @return mixed
 	 */
-	public function create($input, $project, $section);
+	public function create($input, $project);
 
 	/**
 	 * @param $id

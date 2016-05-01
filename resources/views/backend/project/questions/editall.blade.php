@@ -291,7 +291,7 @@
                                   <OPTION value="radio">Radio</OPTION>
                                   <OPTION value="text">Text</OPTION>
                                   <OPTION value="number">Number</OPTION>
-                                  <OPTION value="datetime">Time</OPTION>
+                                  <OPTION value="datetime">Time (HH:mm)</OPTION>
                                   <OPTION value="textarea">Textarea</OPTION>
                                   <OPTION value="checkbox">Checkbox</OPTION>  
                                   <!-- select box need to fix to work in server side 

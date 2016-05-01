@@ -737,6 +737,7 @@ class EloquentProjectRepository implements ProjectContract {
         $project->desc = $input['desc'];
         $project->type = $input['type'];
         $project->validate = $input['validate'];
+        $project->submit = $input['submit'];
         $project->sections = $input['sections'];
         $project->reporting = $input['reporting'];
 

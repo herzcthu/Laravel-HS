@@ -63,6 +63,7 @@ class Macros extends FormBuilder {
             $akey = isset($answer->akey) ? $answer->akey:$answer_key;
             $css = $answer->css;
             $qnum = $question->qnum;
+            $section = $question->section;
             
             if(empty($answer->slug)){
                 $answer->update(['slug' => str_slug($answer->akey)]);
@@ -75,10 +76,10 @@ class Macros extends FormBuilder {
             if($type == 'radio'){
                 $radioname = strtolower($qnum).'_radio';
                 $answer_index = 'radio';
-                $inputname = "answer[$qnum][radio]";
+                $inputname = "answer[$section][$qnum][radio]";
             }else{
                 $answer_index = $akey;
-                $inputname = "answer[$qnum][$akey]";
+                $inputname = "answer[$section][$qnum][$akey]";
             }
             
             if(is_array($results)){

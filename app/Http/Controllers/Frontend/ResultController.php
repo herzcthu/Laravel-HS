@@ -67,7 +67,7 @@ class ResultController extends Controller
         if($project->validate == 'person'){
             $route = route('ajax.project.person', [$project->id, '{pcode}']);
         }elseif($project->validate == 'pcode'){
-            $route = route('ajax.project.pcode', [$project->id, '{pcode}-'.$project->organization->id]);
+            $route = route('ajax.project.pcode', [$project->id, '{pcode}']);
         }elseif($project->validate == 'uec_code'){
             $route = '';
         }else{
@@ -88,15 +88,12 @@ class ResultController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function store($project, $section_id = false, CreateResultRequest $request)
+    public function store($project, CreateResultRequest $request)
     { //dd($request->all());
-        if($section_id == 'incident'){
-            $section_id = $request->get('qnum');
-        }
+        
         $result = $this->results->create(
 			$request->except('project_id'),
-			$project,
-                        $section_id
+			$project
 		);
         
         

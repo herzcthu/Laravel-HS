@@ -45,10 +45,15 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <div class="col-xs-2">
-                            @if($project->type == 'incident')  
+                            @if($project->submit == 'full')
+                                {!! Form::open(['route' => ['data.project.results.section.store', $project->id, 'incident'], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
+                                {!! Form::hidden('project_id', $project->id) !!}
+                                {!! Form::hidden('org_id', $project->organization->id) !!}
+                                {!! Form::hidden('validator_id', null,['class' => 'hidden-validator']) !!}
+                                {!! Form::hidden('form_id', null,['class' => 'form_id','id'=>'form_id']) !!}
                                 @if(isset($project->parent))
                                 {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
-
+                                
                                 {!! Form::select('qnum', $project->parent->questions->sortBy('sort', SORT_NATURAL)->lists('qnum','id'), null, ['class'=>'form-control']) !!}
                                 @else
                                 {!! Form::hidden('qnum', null) !!}
@@ -58,7 +63,7 @@
                             {!! Form::text('validator',null,['class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
                             {!! Form::button('check',['class'=>'form-control btn btn-default','id'=>'check']) !!}
                             
-                            {!! Form::label('formnum', 'Form ID', ['class'=>'control-label']) !!}                            
+                            {!! Form::label('formnum', 'Form Number', ['class'=>'control-label']) !!}                            
                             {!! Form::select('formnum', [''=>'none', '1'=>'1',
                             '2'=>'2', '3'=>'3', '4'=>'4', '5'=>'5',
                             '6'=>'6', '7'=>'7', '8'=>'8', '9'=>'9',
@@ -80,14 +85,6 @@
                     
                 </div>
             </div><!-- end of validation section -->
-        {{-- if project submit type is full form --}} 
-        @if($project->submit == 'full')
-            {!! Form::open(['route' => ['data.project.results.store', $project->id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
-            {!! Form::hidden('project_id', $project->id) !!}
-            {!! Form::hidden('org_id', $project->organization->id) !!}
-            {!! Form::hidden('validator_id', null,['class' => 'hidden-validator']) !!}
-            {!! Form::hidden('form_id', null,['class' => 'form_id','id'=>'form_id']) !!}
-        @endif                  
         @if(is_array($project->sections))
             @foreach($project->sections as $section_key => $section)
             <div class="panel panel-default" id="linktosection{{$section_key}}">
@@ -103,13 +100,11 @@
                 @endif
                 </div>
                 <div class="panel-body">
-                {{-- if project submit type is section by section --}} 
                 @if($project->submit == 'section')
-                    {!! Form::open(['route' => ['data.project.results.store', $project->id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
+                    {!! Form::open(['route' => ['data.project.results.section.store', $project->id, $section_key], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'post']) !!}
                     {!! Form::hidden('project_id', $project->id) !!}
                     {!! Form::hidden('org_id', $project->organization->id) !!}
-                    {!! Form::hidden('validator_id', '',['class' => 'hidden-validator']) !!}                    
-                    {!! Form::hidden('form_id', null,['class' => 'form_id']) !!}
+                    {!! Form::hidden('validator_id', '',['class' => 'hidden-validator']) !!}
                     <div class="row">
                         <div class="col-xs-1 col-lg-1 pull-right">
                         <input type="submit" class="btn btn-success" value="Save" />
@@ -141,8 +136,8 @@
                                     <div class="col-lg-11">
                                         <div class="row col-xs-offset-0">
                                         @if($question->qanswers->count() > 0 )
-                                        {{-- */ $key = 0; $answers = $question->qanswers->sortBy('akey', SORT_NATURAL); /** --}}
-                                            @foreach($answers as $answer)
+                                        {!! $key = 0 !!}
+                                            @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6 col-lg-6">
@@ -193,7 +188,7 @@
                                                 {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"]) !!} 
                                                 </div>
                                                 @endif
-                                                {{-- */ $key++; /** --}}
+                                                {!! $key++ !!}
                                             @endforeach                        
                                         @endif
                                         </div>
@@ -225,8 +220,8 @@
                                     <div class="col-xs-11 col-lg-11">
                                         <div class="row col-xs-offset-0">
                                         @if($question->qanswers->count() > 0 )
-                                           {{-- */ $key = 0;$answers = $question->qanswers->sortBy('akey', SORT_NATURAL); /** --}}
-                                            @foreach($answers as $answer)
+                                           {!! $key = 0 !!} 
+                                            @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6 col-lg-6">
@@ -277,7 +272,7 @@
                                                 {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"]) !!} 
                                                 </div>
                                                 @endif
-                                                {{-- */ $key++; /** --}}
+                                                {!! $key++ !!}
                                             @endforeach                        
                                         @endif
                                         </div>
@@ -377,7 +372,6 @@
 (function ($) {
     $(document).ready(function() {
             function validate(url, replacement, output){
-                var replacement = replacement;
                 if(typeof output === 'undefined'){
                     output = false;
                 }
@@ -402,15 +396,15 @@
                             if(index == 'Location ID'){
                                 
                                 if(output){                  
-                                    $('#validator').val(replacement);
+                                    $('#validator').val(valid);
                                 }
-                                $('.hidden-validator').val($('#validator').val());
+                                $('.hidden-validator').val($('#validator').val() + {{'-'.$project->org_id}});
                             }
                        @elseif($project->validate == 'person')
                             if(index == 'Observer'){
                                 
                                 if(output){                            
-                                    $('#validator').val(replacement);
+                                    $('#validator').val(valid);
                                 }
                                 $('.hidden-validator').val($('#validator').val());
                             }
@@ -432,15 +426,15 @@
             //console.log( index );
           });
           if( $('#validator').val() ) {                
-                var replacement = $('#validator').val();
+                var valid = $('#validator').val();
                 var urlstr = ems.url; console.log(ems.url);
-                var vurl = urlstr.replace("%7Bpcode%7D", replacement );
-                validate(vurl, replacement, true);
+                var vurl = urlstr.replace("%7Bpcode%7D", valid );
+                validate(vurl, valid, true);
             }
           $('#check').on('click',function(e){
               var str = ems.url;
                   //set replacement as global variable
-                  var replacement = $('#validator').val();
+                  replacement = $('#validator').val();
                   var url = str.replace("%7Bpcode%7D", replacement );
                   validate(url, replacement);
           });  
@@ -450,10 +444,11 @@
                   }
                   console.log(e);
               $('#validator').removeClass('alert-danger');
-              var replacement = $(this).val();
-              if( replacement.length > 2 && replacement.length < 7){ 
+              var value = $(this).val();
+              if( value.length > 4 && value.length < 7){ 
                   var str = ems.url;
-                  
+                  //set replacement as global variable
+                  replacement = value;
                   var url = str.replace("%7Bpcode%7D", replacement );
                   validate(url, replacement);
               }
@@ -462,9 +457,6 @@
                     event.preventDefault();
                   }
                 });
-          $('#formnum').on('change', function(e){
-              $('.form_id').val($(this).val());
-          });
           $( "form" ).submit(function(e) {
           if( !$('.hidden-validator').val() ) {
             $('#validator').addClass('alert-danger').focus();

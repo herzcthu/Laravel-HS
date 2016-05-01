@@ -53,8 +53,6 @@ class AjaxController extends Controller
     }
     
     public function sortQuestions($project, Request $request) {
-        
-
         if ($request->has('listid')) {
                 $i = 1;
                 foreach ($request->get('listid') as $qid) {
@@ -68,11 +66,6 @@ class AjaxController extends Controller
         } else {
                 return response()->json(array('success' => false));
         }
-
-		
-
-
-		
     }
     
     public function newQuestion($project, Request $request){
@@ -427,54 +420,6 @@ class AjaxController extends Controller
     public function getAllResults($project, Request $request) {
         $result = Result::with('resultable')->with('answers')->with('answers.question.qanswers');
         
-        
-        /**
-        $start = $request->get('start');
-        $length = $request->get('length');
-        if($request->get('code')){
-            $search_key = $request->get('code');
-            
-            $result = Result::where('project_id', $project->id)->OfWithPcode('pcode', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
-        
-        }elseif($request->get('region')){
-            $search_key = $request->get('region');
-            
-            $result = Result::where('project_id', $project->id)->OfWithPcode('state', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
-        
-        }elseif($request->get('township')){
-            $search_key = $request->get('township');
-            $result = Result::where('project_id', $project->id)->OfWithPcode('township', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
-        
-        }elseif($request->get('station')){
-            $search_key = $request->get('station');
-        
-            $result = Result::where('project_id', $project->id)->OfWithPcode('village', $search_key)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
-        
-        
-        }elseif($request->get('question') && $request->get('answer')){
-            $q = $request->get('question');
-            $search_key = $request->get('answer');
-            $result = Result::where('project_id', $project->id)
-                        ->ofWithAndWhereHas('answers', function($query) use ($q, $search_key){
-                            $query->where('qid', $q)->where('akey', $search_key);
-                        })
-                        ->with('resultable')
-                        ->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')
-                        ->get();
-        }else{
-            
-        }
-        //dd($search_key);
-        if(isset($search_key)){
-            $result = $result;
-        }else{
-                        
-            $result = Result::where('project_id', $project->id)->with('resultable')->with('answers')->with('answers.question.qanswers')->orderBy('resultable_id', 'asc')->get();
-        
-        }
-        
-         * 
-         */
         return Datatables::of($result)
                 ->filter(function($query) use ($request, $project){
                     if($request->get('pcode')){
@@ -562,29 +507,16 @@ class AjaxController extends Controller
             'project_id' => $project->id,
             'org_id' => $project->org_id
         ];
-        // get sections as columns for next query
-        //$column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT(\"MAX(IF(results.section_id = \",section_id,\", results.information, NULL)) AS s\", section_id)) AS sections  FROM results WHERE (project_id = $project->id);"));
-        $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(results.section_id = ',results.section_id,', results.information, NULL)) AS s', results.section_id)) AS sections  FROM results WHERE (results.project_id = $project->id);"));
-        //$column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(section_id = ',section_id,', information, NULL)) AS s', section_id)) AS sections  FROM results;"));
         
-        /**
-        $query = "SELECT pcode.pcode, pcode.state, pcode.district, pcode.township, pcode.village,";
-        $query .= "GROUP_CONCAT(DISTINCT CONCAT(p.name,\"|\", p.participant_id,\"|\", p.phones) ORDER BY p.name) AS observers,";
-        $query .= $column[0]->sections;
-        $query .= " FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = :org_id)) AS pcode ";
-        $query .= "LEFT JOIN participants as p ON p.pcode_id = pcode.primaryid "
-                ."LEFT JOIN results as rs ON (rs.resultable_id = pcode.primaryid) "
-                ."AND (rs.project_id = :project_id) GROUP BY pcode.pcode;";
-        $status = DB::select($query,$parameters);
-         * 
-         */
+        $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(results.section_id = ',results.section_id,', results.information, NULL)) AS s', results.section_id)) AS sections  FROM results WHERE (results.project_id = $project->id);"));
+        
         $query = ['pcode.primaryid',
             'pcode.pcode', 
             'pcode.state', 
             'pcode.district', 
             'pcode.township', 
             'pcode.village'];
-        //$query[] = DB::raw('GROUP_CONCAT(DISTINCT "\"",p.name,"\":",CONCAT("{\"name\":\"",p.name,"\",\"id\":\"", p.participant_id,"\",\"phones\":", p.phones, "}") ORDER BY p.name) AS observers');
+        
         if(!empty($column[0]->sections)){
             $query[] = DB::raw($column[0]->sections);
         }
@@ -594,16 +526,13 @@ class AjaxController extends Controller
         $status = PLocation::select($query)
                 ->where('pcode.org_id', $org_id)
                 ->with(['participants'])
-                //->with(['participants', 'results' => function($q) use ($project_id){
-                //    $column = "SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(section_id = ',section_id,', information, NULL)) AS s', section_id)) AS sections  FROM results;";
-                //    $q->where('project_id','=', $project_id)->addSelect(new \Illuminate\Database\Query\Expression("DB::raw($column)"));
-                //}])
+                
                 ->leftjoin('results',function($pcode) use ($project_id){
                     $pcode->on('pcode.primaryid','=','results.resultable_id')
                             ->where('results.project_id','=', $project_id);
                 })                
                 ->groupBy('pcode.primaryid')->get();
-                //dd($status);
+                
                 return Datatables::of($status)
                         ->filter(function($instance) use ($request){
                             if($request->has('pcode')){
@@ -781,24 +710,19 @@ class AjaxController extends Controller
         foreach ($prole as $key => $val){
             if($key == 'State'){
                 $located = $this->plocation->getStatesScope($pcode->state, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }elseif($key == 'District'){
                 $located = $this->plocation->getDistrictsScope($pcode->district, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }elseif($key == 'Township'){
                 $located = $this->plocation->getTownshipsScope($pcode->township, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }elseif($key == 'VTract'){
                 $located = $this->plocation->getVTractsScope($pcode->village_tract, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }else{
                 $located = $this->plocation->getVillagesScope($pcode->village, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }
             
             if(!$located->get()->isEmpty()){
@@ -809,9 +733,7 @@ class AjaxController extends Controller
                     if(!is_null($sM->supervisor)){
                        // $response[$sM->supervisor->role->name] = $sM->supervisor->name;
                     }
-                    //$response[$sM->role->name.' '.$sM_id ] = $sM->name;
-                    //}
-                   // $response[$sM->role->name.' '.$sM_id.' ID'] = $sM->participant_id;
+                    
                 }
             }
         }
@@ -826,27 +748,16 @@ class AjaxController extends Controller
             }
             
             foreach($pcode->participants as $participant){
-                $response[$participant->role->name.' '.str_replace($pcode->pcode, '', $participant->participant_id)] = $participant->name;
-                $response[$participant->role->name.' '.str_replace($pcode->pcode, '', $participant->participant_id).' ID'] = $participant->participant_id;
+                $response[$participant->role->name.' '.str_replace($pcode->pcode, '', $participant->participant_code)] = $participant->name;
                 foreach($participant->phones as $pk => $phone){
                     if(!empty($phone)){
-                    $response[$participant->role->name.' '.str_replace($pcode->pcode, '', $participant->participant_id).' '.$pk] = $phone;
+                    $response[ucfirst($pk).' Phone '.str_replace($pcode->pcode, '', $participant->participant_code)] = $phone;
                     }
                 }
             }
         }
         
-        /**
-        $observers = $pcode->participants;
-        foreach ($observers as $obk => $obv){
-            $observer_id = str_replace($pcode->pcode, '', $obv->participant_id);
-            if($obv->name != 'No Name'){
-            $response[$obv->role->name.' '.$observer_id ] = $obv->name;
-            $response[$obv->role->name.' ID' ] = $obv->participant_id;
-            }
-        }
-         * 
-         */
+        
         $response['Location ID'] = $pcode->pcode;
         if(!is_null($pcode->village)){
         $response['Village'] = $pcode->village;
