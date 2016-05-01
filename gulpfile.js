@@ -8,6 +8,8 @@ elixir(function(mix) {
         .copy('vendor/twbs/bootstrap/dist/js/bootstrap.min.js', 'public/js/vendor')
         .copy('resources/assets/vendor/jquery/dist/jquery.min.js', 'public/js/vendor/jquery-2.1.4.min.js')
         .copy('resources/assets/vendor/jquery-ui/jquery-ui.min.js', 'public/js/vendor/jquery-ui')
+        .copy('resources/assets/vendor/jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.js', 'public/js/vendor/jquery-ui')
+        .copy('resources/assets/vendor/jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.css', 'public/css/vendor/jquery-ui')
         .copy('resources/assets/vendor/jquery-ui/themes', 'public/css/vendor/jquery-ui/themes')
         .copy('resources/assets/vendor/bootstrap-filestyle/src', 'public/js/vendor/bootstrap-filestyle')
         .copy('vendor/blueimp/jquery-file-upload/js', 'public/js/vendor/blueimp')

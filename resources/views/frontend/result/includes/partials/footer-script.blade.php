@@ -44,15 +44,16 @@
 <script type="text/javascript">
 (function ($) {
     $(document).ready(function() {
-        $('.quest').mouseenter(function(){
+        $('.quest').mouseenter(function(e){
             var input = $(this).find('input');
             var select = $(this).find('select'); // need to implement later
             var textarea = $(this).find('textarea');
+            
             $.each(input,function(index,value){
                 if(typeof value.dataset.logic !== 'undefined' && value.dataset.logic !== 'null'){
                     var logic = JSON.parse(value.dataset.logic);
-                    var operator = logic.operator;
-                    if(operator === 'skip') {
+                    
+                    if(logic.operator == 'skip') {
                         $("#"+logic.lftans).on('click',function(e){
                            //e.preventDefault();
                            if(this.checked){
@@ -66,21 +67,58 @@
                                 $("#mdcl").click(function(){                                    
                                     that.checked = false;
                                     $("#notice").modal('hide');
-                                });
+                                });                                    
                             } else {
                                 return false;
                             }
-                        });
-                        
+                        });                     
                     }
                 }
             });
-            //$(this).css("border-radius", "25px");
-            
-            //$(this).addClass('blue');
         }).on('mouseleave',function(){
             
-            //$(this).removeClass('blue');
+        }).on('focusout',function(){
+            var input = $(this).find('input');
+            var select = $(this).find('select'); // need to implement later
+            var textarea = $(this).find('textarea');
+            console.log('focusout fired');
+            
+            $.each(input,function(index,value){
+                if(typeof value.dataset.logic !== 'undefined' && value.dataset.logic !== 'null'){
+                    var logic = JSON.parse(value.dataset.logic);
+                    
+                    var lftval = $("#"+logic.lftans).val();
+                    var rftval = $("#"+logic.rftans).val();
+                    var message = ((typeof logic.message != 'undefined')? logic.message:'Logic Error!');
+                    switch(logic.operator) {
+                        case '=':
+                            if(lftval != rftval){
+                               $("#logicmessage").html(message);
+                               $("#notice").modal('show');
+                            }
+                            break;
+                        case '>':
+                            if(lftval < rftval){
+                               $("#logicmessage").html(message);
+                               $("#notice").modal('show');
+                            }
+                            break;
+                        case '<':
+                            if(lftval > rftval){
+                               $("#logicmessage").html(message);
+                               $("#notice").modal('show');
+                            }
+                            break;
+                        case 'between':
+                            if(lftval < logic.minval || lftval > logic.maxval){
+                               $("#logicmessage").html(message);
+                               $("#notice").modal('show');
+                            }
+                            break;
+                    }
+                }
+            });
+            
         });
         //reset input values
         $('.reset').on('click',function(){

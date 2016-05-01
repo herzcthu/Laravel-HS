@@ -219,7 +219,7 @@ class Macros extends FormBuilder {
                 return $texthtml;
             }
             if(in_array($type, ['date', 'datetime', 'time', 'week', 'month', 'year', 'number'])){
-                $options['class'] = $options['class'].' '.$type;
+                $options['class'] = $options['class'].' form-control '.$type;
                 $texthtml = "<div class='form-group'>";
                 if($wrap){
                     $texthtml .= $wrap['start'];

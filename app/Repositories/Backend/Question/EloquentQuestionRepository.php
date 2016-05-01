@@ -210,31 +210,9 @@ class EloquentQuestionRepository implements QuestionContract {
             $qans = $question->qanswers;
             $logic = [];
             foreach($qans as $ans){
-                switch($input['operator']) {
-                    case 'skip':
-                        // skip
-                        if($ans->slug == $input['lftans']){
-                            $logic[] = $ans->update(['logic' => $input]);
-                        }
-                        break;
-                    case 'selected':
-                        // selected
-                        if($ans->slug == $input['lftans']){
-                            $logic[] = $ans->update(['logic' => $input]);
-                        }
-                        break;
-                    default:
-                        if(isset($input['rftdiff'])) {
-                            if($ans->slug == $input['rftans']){
-                                $logic[] = $ans->update(['logic' => $input]);
-                            } 
-                        } else {
-                            if($ans->slug == $input['lftans']){
-                                $logic[] = $ans->update(['logic' => $input]);
-                            } 
-                        } 
-                        break;
-                }
+                if($ans->slug == $input['lftans']){
+                    $logic[] = $ans->update(['logic' => $input]);
+                } 
                 
             }
             return $logic;

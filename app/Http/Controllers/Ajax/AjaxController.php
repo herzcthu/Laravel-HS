@@ -127,6 +127,7 @@ class AjaxController extends Controller
         if($request->ajax()){
             $ajax = true;
         }
+        
         if($request->has('logicdata')){
             //$logic = $question->logic;
             $input = $request->except('_method','_hash','logicdata');

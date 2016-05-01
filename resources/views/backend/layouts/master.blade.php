@@ -55,6 +55,7 @@
             $.widget.bridge('uibutton', $.ui.button);
             $.widget.bridge('uitooltip', $.ui.tooltip);        
         </script>
+        {!! HTML::script('js/vendor/jquery-ui/jquery-ui-timepicker-addon.min.js') !!}
         {!! HTML::script('js/vendor/bootstrap.min.js') !!}
         {!! HTML::script('js/vendor/blueimp/vendor/jquery.ui.widget.js') !!}
         {!! HTML::script('js/vendor/blueimp/jquery.iframe-transport.js') !!}

@@ -5,7 +5,10 @@
 @section ('before-styles-end')
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
 @endsection
-
+@section ('after-styles-end')
+    {!! HTML::style('css/vendor/jquery-ui/themes/smoothness/jquery-ui.min.css') !!}
+    {!! HTML::style('css/vendor/jquery-ui/jquery-ui-timepicker-addon.min.css') !!}
+@stop
 @section('page-header')
     <h1>
        {{ _t('Result Management') }}

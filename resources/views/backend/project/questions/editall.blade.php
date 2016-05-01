@@ -7,7 +7,9 @@
 @section ('before-styles-end')
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
 @stop
-
+@section ('after-styles-end')
+    {!! HTML::style('css/vendor/jquery-ui/themes/smoothness/jquery-ui.min.css') !!}
+@stop
 @section ('after-scripts-end')
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
 @stop
@@ -289,6 +291,7 @@
                                   <OPTION value="radio">Radio</OPTION>
                                   <OPTION value="text">Text</OPTION>
                                   <OPTION value="number">Number</OPTION>
+                                  <OPTION value="datetime">Time</OPTION>
                                   <OPTION value="textarea">Textarea</OPTION>
                                   <OPTION value="checkbox">Checkbox</OPTION>  
                                   <!-- select box need to fix to work in server side 
@@ -354,55 +357,80 @@
 
             </div><!-- Modal header -->
               <div class="modal-body">
-                  <div class="row">
+                  <div class="container-fluid">
                     <FORM name="logicForm" data-hash="" id="logicForm" class="form-vertical" role="form" autocomplete="off">
                         <input type="hidden" id="hash" name="_hash"></input>
+                        <div class="row">
                         <div class="col-xs-5">
                                 <h3>Left Side</h3>
                             </div>
                         <div class="col-xs-2"><h3>Operator</h3></div>
                         <div class="col-xs-5"><h3>Right Side</h3>
+                            <div class="form-group">
                             <div class="checkbox">
-                                <label for="rftdiff" class="control-label">
-                                    <input id="rftdiff" type="checkbox" name="rftdiff"></input>
+                                <label for="rftdiff" class="rftdiff control-label">
+                                    <input class="rftdiff" id="rftdiff" type="checkbox" name="rftdiff"></input>
                                     Select Question
                                 </label>
                             </div>
-                        </div>
-                            <div class="col-xs-5">
-                                <label for="lftans" class="control-label">Answer</label>
-                                <select id="lftselect" name="lftans" class="form-control"></select>
-                                <label for="lftval" class="control-label diffques">Optional Value</label>
-                                <input type="text" name="lftval" class="form-control diffques"></input>
                             </div>
-                            <div class="col-xs-2">
+                        </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-5 form-group">
+                                <label for="lftans" class="control-label">Answer</label>
+                                <select id="lftselect" name="lftans" class="form-control"></select>                                
+                            </div>
+                            <div class="col-xs-2 form-group">
                             <label for="operator" class="control-label">Select</label>
                             <select id="operator" name="operator" class="form-control">                                
                                 <option value="=">Equal to (=)</option>
                                 <option value="skip">Skip to</option>
                                 <option value=">">Greater than (>)</option>
                                 <option value="<">Less than (<)</option>
-                                <option value="true">Selected</option>
+                                <option value="between">In between</option>
                             </select>                                
                             </div>
-                            <div class="col-xs-5">
+                            <div class="col-xs-5 form-group">
                                 
                                 <label for="rftques" class="control-label diffques">Question</label>
                                 <select id="rftquess" name="rftquess" class="form-control diffques"><option value="">None</option></select>                                
                                 
                                 <div class="checkbox diffques">
-                                <label for="showans" class="control-label">
-                                    <input id="showans" type="checkbox" name="showans"></input>
+                                <label for="showans" class="control-label showbtn">
+                                    <input id="showans" type="checkbox" name="showans" class="showbtn"></input>
                                     Answer and Value
                                 </label>
                                 </div>
                                 <label for="rftans" class="control-label showans">Answer</label>
                                 <select id="rftans" name="rftans" class="form-control showans"><option value="">None</option></select>
                                 
-                                <label for="rftval" class="control-label">Value</label>
-                                <input type="text" name="rftval" class="form-control"></input>
+                                <label for="rftval" class="control-label optional">Value</label>
+                                <input type="text" name="rftval" class="form-control optional"></input>
+                                <div class="row between">
+                                    <div class="col-xs-6">
+                                    <label for="minval" class="control-label between">Min Value</label>
+                                    <input type="text" name="minval" class="form-control between"></input>
+                                    </div>
+                                    <div class="col-xs-6">
+                                    <label for="maxval" class="control-label between">Max Value</label>
+                                    <input type="text" name="maxval" class="form-control between"></input>
+                                    </div>
+                                </div>
                                 
                             </div>
+                        </div>
+                        <div class="row">
+                            
+                            <div class="col-xs-12">
+                                <div class="row">
+                            <label for="message" class="col-xs-2 control-label">Error Message</label>
+                            <div class="col-xs-10">
+                            <input type="text" name="message" class="form-control"></input>
+                            </div>
+                            </div>
+                            </div>
+                        </div>
                     </FORM>                      
                   </div>
             </div><!-- Modal body -->
@@ -635,7 +663,7 @@
                case "radio":                   
                    e.setAttribute("name", ename + "radio");
                    e.setAttribute("data-name", ename + j);
-                   answers[ename + j] = {   "type": e.type,
+                   answers[ename + j] = {   "type": e.getAttribute("type"),
                                         "name" : e.getAttribute("name"),
                                         "value" : e.getAttribute("value"),
                                         "data-name" : e.getAttribute("data-name"),
@@ -662,8 +690,8 @@
                default:                   
                    e.setAttribute("name", ename + j);
                    e.setAttribute("data-name", ename + j);
-                   //console.log(e.getAttribute("data-name"));
-                   answers[ename + j] = {   "type": e.type,
+                   console.log(e.getAttribute("type"));
+                   answers[ename + j] = {   "type": e.getAttribute("type"),
                                         "name": e.getAttribute("name"),
                                         "value": e.getAttribute("value"),
                                         "data-name": e.getAttribute("data-name"),
@@ -684,7 +712,7 @@
                 data   : qna,
                 success: function (data) {
                         console.log(data);
-                        location.reload(); // To Do: need to remove this function.
+                        //location.reload(); // To Do: need to remove this function.
                 }
 
         });
@@ -770,20 +798,25 @@
                 }
                 e.preventDefault();
             })
-            .on('show.bs.modal', function (event) {
+            .on('shown.bs.modal', function (event) {
+              $('.between').toggle(false);
+              $('.between').prop('disabled',true);              
+            })
+            .on('shown.bs.modal', function (event) {
               var button = $(event.relatedTarget); // Button that triggered the modal
-              console.log(button);
+              
               var dataid = button.data('modal'); // get id for data
               var ajaxurl = button.data('href');
               
               var data = $('#'+dataid);
-              var content = getData(data.data('href'), ['urlhash','qanswers']);   console.log(content);  
+              var content = getData(data.data('href'), ['urlhash','qanswers']);
               var type = data.data('type');
               var lftselect = document.getElementById('lftselect');
               var rftquess = document.getElementById('rftquess');
               var rftans = document.getElementById('rftans');
               var cols = ['id','qnum','question','slug'];
-              var questions = getData(projectURL+'/questions',cols); console.log(questions);
+              var questions = getData(projectURL+'/questions',cols); 
+              
               
               //if(typeof urlhash != 'undefined') {
                     $("#logicForm").attr('data-hash', content[0].urlhash.logic);
@@ -834,13 +867,21 @@
                             rftans.appendChild(option);
                       });
                   }
-                  $("#logicForm")[0].reset();
+                  
                 }
+            })
+            .on('hide.bs.modal', function(e){
+                $("#logicForm")[0].reset();
+                var rftdiff = $('#rftdiff');
+                rftdiff.checked = false;
+                $('.diffques').toggle(rftdiff.checked);
+                
             })
             .on('load click change','#rftquess', function(e){
                 var anscols = ['akey','text','slug'];
                   var qid = rftquess.options[rftquess.selectedIndex].getAttribute("data-qid");
                   var answers = getData(projectURL+'/question/'+qid+'/answers',anscols);
+                  
                   if(typeof answers !== 'undefined') {
                       // remove all options from select box
                     while (rftans.firstChild) {
@@ -852,14 +893,78 @@
                         option.innerHTML = answer.text;
                         rftans.appendChild(option);
                   });
-                  }
+                  }                  
             });
+            $('#operator').on('change', function(){
+                switch(this.value){
+                    case 'skip':
+                        $('#rftdiff').prop('checked', true);
+                        if ($('#rftdiff').is(':checked')) {
+                            $('.diffques').toggle(true);
+                            $('.diffques').prop('disabled',false);
+                            $('.showbtn').toggle(false);
+                            $('.showbtn').prop('disabled',true);
+                            $('.optional').toggle(false);
+                            $('.optional').prop('disabled',true);
+                            $('.between').toggle(false);
+                            $('.between').prop('disabled',true);
+                            $('.rftdiff').toggle(false);
+                        }
+                        break;
+                    case 'between':
+                        $('#rftdiff').prop('checked', false);
+                        $('.rftdiff').toggle(false);
+                        $('.diffques').toggle(false);
+                        $('.diffques').prop('disabled',true);
+                        $('.between').toggle(true);
+                        $('.between').prop('disabled',false);
+                        $('.optional').toggle(false);
+                        $('.optional').prop('disabled',true);
+                        $('.showbtn').toggle(false);
+                        $('.showbtn').prop('disabled',true);
+                        break;    
+                    default:
+                        $('#rftdiff').prop('checked', false);
+                        $('.rftdiff').toggle(true);
+                        if ($('#rftdiff').is(':checked')) {
+                            $('.diffques').toggle(true);
+                            $('.diffques').prop('disabled',false);                            
+                            $('.optional').toggle(true);
+                            $('.optional').prop('disabled',false);
+                            $('.between').toggle(false);
+                            $('.between').prop('disabled',true);
+                            $('.showbtn').toggle(true);
+                            $('.showbtn').prop('disabled',false);
+                        }else{
+                            $('.optional').toggle(true);
+                            $('.optional').prop('disabled',false);
+                            $('.diffques').toggle(false);
+                            $('.diffques').prop('disabled',true);                                                         
+                            $('.showans').toggle(false);
+                            $('.showans').prop('disabled',true);
+                            $('.showbtn').toggle(false);
+                            $('.showbtn').prop('disabled',true);
+                            $('.between').toggle(false);
+                            $('.between').prop('disabled',true);
+                        }
+                        break;
+                }
+            }).change();
+            
             $('#rftdiff').on('change', function(){
                 $('.diffques').toggle(this.checked);
+                $('.diffques').prop('disabled',!this.checked);
+                $('.optional').toggle(!this.checked);
+                $('.optional').prop('disabled',this.checked);
+                $('.between').toggle(false);
+                $('.between').prop('disabled',true);
+                $('.showbtn').toggle(this.checked);
+                $('.showbtn').prop('disabled',!this.checked);
             }).change();
             
             $('#showans').on('change', function(){
                 $('.showans').toggle(this.checked);
+                $('.showans').prop('disabled',!this.checked);
             }).change();
             
             $( "#formTemplate" ).on("click", "#add", function(){                

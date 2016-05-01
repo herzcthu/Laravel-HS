@@ -70,7 +70,18 @@
             e.preventDefault();
             getPosts($(this).attr('href'));
         });
-    
+        
+    // check html 5 date support and apply query date picker    
+    if ( $('[type="date"]').prop('type') != 'date' ) {
+        $('[type="date"]').datepicker();
+    }
+    if ( $('[type="datetime"]').prop('type') != 'datetime' ) {
+        console.log('datetime not support');
+        $('[type="datetime"]').timepicker({
+            controlType: 'select',
+            oneLine: true,
+        });
+    }
 
     function getPosts(page) {
         $.ajax({
@@ -119,7 +130,7 @@ $(function(){
      Injects a form with that's fired on click of the link with a DELETE request.
      Good because you don't have to dirty your HTML with delete forms everywhere.
      */
-    $('[data-method]').append(function(){
+    $('[data-method=delete]').append(function(){
         return "\n"+
         "<form action='"+$(this).attr('href')+"' method='POST' name='delete_item' style='display:none'>\n"+
         "   <input type='hidden' name='_method' value='"+$(this).attr('data-method')+"'>\n"+
