@@ -711,8 +711,8 @@
                 dataType:"json",
                 data   : qna,
                 success: function (data) {
-                        console.log(data);
-                        //location.reload(); // To Do: need to remove this function.
+                        //console.log(data);
+                        location.reload(); // To Do: need to remove this function.
                 }
 
         });
@@ -788,8 +788,8 @@
                         data: logicdata,
                         success: function (data) {
                                 saved = data;
-                                console.log(data);
-                                //location.reload(); // reload page after logic added.
+                                //console.log(data);
+                                location.reload(); // reload page after logic added.
                         }
 
                 });
