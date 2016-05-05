@@ -89,20 +89,7 @@ class EloquentResultRepository implements ResultContract {
                             return $ans->value;
                         }
                     }
-                    /**
-                    if(property_exists($result_ByNum->results, $qnum)){
-                        if(property_exists($result_ByNum->results->{$qnum}, $anskey)){
-                        return $result_ByNum->results->{$qnum}->{$anskey};
-                        }
-                    }
-                    if(array_key_exists($qnum, $result_ByNum->results)){
-                        if(array_key_exists($anskey, $result_ByNum->results[$qnum])){
-                            return $result_ByNum->results[$qnum][$anskey];
-                        }
-                    }
                     
-                     * 
-                     */
                 }
              
             }
@@ -166,7 +153,6 @@ class EloquentResultRepository implements ResultContract {
                     $resultable = $this->participant->getParticipantByCode($validate, $project->organization->id);
                     $resultable_type = 'App\Participant';
                 }else{
-                    $validator = $validate.'-'.$project->organization->id;
                     $resultable = $this->pcode->getLocationByPcode($validate, $project->organization->id);
                     $resultable_type = 'App\PLocation';
                 }
@@ -195,8 +181,9 @@ class EloquentResultRepository implements ResultContract {
                                 ->where('section_id', $section)
                                 ->where('resultable_id', $resultable->id)
                                 ->where('incident_id', $incident_id)->first();
-                        if(!is_null($incident)){
-                            throw new GeneralException('Duplicate form ID! Please select another form ID or edit from list.');
+                        if(!is_null($incident) || empty($incident_id)){
+                            
+                            throw new GeneralException('Duplicate or No form ID! Please select another form ID or edit from list.');
                         }
                     }else{
                         $incident_id = null;
@@ -206,109 +193,61 @@ class EloquentResultRepository implements ResultContract {
         }
 
 	/**
-	 * @param $id
+	 * @param $result
 	 * @param $input
 	 * @param $organizations
 	 * @return bool
 	 * @throws GeneralException
 	 */
-	public function update($id, $input, $project, $section) {
-                $validate = $input['validator_id'];
-                
-                if($project->validate == 'person'){
-                    $resultable = $this->participant->getParticipantByCode($validate, $project->organization->id);
-                    $resultable_type = 'App\Participant';
-                    $resultable_id = $resultable->id;
-                }else{
-                    $validator = $validate.'-'.$project->organization->id;
-                    try{
-                        $resultable2 = $this->pcode->findOrThrowException($validator);
-                        
-                    }catch(GeneralException $e){
-                        unset($e);
-                    }
-                    try{
-                        $resultable1 = $this->pcode->findOrThrowException($validate);
-                        
-                    }catch(GeneralException $e){
-                        unset($e);
-                    }
-                    if(isset($resultable1)){
-                        $resultable = $resultable1;
-                    }
-                    if(isset($resultable2)){
-                        $resultable = $resultable2;
-                    }
-                    $resultable_type = 'App\PLocation';
-                      
-                    //$person = $pcode->participants->first();
-                    $resultable_id = $resultable->id;
-                }
-                if($project->type == 'incident'){
-                    $incident = \App\Result::where('project_id', $project->id)
-                            ->where('section_id', $section)
-                            ->where('resultable_id', $resultable_id)
-                            ->orderBy('incident_id', 'desc')->first();
-                    if(!is_null($incident)){
-                    $incident_id = $incident->incident_id + 1;
-                    }else{
-                        $incident_id = 1;
-                    }
-                    
-                }else{
-                    $incident_id = null;
-                }
-                
-                
-                $result = Result::firstOrNew(['section_id' => $section, 'project_id' => $project->id, 
-                    'incident_id' => $incident_id,
-                    'resultable_id' => $resultable_id, 
-                    'resultable_type' => $resultable_type]);
-                if($incident_id){
-                    $result->incident_id = $incident_id;
-                }
-                $result->resultable_id = $resultable_id;
-                $result->results = $input['answer'];
-                $result->section_id = $section;
-                $result->information = $this->updateStatus($project, $section, $input['answer']);
-                $current_user = auth()->user();
-                $result->user()->associate($current_user);
-                
-                $result->project()->associate($project);
-                if(isset($resultable)){
-                    $result->resultable()->associate($resultable);
-                }
-                
-                if ($result->save()) {
+	public function update($code, $input, $project) {
+            if($code instanceof \App\Result){
+                $result = $code;
+            }
+            if($code instanceof \App\PLocation){
+                $result = $code;
+            }
+            if($code instanceof \App\Participant){
+                $result = $code;
+            }
+                foreach($input['answer'] as $section => $answers) {
+                    /**
+                     * delete all related answers before save.
+                     * More like overwriting old answers
+                     */
                     Answers::where('status_id', $result->id)->delete();
-                    foreach($input['answer'] as $qnum => $answers){
-                        $q = $this->questions->getQuestionByQnum($qnum, $project->id);
-                        foreach($answers as $akey => $aval){
+                    foreach($answers as $qslug => $ans){
+                        $q = $this->questions->getQuestionByQnum($qslug, $section, $project->id);  
+                        if(is_null($q)) {
+                            throw new GeneralException("slug = $qslug, section = $section, project = $project->id There was a problem creating this result. Please try again.");
+                        }
+                        foreach($ans as $akey => $aval){
                             if($akey == 'radio'){
                                 $answerkey = $aval;
                             }else{
                                 $answerkey = $akey;
                             }
                             $qanswer = $q->qanswers->where('akey', $answerkey)->first();
-                            if(in_array($qanswer->type,['radio','checkbox'])){
+                            if(!is_null($qanswer) && in_array($qanswer->type,['radio','checkbox'])){
                                 $answerVal = $qanswer->value;
                             }else{
                                 $answerVal = $aval;
                             }
-                            
+
                             $answerR = Answers::firstOrNew(['qid' => $q->id, 'akey' => $answerkey, 'status_id' => $result->id]);
+                            
                             if(isset($answerVal)){
                                 $answerR->value = $answerVal;
-                                $result->answers()->save($answerR);
+                                $answerR->results()->dissociate();                                        
+                                $answerR->results()->associate($result);
+                                $answerR->save();
                             }
+                            
                         }
-
-
-                    }                   
-			return $result;
-		}
-
-		throw new GeneralException('There was a problem creating this result. Please try again.');
+                    }   
+                    $rinput['information'] = $this->updateStatus($project, $section, $answers);
+                    $result->update($rinput);
+                }
+                return $result;
 	}
 
 	
@@ -462,6 +401,7 @@ class EloquentResultRepository implements ResultContract {
          * @throws GeneralException
          */
         private function updateStatus($project, $section, $answers) {
+            
             if($project->type == 'incident'){
                 return 'incident';
             }
@@ -473,7 +413,7 @@ class EloquentResultRepository implements ResultContract {
             $section_qcount = $project->questions->where('section', $section)->count();
             
             $anscount = count(array_filter(array_keys($answers), 'strlen'));// total answers count from form submit
-            
+            return $anscount;
             $ac = 0; //counter
             /**
              * Loop through form submitted answers
@@ -483,8 +423,8 @@ class EloquentResultRepository implements ResultContract {
             foreach($answers as $qnum => $answer){
                 //get only first item in array because question with logical check will include only one answer
                 $var[$qnum] = array_values($answer)[0];
-                
-                $q = $this->questions->getQuestionByQnum($qnum, $project->id);
+                // get question using qnum slug
+                $q = $this->questions->getQuestionByQnum(str_slug($qnum), $section, $project->id);
                 
                 /**
                  * Loop answer
@@ -495,7 +435,7 @@ class EloquentResultRepository implements ResultContract {
                 foreach($answer as $akey => $aval){
                     if($akey != 'radio'){
                         $qanswer = $q->qanswers->where('akey', $akey)->first();
-                        if(in_array($qanswer->type, ['checkbox', 'text', 'number', 'textarea']) && $anscount > 0){
+                        if(!is_null($qanswer) && $anscount > 0){
                             $ac++;
                         }
                     }else{
@@ -557,8 +497,18 @@ class EloquentResultRepository implements ResultContract {
         //dd($result);
         return $result;
     }
-
-    public function saveResults($project, $section, $answers, $incident_id, $resultable, $resultable_type) {
+    
+    /**
+     * @param type $project
+     * @param type $section
+     * @param type $answers
+     * @param type $incident_id
+     * @param type $resultable
+     * @param type $resultable_type
+     * @return type
+     * @throws GeneralException
+     */
+    private function saveResults($project, $section, $answers, $incident_id, $resultable, $resultable_type) {
         
         /**
          * Result is link between questions,location,paricipants and actual answer
@@ -591,8 +541,8 @@ class EloquentResultRepository implements ResultContract {
              * More like overwriting old answers
              */
             Answers::where('status_id', $result->id)->delete();
-            foreach($answers as $qnum => $ans){
-                $q = $this->questions->getQuestionByQnum($qnum, $project->id);
+            foreach($answers as $qslug => $ans){
+                $q = $this->questions->getQuestionByQnum($qslug, $section, $project->id);
                 foreach($ans as $akey => $aval){
                     if($akey == 'radio'){
                         $answerkey = $aval;

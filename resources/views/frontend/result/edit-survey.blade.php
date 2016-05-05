@@ -23,15 +23,8 @@
 
         <div class="row">
             <div class="col-xs-1 col-lg-12">
-                @if($project->type == 'checklist')
-                    <a href="{{route('data.project.status.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to status list.') }}</a>
-                @endif
-                @if($project->type == 'incident')
-                    <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to incident list.') }}</a>
-                @endif
-                @if($project->type == 'survey')
-                    <a href="{{route('data.project.survey.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to survey list.') }}</a>
-                @endif
+                <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to incident list.') }}</a>
+                
             </div>
         </div>
             <div class="panel panel-default">
@@ -43,17 +36,9 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <div class="col-xs-2">
-                            @if($project->type == 'incident')  
-                                @if(isset($project->parent))
-                                {!! Form::label('qnum', _('Checklist Question Number'), ['class'=>'control-label']) !!}
-
-                                {!! Form::select('qnum', $project->parent->questions->sortBy('sort', SORT_NATURAL)->lists('qnum','id'), null, ['class'=>'form-control']) !!}
-                                @else
-                                {!! Form::hidden('qnum', null) !!}
-                                @endif
-                            @endif
+                            
                             {!! Form::label('validator', 'Location Code', ['class'=>'control-label']) !!}
-                            {!! Form::text('validator', $validated['validator'],['disabled', 'class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
+                            {!! Form::text('validator', $code->pcode,['disabled', 'class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
                             {!! Form::button('check',['class'=>'form-control btn btn-default','id'=>'check']) !!}
                             
                         </div>
@@ -75,15 +60,13 @@
             </div><!-- end of validation section -->
         {{-- if project submit type is full form --}} 
         @if($project->submit == 'full')
-            @if($project->type == 'checklist')
-            {!! Form::model($result, ['route' => ['data.project.results.update', $project->id, $result->id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'patch']) !!}
-            @else
-            {!! Form::model($result, ['route' => ['data.project.results.form.update', $project->id, $result->id, $result->incident_id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'patch']) !!}
-            @endif
+            
+            {!! Form::open(['route' => ['data.project.code.form.update', $project->id, $code->id, $form], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'patch']) !!}
+            
             {!! Form::hidden('project_id', $project->id) !!}
             {!! Form::hidden('org_id', $project->organization->id) !!}
-            {!! Form::hidden('validator_id', null,['class' => 'hidden-validator']) !!}
-            {!! Form::hidden('form_id', $result->incident_id,['class' => 'form_id','id'=>'form_id']) !!}
+            {!! Form::hidden('validator_id', $code->pcode,['class' => 'hidden-validator']) !!}
+            {!! Form::hidden('form_id', $form,['class' => 'form_id','id'=>'form_id']) !!}
         @endif                  
         @if(is_array($project->sections))
             @foreach($project->sections as $section_key => $section)
@@ -102,15 +85,13 @@
                 <div class="panel-body">
                 {{-- if project submit type is section by section --}} 
                 @if($project->submit == 'section')
-                    @if($project->type == 'checklist')
-                    {!! Form::model($result, ['route' => ['data.project.results.update', $project->id, $result->id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'patch']) !!}
-                    @else
-                    {!! Form::model($result, ['route' => ['data.project.results.form.update', $project->id, $result->id, $result->incident_id], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'patch']) !!}
-                    @endif
+                    
+                    {!! Form::open(['route' => ['data.project.code.form.update', $project->id, $code->id, $form], 'class' => 'form-horizontal', 'result' => 'form', 'method' => 'patch']) !!}
+                    
                     {!! Form::hidden('project_id', $project->id) !!}
                     {!! Form::hidden('org_id', $project->organization->id) !!}
-                    {!! Form::hidden('validator_id', '',['class' => 'hidden-validator']) !!}                    
-                    {!! Form::hidden('form_id', null,['class' => 'form_id']) !!}
+                    {!! Form::hidden('validator_id', $code->pcode,['class' => 'hidden-validator']) !!}                    
+                    {!! Form::hidden('form_id', $form,['class' => 'form_id']) !!}
                     <div class="row">
                         <div class="col-xs-1 col-lg-1 pull-right">
                         <input type="submit" class="btn btn-success" value="Save" />
@@ -233,14 +214,14 @@
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
-                                                    {!! Form::makeInput($answer, $result->answers, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
-                                                    {!! Form::makeInput($answer, $result->answers, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
                                                     @endif
                                                     @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
@@ -250,21 +231,21 @@
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif    
                                                     @if($key < ceil(($question->qanswers->count() / 3)))
-                                                    {!! Form::makeInput($answer, $result->answers, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3)))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3)) && $key < ceil(($question->qanswers->count() / 3) * 2))
-                                                    {!! Form::makeInput($answer, $result->answers, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3) * 2))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3) * 2))
-                                                    {!! Form::makeInput($answer, $result->answers, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""]) !!}
                                                     @endif
                                                     @if($key + 1  == ($question->qanswers->count()) )
                                                     </div>
@@ -272,12 +253,12 @@
                                                 @elseif($question->answer_view == 'horizontal')
                                                 
                                                 <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
-                                                    {!! Form::makeInput($answer, $result->answers, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
                                                 </div>
                                                 @else
                                                 <div class="col-xs-12">
                                                 <div class="form-group">
-                                                    {!! Form::makeInput($answer, $result->answers, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
                                                 </div>
                                                 </div>
                                                 @endif

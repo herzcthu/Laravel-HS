@@ -159,9 +159,7 @@ class AjaxController extends Controller
     public function getQuestions($project, Request $request){
         if($request->get('columns')){
             $columns = $request->get('columns');
-            //$key = $columns['key'];
-            //$value = $columns['value'];
-            //$columns = ['id','qnum','question'];
+            
             $questions = $project->questions->map(function ($item, $key) use ($columns) {
                 return array_intersect_key($item->toArray(), array_flip ($columns));
             });
@@ -196,8 +194,7 @@ class AjaxController extends Controller
     public function getAnswers($project, $question, Request $request){
         if($request->get('columns')){
             $columns = $request->get('columns');
-            //$key = $columns['key'];
-            //$value = $columns['value'];
+            
             $answers = $question->qanswers->map(function ($item, $key) use ($columns) {
                 return array_intersect_key($item->toArray(), array_flip ($columns));
             });
@@ -238,24 +235,7 @@ class AjaxController extends Controller
                         $json['message'] = 'Something wrong!';
                     }
                     
-                    /**
-                    if(is_array($translation)){
-                        foreach($translation as $lang => $translation){
-                            $locale = \App\Locale::where('code', $lang)->first();
-                            $child = Translation::firstOrNew(['locale_id' => $locale->id, 'translation_id' => $translate->id]);
-                            $child->translation = $translation;
-                            $child->original()->dissociate();
-                            $child->original()->associate($locale);
-                            $child->locale()->associate($locale);
-                            $child->save();
-                        }
-                    }else{
-			
-			$translate->translation = $translation;
-			$translate->update();
-                    }
-                     * 
-                     */
+                    
 		}
 		$json['status'] = true;
 		$json['message'] = 'Translation updated!';
@@ -417,6 +397,115 @@ class AjaxController extends Controller
         return Datatables::of($result)
                 ->make(true);
     }
+    
+    public function getSurveyLists($project, Request $request){
+        $parameters = [
+            'project_id' => $project->id,
+            'org_id' => $project->org_id
+        ];
+        
+        $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(results.section_id = ',results.section_id,', results.information, NULL)) AS s', results.section_id)) AS sections  FROM results WHERE (results.project_id = $project->id);"));
+        
+        $query = [
+            //'*',
+            'pcode.id',
+            'pcode.pcode', 
+            'pcode.state', 
+            'pcode.district', 
+            'pcode.township', 
+            'pcode.village',
+            'results.incident_id',
+            'results.id as result_id',
+            ];
+        
+        if(!empty($column[0]->sections)){
+            $query[] = DB::raw($column[0]->sections);
+        }
+        
+        $project_id = $project->id;
+        $org_id = $project->org_id;
+        $status = PLocation::select($query)
+                ->where('pcode.org_id', $org_id)
+                ->with(['participants'])
+                ->join('results',function($pcode) use ($project_id){
+                    $pcode->on('pcode.id','=','results.resultable_id')
+                            ->where('results.project_id','=', $project_id);
+                })                
+                ->groupBy('pcode', 'incident_id')
+                ->orderBy('pcode', 'ASC')
+                ->orderBy('incident_id', 'ASC')
+                ->get();
+                return Datatables::of($status)
+                        ->filter(function($instance) use ($request){
+                            if($request->has('pcode')){
+                                $code = $request->get('pcode');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['pcode'], $request->get('pcode')) ? true : false;
+                                });
+                            }
+                            if($request->has('region')){
+                                $code = $request->get('region');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['state'], $request->get('region')) ? true : false;
+                                });
+                            }
+                            if($request->has('township')){
+                                $code = $request->get('township');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['township'], $request->get('township')) ? true : false;
+                                });
+                            }
+                            if($request->has('station')){
+                                $code = $request->get('station');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    return Str::contains($row['village'], $request->get('station')) ? true : false;
+                                });
+                            }
+                            if($request->has('phone')){
+                                $code = $request->get('phone');
+                                $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                                    //dd($row->toArray());
+                                    return Str::contains($row['participants'], $request->get('phone')) ? true : false;
+                                });
+                            }
+                            
+                            if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
+                                $section = "s".$request->get('section'); // array key will be s0,s1,s2 etc..
+                                $status = $request->get('status');
+                                if($status == 'missing'){
+                                    $instance->collection = $instance->collection->filter(function ($row) use ($request, $section) {
+                                        return Str::is($row[$section], null) ? true : false;
+                                    });
+                                }else{
+                                   $instance->collection = $instance->collection->filter(function ($row) use ($request, $section, $status) {
+                                        return Str::is($row[$section], $status) ? true : false;
+                                    });
+                                }
+                            }
+                        })
+                        ->editColumn('pcode', function ($modal) use ($project){
+                            //if($modal->results){
+                            return $modal->pcode."<a href='".route('data.project.code.form.edit', [$project->id, $modal->id, $modal->incident_id])."' title='Edit'> <i class='fa fa-edit'></i></a>";
+                            //}
+                        })
+                        ->editColumn('form_id', function($modal) use ($project){                            
+                            return $modal->incident_id;
+                        })
+                        ->editColumn('state', function ($modal) use ($project){
+                            $state = (!is_null($modal->state))? $modal->state:'';
+                            return _t($state);
+                        })
+                        ->editColumn('township', function ($modal) use ($project){
+                            $township = (!is_null($modal->township))? $modal->township:'';
+                            return _t($township);
+                        })
+                        ->editColumn('village', function ($modal) use ($project){
+                            $village = (!is_null($modal->village))? $modal->village:'';
+                            return _t($village);
+                        })
+                        ->make(true);   
+    }
+    
     public function getAllResults($project, Request $request) {
         $result = Result::with('resultable')->with('answers')->with('answers.question.qanswers');
         
@@ -510,7 +599,7 @@ class AjaxController extends Controller
         
         $column = DB::select(DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('MAX(IF(results.section_id = ',results.section_id,', results.information, NULL)) AS s', results.section_id)) AS sections  FROM results WHERE (results.project_id = $project->id);"));
         
-        $query = ['pcode.primaryid',
+        $query = ['pcode.id',
             'pcode.pcode', 
             'pcode.state', 
             'pcode.district', 
@@ -528,10 +617,10 @@ class AjaxController extends Controller
                 ->with(['participants'])
                 
                 ->leftjoin('results',function($pcode) use ($project_id){
-                    $pcode->on('pcode.primaryid','=','results.resultable_id')
+                    $pcode->on('pcode.id','=','results.resultable_id')
                             ->where('results.project_id','=', $project_id);
                 })                
-                ->groupBy('pcode.primaryid')->get();
+                ->groupBy('pcode.id')->get();
                 
                 return Datatables::of($status)
                         ->filter(function($instance) use ($request){
@@ -583,7 +672,7 @@ class AjaxController extends Controller
                         })
                         ->editColumn('pcode', function ($modal) use ($project){
                             //if($modal->results){
-                            return $modal->pcode."<a href='".route('data.project.results.edit', [$project->id, $modal->primaryid])."' title='Edit'> <i class='fa fa-edit'></i></a>";
+                            return $modal->pcode."<a href='".route('data.project.results.edit', [$project->id, $modal->id])."' title='Edit'> <i class='fa fa-edit'></i></a>";
                             //}
                         })
                         ->editColumn('state', function ($modal) use ($project){

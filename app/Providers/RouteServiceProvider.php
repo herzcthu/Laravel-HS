@@ -32,35 +32,19 @@ class RouteServiceProvider extends ServiceProvider {
                 $router->model('projects', 'App\Project');
                 $router->model('questions', 'App\Question');
                 $router->model('organizations', 'App\Organization');
-                //$router->model('pcode', 'App\PLocation');
+                $router->model('result', 'App\Result');
+                $router->model('code', 'App\PLocation');
                 $router->bind('pcode', function($value, $route){
-                    if($route->project->type == 'incident'){
-                        if(\Request::ajax()){
-                            if($route->project->validate == 'person'){
-                                $pcode = \App\Participant::find($value);
-                            }elseif($route->project->validate == 'pcode'){
-                                $pcode = \App\PLocation::find($value);
-                            }
-                        }else{
-                            $pcode = \App\Result::find($value);
-                        }
-                    }else{
-                        if($route->project->validate == 'person'){
-                            $pcode = \App\Participant::find($value);
-                        }elseif($route->project->validate == 'pcode'){
-                            $pcode = \App\PLocation::where('org_id', $route->project->organization->id)
-                                    ->where('pcode',$value)->first();
-                        }
+                    if($route->project->validate == 'person'){
+                        $pcode = \App\Participant::where('org_id', $route->project->organization->id)->where('participant_code',$value)->first();
+                    }elseif($route->project->validate == 'pcode'){
+                        $pcode = \App\PLocation::where('org_id', $route->project->organization->id)->where('pcode',$value)->first();
                     }
-                    if(!is_null($pcode)){
-                        return $pcode;
-                    }else{
-                        \App::abort(404, 'Not Found.');
-                    }
+                    if(!is_null($pcode)){ return $pcode; }else{ \App::abort(404, 'Not Found.'); }
                 });
                 
                 $router->bind('person', function($value, $route){ //dd($route->project);
-                    $person = \App\Participant::where('participant_id', $value)->where('org_id', $route->project->org_id)->first();
+                    $person = \App\Participant::where('participant_code', $value)->where('org_id', $route->project->org_id)->first();
                     if(!is_null($person)){
                         return $person;
                     }else{

@@ -32,7 +32,7 @@
                     <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to incident list.') }}</a>
                 @endif
                 @if($project->type == 'survey')
-                    <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to survey list.') }}</a>
+                    <a href="{{route('data.project.survey.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to survey list.') }}</a>
                 @endif
             </div>
         </div>
@@ -57,12 +57,13 @@
                             {!! Form::label('validator', 'Location Code', ['class'=>'control-label']) !!}
                             {!! Form::text('validator',null,['class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
                             {!! Form::button('check',['class'=>'form-control btn btn-default','id'=>'check']) !!}
-                            
+                            @if($project->type == 'survey') 
                             {!! Form::label('formnum', 'Form ID', ['class'=>'control-label']) !!}                            
                             {!! Form::select('formnum', [''=>'none', '1'=>'1',
                             '2'=>'2', '3'=>'3', '4'=>'4', '5'=>'5',
                             '6'=>'6', '7'=>'7', '8'=>'8', '9'=>'9',
                             '10'=>'10'], null, ['class'=>'form-control', 'id'=>'formnum']) !!}
+                            @endif
                         </div>
                         <div class="col-xs-3 col-lg-3">
                             @if(is_array($project->sections))
@@ -226,7 +227,7 @@
                                         <div class="row col-xs-offset-0">
                                         @if($question->qanswers->count() > 0 )
                                            {{-- */ $key = 0;$answers = $question->qanswers->sortBy('akey', SORT_NATURAL); /** --}}
-                                            @foreach($answers as $answer)
+                                            @foreach($answers as $k => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
                                                     <div class="col-xs-6 col-lg-6">

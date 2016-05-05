@@ -33,12 +33,16 @@ Route::group(['middleware' => 'auth'], function ()
                     'with'       => ['flash_danger', 'You do not have access to do that.']
             ], function ()
             {
-            Route::get('/results', ['as' => 'data.project.results.index', 'uses' => 'ResultController@index']);
-            Route::get('/results/create', ['as' => 'data.project.results.create', 'uses' => 'ResultController@create']);
-            Route::get('/results/{result}/edit', ['as' => 'data.project.results.edit', 'uses' => 'ResultController@edit']);
-            Route::post('/results/store', ['as' => 'data.project.results.store', 'uses' => 'ResultController@store']);
-            Route::patch('/results/update', ['as' => 'data.project.results.update', 'uses' => 'ResultController@update']);
-            //Route::resource('project.results', 'ResultController', ['except' => ['show','edit']]); 
+                Route::get('/survey', ['as' => 'data.project.survey.index', 'uses' => 'ResultController@surveyIndex']);
+                Route::get('/results', ['as' => 'data.project.results.index', 'uses' => 'ResultController@index']);
+                Route::get('/results/create', ['as' => 'data.project.results.create', 'uses' => 'ResultController@create']);
+                Route::get('/results/{result}/edit', ['as' => 'data.project.results.edit', 'uses' => 'ResultController@edit']);                
+                Route::get('/location/{code}/form/{form}/edit', ['as' => 'data.project.code.form.edit', 'uses' => 'ResultController@editSurvey']);
+                Route::post('/results/store', ['as' => 'data.project.results.store', 'uses' => 'ResultController@store']);
+                Route::match(['put','patch'],'/results/{result}/update', ['as' => 'data.project.results.update', 'uses' => 'ResultController@update']);
+                Route::match(['put','patch'],'/location/{code}/form/{form}/update', ['as' => 'data.project.code.form.update', 'uses' => 'ResultController@update']);
+                //Route::resource('project.results', 'ResultController', ['except' => ['show','edit']]); 
+
             });
         });
         Route::get('profile', ['as' => 'profile.index', 'uses' => 'ProfileController@index']);

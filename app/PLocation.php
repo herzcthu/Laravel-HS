@@ -66,7 +66,7 @@ class PLocation extends Model
     }
     
     public function status() {
-        return $this->hasMany('App\Status', 'station_id', 'primary_id');
+        return $this->hasMany('App\Status', 'station_id', 'id');
     }
     
     public function scopeOfState($query, $state)
@@ -99,7 +99,7 @@ class PLocation extends Model
     public function scopeNotWithResults($query){
         return $query->whereNotExists(function($query){
             $this_table = DB::getTablePrefix() . $this->table; 
-            $query->select(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.primaryid'); 
+            $query->select(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.id'); 
             
         });
     }
@@ -107,7 +107,7 @@ class PLocation extends Model
     public function scopeOrNotWithResults($query){
         return $query->orWhereNotExists(function($query){
             $this_table = DB::getTablePrefix() . $this->table; 
-            $query->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.primaryid'); 
+            $query->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.id'); 
             
         });
     }
@@ -116,7 +116,7 @@ class PLocation extends Model
     public function scopeOfOrNotWithResults($query, $project){
         return $query->orWhereNotExists(function($q) use ($project){
             $this_table = DB::getTablePrefix() . $this->table; 
-            $q->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.primaryid')
+            $q->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.id')
                     ->where('project_id', $project->id); 
             
         });
@@ -131,7 +131,7 @@ class PLocation extends Model
     public function scopeOfNotWithResults($query, $project){
         return $query->whereNotExists(function($q) use ($project){
             $this_table = DB::getTablePrefix() . $this->table; 
-            $q->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.primaryid')
+            $q->selectRaw(DB::raw('resultable_id')) ->from('results') ->whereRaw('resultable_id = '.$this_table.'.id')
                     ->where('project_id', $project->id); 
             
         });
@@ -142,7 +142,7 @@ class PLocation extends Model
             $this_table = DB::getTablePrefix() . $this->table; 
             $query->selectRaw(DB::raw('resultable_id')) ->from('results')
                     ->where('project_id', $project)
-                    ->whereRaw('resultable_id = '.$this_table.'.primaryid'); 
+                    ->whereRaw('resultable_id = '.$this_table.'.id'); 
             
         });
     }

@@ -55,6 +55,14 @@ class ResultController extends Controller
                         ->withAllLoc($alocations)
                         ->withRequest($request);
     }
+    
+    public function surveyIndex($project, Request $request) {
+        $alocations = PLocation::where('org_id', $project->organization->id )->get();
+        return view('frontend.result.survey-index')
+                    ->withAllLoc($alocations)
+                    ->withProject($project)
+                    ->withRequest($request);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -101,7 +109,6 @@ class ResultController extends Controller
             return redirect()->route('data.project.results.edit', [$project->id, $result->id])->withFlashSuccess('The results was successfully created.');
         }else{
             return redirect()->back()->withFlashSuccess('The results was successfully created.');
-            //return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
         }
     }
 
@@ -123,43 +130,59 @@ class ResultController extends Controller
      * @return Response
      */
     public function edit($project, $code, Request $request)
-    {
+    { 
         $user = auth()->user();
         if($project->validate == 'person'){
             $route = route('ajax.project.person', [$project->id, '{pcode}']);
         }elseif($project->validate == 'pcode'){
-            $route = route('ajax.project.pcode', [$project->id, '{pcode}-'.$project->organization->id]);
+            $route = route('ajax.project.pcode', [$project->id, '{pcode}']);
         }elseif($project->validate == 'uec_code'){
-            
+            $route = '';
+        }else{
+            $route = '';
         }
-        if($code instanceof PLocation){
-            $validated = $this->formValidatePcode($project, $code, $request);
-            $validated['validator'] = $code->pcode;
-            $validated['validator_key'] = $code->pcode.'-'.$project->organization->id;
-            
-        }
-        if($code instanceof Participant){
-            $validated = $this->formValidatePerson($project, $code, $request);
-            $validated['validator'] = $code->participant_id;
-            $validated['validator_key'] = $code->participant_id;
-        }
+        
+        
         if($code instanceof \App\Result){
             $validated = $this->formValidatePcode($project, $code->resultable, $request);
-            $validated['validator'] = $code->resultable->pcode;
-            $validated['validator_key'] = $code->resultable->pcode.'-'.$project->organization->id;
+            if($code->resultable_type == 'App\PLocation') {
+            $idcode = $code->resultable->pcode;
+            }
+            if($code->resultable_type == 'App\Participant') {
+            $idcode = $code->resultable->participant_code;
+            }
+            $validated['validator_key'] = $code->id;
+            $validated['validator'] = $idcode;
         }
         javascript()->put([
 			'url' => $route,
-                        //'org' => 
-		]); //dd($code);
-        $result = \App\Result::where('project_id', $project->id)->where('resultable_id',$validated['validator_key'])->lists('information','section_id');
+		]); 
+        
         return view('frontend.result.edit')
 			->withUser($user)
                         ->withProject($project)
                         ->withValidated($validated)
+                        ->withResult($code);
+    }
+    
+    public function editSurvey($project, $code, $form, Request $request) {
+        $user = auth()->user();
+        if($project->validate == 'person'){
+            $route = route('ajax.project.person', [$project->id, '{pcode}']);
+        }elseif($project->validate == 'pcode'){
+            $route = route('ajax.project.pcode', [$project->id, '{pcode}']);
+        }elseif($project->validate == 'uec_code'){
+            $route = '';
+        }else{
+            $route = '';
+        }
+        
+        
+        return view('frontend.result.edit-survey')
+			->withUser($user)
+                        ->withProject($project)
                         ->withCode($code)
-                        ->withResults($this->results)
-                        ->withResult($result);
+                        ->withForm($form);
     }
 
     /**
@@ -169,21 +192,17 @@ class ResultController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function update($result, $project, $section_id = false, CreateResultRequest $request)
-    { //dd($request->all());
-        if($section_id == 'incident'){
-            $section_id = $request->get('qnum');
-        }
+    public function update($project, $result, CreateResultRequest $request)
+    { 
         $result = $this->results->update(
                         $result,
 			$request->except('project_id'),
-			$project,
-                        $section_id
+			$project
 		);
         
         
-        if($project->type == 'incident'){
-            return redirect()->route('data.project.results.edit', [$project->id, $result->id])->withFlashSuccess('The results was successfully created.');
+        if($project->type == 'incident' || $project->type == 'survey'){
+            return redirect()->route('data.project.results.form.edit', [$project->id, $result->id, $result->incident_id])->withFlashSuccess('The results was successfully created.');
         }else{
             return redirect()->back()->withFlashSuccess('The results was successfully created.');
             //return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');
@@ -310,24 +329,19 @@ class ResultController extends Controller
         foreach ($prole as $key => $val){
             if($key == 'State'){
                 $located = $this->plocation->getStatesScope($pcode->state, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }elseif($key == 'District'){
                 $located = $this->plocation->getDistrictsScope($pcode->district, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }elseif($key == 'Township'){
                 $located = $this->plocation->getTownshipsScope($pcode->township, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }elseif($key == 'VTract'){
                 $located = $this->plocation->getVTractsScope($pcode->village_tract, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }else{
                 $located = $this->plocation->getVillagesScope($pcode->village, 'village')
-                    ->where('org_id', $project->organization->id)
-                    ->where('role_id', $val);
+                    ->where('org_id', $project->organization->id);
             }
             
             if(!$located->get()->isEmpty()){

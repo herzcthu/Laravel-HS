@@ -52,6 +52,93 @@ class Macros extends FormBuilder {
 		return $this->select($name, $countries_list, $selected, $options);
 	}
         
+        public function makeInput($answer,$values,$options = []){
+            
+            $html = '';
+            $type = $answer->type;
+            $name = $answer->akey;
+            $text = $answer->text;
+            $ansval = $answer->value;
+            $section = $answer->question->section;
+            $slug = $answer->question->slug;
+            $qid = $answer->question->id;
+            $ans_slug = $answer->slug;
+            $options['id'] = $ans_slug;
+            $options['data-logic'] = json_encode($answer->logic);
+            
+            $value = null;
+            
+            if(!is_null($values)){
+                foreach ($values as $val) {
+                    
+                    if(in_array($name,$val->toArray() )) {                        
+                        
+                        if($type == 'radio'){
+                            $value = $val->akey;
+                        }else{
+                            $value = $val->value;
+                        }
+                        break;
+                    } 
+                }
+            } 
+            
+            if($type == 'radio'){
+                $inputname = "answer[$section][$slug][radio]";
+            }else{
+                $inputname = "answer[$section][$slug][$ans_slug]";
+            }
+            
+            if(array_key_exists('class', $options) ) {
+                $cssClass = $options['class'];
+            } else {
+                $cssClass = '';
+            }
+            
+            switch($type) {
+                case 'radio':
+                    $html .= "<div class=\"radio\">";
+                    $html .= "<label class='control-label'>";
+                    $html .= $this->radio($inputname, $name, $value, $options);
+                    $html .= "<span class='badge'>$ansval</span> ";
+                    $html .= $text;
+                    $html .= "</label>";
+                    $html .= "</div>";
+                    
+                    break;
+                case 'checkbox':
+                    $html .= "<div class=\"checkbox\">";
+                    $html .= "<label class='control-label'>";
+                    $html .= $this->checkbox($inputname, $ansval, $value, $options);
+                    
+                    $html .= $text;
+                    $html .= "</label>";
+                    $html .= "</div>";
+                    break;
+                case 'textarea':
+                    $options['class'] = $cssClass . ' form-control';
+                    $html .=  "<label for=\"$inputname\" class='col-xs-2'>$text</label>";
+                    $html .=  "<div class='col-xs-10' style='padding-left:0px'>";
+                    $html .=  $this->textarea($inputname, $value, $options);
+                    $html .=  "</div>";
+                    break;
+                case 'option':
+                    
+                    break;
+                case 'question':
+                    
+                    break;
+                default:
+                    $options['class'] = $cssClass . ' form-control';
+                    $html .=  "<label for=\"$inputname\" class='col-xs-2'>$text</label>";
+                    $html .=  "<div class='col-xs-10' style='padding-left:0px'>";
+                    $html .=  $this->input($type, $inputname, $value, $options);
+                    $html .=  "</div>";
+                    break;
+            }
+            return $html;
+        }
+        
         
         public function answerField($question, $answer, $qnumber, $answer_key, $results, $options=array(), $wrapper = array())
         {            

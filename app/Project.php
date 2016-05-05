@@ -69,7 +69,7 @@ class Project extends Model
   * @return string
   */
   public function getEditButtonAttribute() {
-     return '<a href="'.route('admin.project.edit', $this->id).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil"></i></a>';
+     return '<a href="'.route('admin.project.edit', $this->id).'" class="btn btn-lg btn-warning" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil"></i></a>';
   }
   
   /**
@@ -84,14 +84,14 @@ class Project extends Model
   * @return string
   */
   public function getExportButtonAttribute() {
-    return '<a href="'.route('admin.project.export', $this->id).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" title="Export"><i class="fa fa-download"></i></a>';
+    return '<a href="'.route('admin.project.export', $this->id).'" class="btn btn-lg btn-default" data-toggle="tooltip" data-placement="top" title="Export"><i class="fa fa-download"></i></a>';
   }
   
   /**
   * @return string
   */
   public function getAddQuestionButtonAttribute() {
-     return '<a href="'.route('admin.project.questions.create', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" title="Add Question"><i class="fa fa-question"></i><i class="fa fa-plus"></i></a>';
+     return '<a href="'.route('admin.project.questions.create', ['p' => $this->id]).'" class="btn btn-lg btn-success" data-toggle="tooltip" data-placement="top" title="Add Question"><i class="fa fa-question"></i><i class="fa fa-plus"></i></a>';
   }
   
   /**
@@ -132,13 +132,14 @@ class Project extends Model
   * @return string
   */
   public function getAddResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Incidents</h5><p>click here to add incident data</p>"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
+     return '<a href="'.route('data.project.results.create', ['p' => $this->id]).'" class="btn btn-lg btn-success" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>'.ucfirst($this->type).'</h5><p>click here to add '.$this->type.' data</p>"><i class="fa fa-database"></i><i class="fa fa-plus"></i></a>';
   }
+  
   /**
   * @return string
   */
-  public function getViewResultsFrontendButtonAttribute() {
-     return '<a href="'.route('data.project.results.index', ['p' => $this->id]).'" class="btn btn-lg btn-primary" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>Results</h5><p>click here to edit incident or check results</p>"><i class="fa fa-database"></i><i class="fa fa-table"></i></a>';
+  public function getListsViewFrontendButtonAttribute() {
+     return '<a href="'.route('data.project.'.$this->type.'.index', ['p' => $this->id]).'" class="btn btn-lg btn-info" data-toggle="tooltip" data-placement="top" data-html="true" title="<h5>'.ucfirst($this->type).' lists</h5><p>click here to edit survey or view lists</p>"><i class="fa fa-database"></i><i class="fa fa-table"></i></a>';
   }
   /**
   * @return string
@@ -154,7 +155,16 @@ class Project extends Model
               $this->getEditQuestionsButtonAttribute().' '.
               $this->getAddResultsFrontendButtonAttribute().' '.
               $this->getViewIresponseFrontendButtonAttribute().' '.
-              $this->getViewResultsFrontendButtonAttribute().' '.
+              $this->getListsViewFrontendButtonAttribute().' '.
+              $this->getExportButtonAttribute();
+  }
+  
+  public function getSurveyActionButtonsAttribute() {
+      return $this->getEditButtonAttribute().' '.
+              $this->getDeleteButtonAttribute().' '.
+              $this->getEditQuestionsButtonAttribute().' '.
+              $this->getAddResultsFrontendButtonAttribute().' '.
+              $this->getListsViewFrontendButtonAttribute().' '.
               $this->getExportButtonAttribute();
   }
   
@@ -169,13 +179,17 @@ class Project extends Model
   }
   
   public function getFrontendActionButtonsAttribute(){
-      return  $this->getViewResponseFrontendButtonAttribute().' '.
-              $this->getViewStatusFrontendButtonAttribute();
+      $buttons = '';
+      if($this->type == 'checklist') {
+          $buttons .= $this->getViewResponseFrontendButtonAttribute().' '.
+                        $this->getViewStatusFrontendButtonAttribute();
+      } else {
+          $buttons .= $this->getAddResultsFrontendButtonAttribute().' '.
+              $this->getListsViewFrontendButtonAttribute();
+      }
+     
+      return  $buttons;
   }
   
-  public function getFrontendIncidentActionButtonsAttribute(){
-      return $this->getAddResultsFrontendButtonAttribute().' '.
-              $this->getViewResultsFrontendButtonAttribute();
-  }
   
 }

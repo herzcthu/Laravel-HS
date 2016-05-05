@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth'], function ()
         Route::get('/response', ['as' => 'ajax.project.response', 'uses' => 'AjaxController@getResponse']);
         Route::get('/status', ['as' => 'ajax.project.status', 'uses' => 'AjaxController@getAllStatus']);
         Route::get('/results', ['as' => 'ajax.project.results', 'uses' => 'AjaxController@getAllResults']);
+        Route::get('/survey', ['as' => 'ajax.project.survey', 'uses' => 'AjaxController@getSurveyLists']);
         Route::post('/questions/sort', ['as' => 'ajax.project.questions.sort', 'uses' => 'AjaxController@sortQuestions']);
         Route::post('/question/new', ['as' => 'ajax.project.question.new', 'uses' => 'AjaxController@newQuestion']);
         Route::get('/question/{questions}/edit', ['as' => 'ajax.project.question.edit', 'uses' => 'AjaxController@getQuestion']);

@@ -93,7 +93,7 @@ class Question extends Model
   */
   public function getEditButtonAttribute() {
       $content = json_encode($this, true);
-      $content = str_replace("'", "&apos;", $content); // this is quick fix for single quote. need to remove later
+      //$content = str_replace("'", "&apos;", $content); // this is quick fix for single quote. need to remove later
       // ajax route for creating new question
         $question_url = route('ajax.project.question.edit', [$this->project->id, $this->id]);
         // get ajax urlhash for project

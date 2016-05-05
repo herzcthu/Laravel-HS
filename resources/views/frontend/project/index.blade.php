@@ -33,11 +33,7 @@
                                     
                     <td>
                         {!! _t($project->name) !!} <br>
-                        @if($project->type == 'incident')
-                        {!! $project->frontend_incident_action_buttons !!}
-                        @else
                         {!! $project->frontend_action_buttons !!}
-                        @endif
                     </td>
                     <td>
                         @if ($project->parent)

@@ -53,10 +53,12 @@ class EloquentQuestionRepository implements QuestionContract {
 		throw new GeneralException('That question does not exist.');
 	}
         
-        public function getQuestionByQnum($qnum){
-            $question_ByNum = Question::where('qnum', $qnum)->first();
-            $question = $this->findOrThrowException($question_ByNum->id);
-            return $question;
+        public function getQuestionByQnum($qslug, $section, $project){
+            return Question::where('slug', $qslug)
+                    ->where('section', $section)
+                    ->where('project_id', $project)
+                    ->first();
+            
         }
 
 	/**
@@ -164,7 +166,7 @@ class EloquentQuestionRepository implements QuestionContract {
 	 * @throws GeneralException
 	 */
 	public function update($question, $input, $project, $ajax = false) {
-            
+            dd($question);
 		$related_id = (isset($input['related_data'])) ? $input['related_data']['q']:'';
                 if(!empty($related_id)){
                     $this->flushParent($related_id, $question);

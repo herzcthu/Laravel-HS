@@ -53,11 +53,12 @@ class EloquentQuestionRepository implements QuestionContract {
 		throw new GeneralException('That question does not exist.');
 	}
         
-        public function getQuestionByQnum($qnum, $project_id){
-            $question_ByNum = Question::where('project_id', $project_id)->where('qnum', $qnum)->first();
-            if(!is_null($question_ByNum)) return $this->findOrThrowException($question_ByNum->id);
+        public function getQuestionByQnum($qslug, $section, $project){
+            return Question::where('slug','=', $qslug)
+                    ->where('section', $section)
+                    ->where('project_id','=', $project)
+                    ->first();
             
-            throw new GeneralException('That question does not exist');
         }
 
 	/**

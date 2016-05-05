@@ -13,7 +13,7 @@ interface QuestionContract {
 	 */
 	public function findOrThrowException($id, $withProject = false);
         
-        public function getQuestionByQnum($qnum);
+        public function getQuestionByQnum($qslug, $section, $project);
 
 	/**
 	 * @param $per_page
