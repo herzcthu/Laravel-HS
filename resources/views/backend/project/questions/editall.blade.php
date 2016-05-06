@@ -383,7 +383,8 @@
                             </div>
                             <div class="col-xs-2 form-group">
                             <label for="operator" class="control-label">Select</label>
-                            <select id="operator" name="operator" class="form-control">                                
+                            <select id="operator" name="operator" class="form-control">
+                                <option value="delete">Delete Logic</option>                                
                                 <option value="=">Equal to (=)</option>
                                 <option value="skip">Skip to</option>
                                 <option value=">">Greater than (>)</option>

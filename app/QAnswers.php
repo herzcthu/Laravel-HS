@@ -31,7 +31,11 @@ class QAnswers extends Model
      return json_decode($this->attributes['logic'], true);
   }
   
-  public function setLogicAttribute(Array $val) {
-      $this->attributes['logic'] = json_encode($val);
+  public function setLogicAttribute($val) {
+      if(!empty($val) && is_array($val)) {
+        $this->attributes['logic'] = json_encode($val);
+      } else {
+        $this->attributes['logic'] = '';
+      }
   }
 }

@@ -213,7 +213,11 @@ class EloquentQuestionRepository implements QuestionContract {
             $logic = [];
             foreach($qans as $ans){
                 if($ans->slug == $input['lftans']){
-                    $logic[] = $ans->update(['logic' => $input]);
+                    if($input['operator'] == 'delete') {
+                        $logic[] = $ans->update(['logic' => null]);
+                    } else {
+                        $logic[] = $ans->update(['logic' => $input]);
+                    }
                 } 
                 
             }
