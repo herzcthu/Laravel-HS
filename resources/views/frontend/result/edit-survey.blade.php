@@ -5,7 +5,10 @@
 @section ('before-styles-end')
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
 @stop
-
+@section ('after-styles-end')
+    {!! HTML::style('css/vendor/jquery-ui/themes/smoothness/jquery-ui.min.css') !!}
+    {!! HTML::style('css/vendor/jquery-ui/jquery-ui-timepicker-addon.min.css') !!}
+@stop
 @section('page-header')
     <h1>
         {{ _t('Result Management') }}
@@ -214,14 +217,14 @@
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
-                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
-                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
                                                     @endif
                                                     @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
@@ -231,21 +234,21 @@
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif    
                                                     @if($key < ceil(($question->qanswers->count() / 3)))
-                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3)))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3)) && $key < ceil(($question->qanswers->count() / 3) * 2))
-                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""]) !!}
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3) * 2))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3) * 2))
-                                                    {!! Form::makeInput($answer, $results, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""],$form) !!}
                                                     @endif
                                                     @if($key + 1  == ($question->qanswers->count()) )
                                                     </div>
@@ -253,12 +256,12 @@
                                                 @elseif($question->answer_view == 'horizontal')
                                                 
                                                 <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
-                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""],$form) !!}
                                                 </div>
                                                 @else
                                                 <div class="col-xs-12">
                                                 <div class="form-group">
-                                                    {!! Form::makeInput($answer, $answer->question->ans, ['class' => ""]) !!}
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""],$form) !!}
                                                 </div>
                                                 </div>
                                                 @endif

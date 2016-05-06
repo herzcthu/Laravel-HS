@@ -171,18 +171,19 @@ class ResultController extends Controller
             $route = route('ajax.project.person', [$project->id, '{pcode}']);
         }elseif($project->validate == 'pcode'){
             $route = route('ajax.project.pcode', [$project->id, '{pcode}']);
-        }elseif($project->validate == 'uec_code'){
-            $route = '';
         }else{
             $route = '';
         }
         
+        $results = $code->results->where('project_id', $project->id)->where('incident_id', (int)$form);
+       // dd($results);
         
         return view('frontend.result.edit-survey')
-			->withUser($user)
-                        ->withProject($project)
-                        ->withCode($code)
-                        ->withForm($form);
+			->withUser($user) // App\User
+                        ->withProject($project) // App\Project
+                        ->withCode($code) //App\PLocation
+                        ->withResults($results)
+                        ->withForm($form); // incident_id
     }
 
     /**
@@ -192,17 +193,18 @@ class ResultController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function update($project, $result, CreateResultRequest $request)
-    { 
+    public function update($project, $code, CreateResultRequest $request)
+    {               
+        $form_id = $request->only('form_id')['form_id'];
         $result = $this->results->update(
-                        $result,
-			$request->except('project_id'),
-			$project
+                        $code,
+			$request->except('project_id','form_id'),
+			$project,
+                        $form_id
 		);
-        
-        
+        //dd($result);
         if($project->type == 'incident' || $project->type == 'survey'){
-            return redirect()->route('data.project.results.form.edit', [$project->id, $result->id, $result->incident_id])->withFlashSuccess('The results was successfully created.');
+            return redirect()->route('data.project.code.form.edit', [$project->id, $code->id, $form_id])->withFlashSuccess('The results was successfully created.');
         }else{
             return redirect()->back()->withFlashSuccess('The results was successfully created.');
             //return redirect()->route('data.project.status.index', $project->id)->withFlashSuccess('The results was successfully created.');

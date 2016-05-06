@@ -52,7 +52,15 @@ class Macros extends FormBuilder {
 		return $this->select($name, $countries_list, $selected, $options);
 	}
         
-        public function makeInput($answer,$values,$options = []){
+        /**
+         * 
+         * @param type $answer
+         * @param type $results
+         * @param type $options
+         * @param type $form
+         * @return string
+         */
+        public function makeInput( $answer, $results = null ,$options = [], $form = '' ){
             
             $html = '';
             $type = $answer->type;
@@ -65,23 +73,26 @@ class Macros extends FormBuilder {
             $ans_slug = $answer->slug;
             $options['id'] = $ans_slug;
             $options['data-logic'] = json_encode($answer->logic);
-            
             $value = null;
-            
-            if(!is_null($values)){
-                foreach ($values as $val) {
-                    
-                    if(in_array($name,$val->toArray() )) {                        
-                        
-                        if($type == 'radio'){
-                            $value = $val->akey;
+            if(!is_null($results)){
+                $rs = $results->where('section_id', $section)->first();
+                if(!is_null($rs)) {
+                foreach($rs->answers as $values) {
+                    if(in_array($name, $values->toArray())) { 
+                        if($type == 'radio') {
+                            $value = true;   
                         }else{
-                            $value = $val->value;
+                            $value = $values->value; 
                         }
                         break;
-                    } 
+                    } else {
+                        $value = null;
+                    }
                 }
-            } 
+                }
+            } else {
+                $value = null;
+            }
             
             if($type == 'radio'){
                 $inputname = "answer[$section][$slug][radio]";
@@ -97,6 +108,7 @@ class Macros extends FormBuilder {
             
             switch($type) {
                 case 'radio':
+                    
                     $html .= "<div class=\"radio\">";
                     $html .= "<label class='control-label'>";
                     $html .= $this->radio($inputname, $name, $value, $options);
