@@ -176,7 +176,10 @@ class ResultController extends Controller
         }
         
         $results = $code->results->where('project_id', $project->id)->where('incident_id', (int)$form);
-       // dd($results);
+        
+        if(empty($results->all())) {
+            return redirect()->route('data.project.survey.index',[$project->id])->withFlashWarning('Data not exist.');
+        }
         
         return view('frontend.result.edit-survey')
 			->withUser($user) // App\User

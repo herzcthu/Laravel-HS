@@ -17,7 +17,7 @@ class AnswersResultsTable extends Migration
             $table->integer('qid')->unsigned();
             $table->integer('status_id')->unsigned();
             $table->text('value');
-            $table->string('akey');
+            $table->string('akey')->index();
             $table->foreign('qid')
                   ->references('id')
                   ->on('questions');

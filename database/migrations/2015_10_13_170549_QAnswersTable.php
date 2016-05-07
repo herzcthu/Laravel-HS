@@ -15,10 +15,10 @@ class QAnswersTable extends Migration
         Schema::create('qanswers', function(Blueprint $table){
             $table->increments('id');
             $table->integer('qid')->unsigned();
-            $table->string('type');
-            $table->string('text');
-            $table->string('value');
-            $table->string('akey');
+            $table->string('type')->index();
+            $table->string('text')->index();
+            $table->string('value')->index();
+            $table->string('akey')->index();
             $table->string('qarequire');
             $table->string('css');
             $table->text('logic');

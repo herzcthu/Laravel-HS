@@ -211,7 +211,7 @@
                     }, // observer column
                     @foreach($project->sections as $k => $section)
                     // add 5 to $k because section start from column index 5 in table
-                    { "orderable": false, "targets": {{$k + 5}}, 
+                    { "orderable": false, "targets": {{$k + 6}}, "data": "section{{$k}}",
                         "render": function ( data, type, full, meta ) {
                             if(typeof data == 'undefined'){
                                 return '<img src="{{ asset('img/') }}/missing.png" title="missing" class="status-icon">';
@@ -238,7 +238,7 @@
                     { data: 'village', name: 'station' },
                     { data: 'participants', name: 'observers'},
                     @foreach($project->sections as $k => $section)
-                    { data: 's{{$k}}', name: 's{{$k}}'},
+                    { data: 's{{$k}}', name: 'section{{$k}}'},
                     @endforeach
                 ]
             });

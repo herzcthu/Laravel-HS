@@ -13,10 +13,10 @@ class AddSlugColumn extends Migration
     public function up()
     {
         Schema::table('questions', function(Blueprint $table){
-            $table->string('slug')->after('qnum');
+            $table->string('slug')->index()->after('qnum');
         });
         Schema::table('qanswers', function(Blueprint $table){
-            $table->string('slug')->after('akey');
+            $table->string('slug')->index()->after('akey');
         });
     }
 

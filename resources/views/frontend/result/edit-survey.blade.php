@@ -26,8 +26,9 @@
 
         <div class="row">
             <div class="col-xs-1 col-lg-12">
-                <a href="{{route('data.project.results.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to incident list.') }}</a>
-                
+                @if($project->type == 'survey')
+                    <a href="{{route('data.project.survey.index',[$project->id])}}" class="btn btn-success">{{ _t('Go to survey list.') }}</a>
+                @endif
             </div>
         </div>
             <div class="panel panel-default">

@@ -38,7 +38,7 @@ class CreateQuestionsTable extends Migration {
                   ->default(NULL);
             $table->integer('project_id')
                   ->unsigned();
-            $table->string('urlhash');
+            $table->string('urlhash')->index();
             $table->timestamps();
             $table->unique(['qnum', 'related_id', 'project_id'], 'questions_qnum_related_id_project_id_unique');
             $table->index('project_id', 'questions_project_id_foreign');

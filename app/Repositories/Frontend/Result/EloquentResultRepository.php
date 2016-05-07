@@ -202,7 +202,9 @@ class EloquentResultRepository implements ResultContract {
             $resultable = $this->pcode->getLocationByPcode($validate, $project->organization->id);
             $resultable_type = 'App\PLocation';
         }
-        foreach ($input['answer'] as $section => $answers) {
+        foreach ($input['answer'] as $section => $raw_answers) {
+            // this function defined in app\helpers.php
+            $answers = array_filter_recursive($raw_answers);
             if ($code instanceof \App\Result) {
                 $result = $code;
             }
@@ -220,42 +222,47 @@ class EloquentResultRepository implements ResultContract {
             }
 
             if (!is_null($result)) {
-                // update if $result is not null
-                /**
-                 * delete all related answers before save.
-                 * More like overwriting old answers
-                 */
-                Answers::where('status_id', $result->id)->delete();
-                foreach ($answers as $qslug => $ans) {
-                    $q = $this->questions->getQuestionByQnum($qslug, $section, $project->id);
-                    if (is_null($q)) {
-                        throw new GeneralException("slug = $qslug, section = $section, project = $project->id There was a problem creating this result. Please try again.");
-                    }
-                    foreach ($ans as $akey => $aval) {
-                        if ($akey == 'radio') {
-                            $answerkey = $aval;
-                        } else {
-                            $answerkey = $akey;
+                if(!empty($answers)) {
+                    // update if $result is not null and $answers is not empty
+                    /**
+                     * delete all related answers before save.
+                     * More like overwriting old answers
+                     */
+                    Answers::where('status_id', $result->id)->delete();
+                    foreach ($answers as $qslug => $ans) {
+                        $q = $this->questions->getQuestionByQnum($qslug, $section, $project->id);
+                        if (is_null($q)) {
+                            throw new GeneralException("slug = $qslug, section = $section, project = $project->id There was a problem creating this result. Please try again.");
                         }
-                        $qanswer = $q->qanswers->where('slug', $answerkey)->first();
-                        if (!is_null($qanswer) && in_array($qanswer->type, ['radio', 'checkbox'])) {
-                            $answerVal = $qanswer->value;
-                        } else {
-                            $answerVal = $aval;
-                        }
+                        foreach ($ans as $akey => $aval) {
+                            if ($akey == 'radio') {
+                                $answerkey = $aval;
+                            } else {
+                                $answerkey = $akey;
+                            }
+                            $qanswer = $q->qanswers->where('slug', $answerkey)->first();
+                            if (!is_null($qanswer) && in_array($qanswer->type, ['radio', 'checkbox'])) {
+                                $answerVal = $qanswer->value;
+                            } else {
+                                $answerVal = $aval;
+                            }
 
-                        $answerR = Answers::firstOrNew(['qid' => $q->id, 'akey' => $answerkey, 'status_id' => $result->id]);
+                            $answerR = Answers::firstOrNew(['qid' => $q->id, 'akey' => $answerkey, 'status_id' => $result->id]);
 
-                        if (isset($answerVal)) {
-                            $answerR->value = $answerVal;
-                            $answerR->results()->dissociate();
-                            $answerR->results()->associate($result);
-                            $answerR->save();
+                            if (isset($answerVal) && !empty($answerVal)) {
+                                $answerR->value = $answerVal;
+                                $answerR->results()->dissociate();
+                                $answerR->results()->associate($result);
+                                $answerR->save();
+                            }
                         }
                     }
+                    $rinput['information'] = $this->updateStatus($project, $section, $answers, $form_id, $resultable, $resultable_type);
+                    $result->update($rinput);
+                } else {
+                    $result->delete();
                 }
-                $rinput['information'] = $this->updateStatus($project, $section, $answers, $form_id, $resultable, $resultable_type);
-                $result->update($rinput);
+                
             } else {                
                 
                 if (empty($form_id)) {
@@ -265,8 +272,10 @@ class EloquentResultRepository implements ResultContract {
                 //create new;
 
                 $result = $this->saveResults($project, $section, $answers, $form_id, $resultable, $resultable_type);
+            
             }
         }
+        
         return $result;
     }
 
@@ -429,12 +438,13 @@ class EloquentResultRepository implements ResultContract {
         $anscount = count(array_filter(array_keys($answers), 'strlen')); // total answers count from form submit
         // initialize error status
         $error = false;
+        // flat multi dimentional questions and answers array to single array
+        $flat_answers = call_user_func_array('array_merge', $answers);
         /**
          * Loop through form submitted answers
          * $qnum string (question number)
          * $answer array
-         */
-        $flat_answers = call_user_func_array('array_merge_recursive', $answers);
+         */        
         
         foreach ($answers as $qslug => $answer) {
             // get question using qnum slug
@@ -475,35 +485,41 @@ class EloquentResultRepository implements ResultContract {
                                     break;
                             }
                         }
-                        if (!empty($qanswer->rftval)) {
-                            $rftval = $qanswer->rftval;
+                        if (!empty($qanswer->logic['rftval'])) {
+                            $rftval = $qanswer->logic['rftval'];
                         } else {
                             // get right side question
-                            $rftq = $this->questions->getQuestionByQnum($qanswer->logic['rftquess'], $section, $project->id);
-                            if (!is_null($rftq)) {
-                                $rftanswer = $rftq->qanswers->where('slug', $qanswer->logic['rftans'])->first();
-                                
-                                switch ($rftanswer->type) {
-                                    case 'radio':
-                                        $rftval = $rftanswer->value;
-                                        break;
-                                    case 'checkbox':
-                                        $rftval = $rftanswer->value;
-                                        break;
-                                    default:
-                                        if (array_key_exists($qanswer->logic['rftans'], $flat_answers)) {
-                                            /** get actual answer if exist in input
-                                             */
-                                            $rftval = $flat_answers[$qanswer->logic['rftans']];
-                                        } else {
-                                            // get answer from database
-                                            $results = Result::where('project_id', $project->id)
-                                                    ->where('incident_id', $form_id)
-                                                    ->where('resultable_id', $resultable->id)
-                                                    ->where('resultable_type', $resultable_type)->all();
-                                            dd($results);
-                                        }
-                                        break;
+                            if(isset($qanswer->logic['rftquess'])) {
+                                // initialize right value
+                                $rftval = '';
+                                $rftq = $this->questions->getQuestionByQnum($qanswer->logic['rftquess'], $section, $project->id);
+                                if (!is_null($rftq)) {
+                                    if(isset($qanswer->logic['rftans'])) {
+                                    $rftanswer = $rftq->qanswers->where('slug', $qanswer->logic['rftans'])->first();
+
+                                        switch ($rftanswer->type) {
+                                        case 'radio':
+                                            $rftval = $rftanswer->value;
+                                            break;
+                                        case 'checkbox':
+                                            $rftval = $rftanswer->value;
+                                            break;
+                                        default:
+                                            if (array_key_exists($qanswer->logic['rftans'], $flat_answers)) {
+                                                /** get actual answer if exist in input
+                                                 */
+                                                $rftval = $flat_answers[$qanswer->logic['rftans']];
+                                            } else {
+                                                // get answer from database
+                                                $results = Result::where('project_id', $project->id)
+                                                        ->where('incident_id', $form_id)
+                                                        ->where('resultable_id', $resultable->id)
+                                                        ->where('resultable_type', $resultable_type)->all();
+                                                dd($results);
+                                            }
+                                            break;
+                                    }
+                                    }
                                 }
                             }
                         }
@@ -581,7 +597,8 @@ class EloquentResultRepository implements ResultContract {
         //dd($result);
         return $result;
     }
-
+    
+    
     /**
      * @param type $project
      * @param type $section
@@ -592,8 +609,10 @@ class EloquentResultRepository implements ResultContract {
      * @return type
      * @throws GeneralException
      */
-    private function saveResults($project, $section, $answers, $incident_id, $resultable, $resultable_type) {
-
+    private function saveResults($project, $section, $raw_answers, $incident_id, $resultable, $resultable_type) {
+        
+        // this function defined in app\helpers.php
+        $answers = array_filter_recursive($raw_answers);
         /**
          * Result is link between questions,location,paricipants and actual answer
          * mark the status
@@ -609,7 +628,6 @@ class EloquentResultRepository implements ResultContract {
         $result->resultable_id = $resultable->id;
         $result->results = $answers;
         $result->section_id = $section;
-        $result->information = $this->updateStatus($project, $section, $answers, $incident_id, $resultable, $resultable_type);
         $current_user = auth()->user();
         $result->user()->associate($current_user);
 
@@ -617,42 +635,46 @@ class EloquentResultRepository implements ResultContract {
         if (isset($resultable)) {
             $result->resultable()->associate($resultable);
         }
-
-        if ($result->save()) {
-            /**
-             * After result saved. Save actual answers.
-             * delete all related answers before save.
-             * More like overwriting old answers
-             */
-            Answers::where('status_id', $result->id)->delete();
-            foreach ($answers as $qslug => $ans) {
-                $q = $this->questions->getQuestionByQnum($qslug, $section, $project->id);
-                foreach ($ans as $akey => $aval) {
-                    if ($akey == 'radio') {
-                        $answerkey = $aval;
-                    } else {
-                        $answerkey = $akey;
-                    }
-                    $qanswer = $q->qanswers->where('slug', $answerkey)->first();
-                    if (!is_null($qanswer)) {
-                        if (in_array($qanswer->type, ['radio', 'checkbox'])) {
-                            $answerVal = $qanswer->value;
+        
+        if(!empty($answers)) {
+            $result->information = $this->updateStatus($project, $section, $answers, $incident_id, $resultable, $resultable_type);
+        
+            if ($result->save()) {
+                /**
+                 * Save actual answers after result status saved
+                 * delete all related answers before save.
+                 * More like overwriting old answers
+                 */
+                Answers::where('status_id', $result->id)->delete();
+                foreach ($answers as $qslug => $ans) {
+                    $q = $this->questions->getQuestionByQnum($qslug, $section, $project->id);
+                    foreach ($ans as $akey => $aval) {
+                        if ($akey == 'radio') {
+                            $answerkey = $aval;
                         } else {
-                            $answerVal = $aval;
+                            $answerkey = $akey;
                         }
+                        $qanswer = $q->qanswers->where('slug', $answerkey)->first();
+                        if (!is_null($qanswer)) {
+                            if (in_array($qanswer->type, ['radio', 'checkbox'])) {
+                                $answerVal = $qanswer->value;
+                            } else {
+                                $answerVal = $aval;
+                            }
 
-                        $answerR = Answers::firstOrNew(['qid' => $q->id, 'akey' => $answerkey, 'status_id' => $result->id]);
-                        if (isset($answerVal)) {
-                            $answerR->value = $answerVal;
-                            $result->answers()->save($answerR);
+                            $answerR = Answers::firstOrNew(['qid' => $q->id, 'akey' => $answerkey, 'status_id' => $result->id]);
+                            if (isset($answerVal) && !empty($answerVal)) {
+                                $answerR->value = $answerVal;
+                                $result->answers()->save($answerR);
+                            }
                         }
                     }
                 }
+                        
+                return $result;
             }
-            return $result;
-        }
-
-        throw new GeneralException('There was a problem creating this result. Please try again.');
+        } 
+        
     }
 
 }
