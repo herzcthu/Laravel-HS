@@ -3,6 +3,9 @@
 @section ('title', 'Result Management | Create Result')
 
 @section ('before-styles-end')
+<style type='text/css'>
+    .quest{margin-top:30px;}
+</style>
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
 @stop
 @section ('after-styles-end')
