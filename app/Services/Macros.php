@@ -68,7 +68,7 @@ class Macros extends FormBuilder {
             $text = $answer->text;
             $ansval = $answer->value;
             $section = $answer->question->section;
-            $slug = $answer->question->slug;
+            $qslug = $answer->question->slug;
             $qid = $answer->question->id;
             $ans_slug = $answer->slug;
             $options['id'] = $ans_slug;
@@ -78,7 +78,7 @@ class Macros extends FormBuilder {
                 $rs = $results->where('section_id', $section)->first();
                 if(!is_null($rs)) {
                 foreach($rs->answers as $values) {
-                    if(in_array($name, $values->toArray())) { 
+                    if(in_array($ans_slug, $values->toArray())) { 
                         if($type == 'radio') {
                             $value = true;   
                         }else{
@@ -95,9 +95,9 @@ class Macros extends FormBuilder {
             }
             
             if($type == 'radio'){
-                $inputname = "answer[$section][$slug][radio]";
+                $inputname = "answer[$section][$qslug][radio]";
             }else{
-                $inputname = "answer[$section][$slug][$ans_slug]";
+                $inputname = "answer[$section][$qslug][$ans_slug]";
             }
             
             if(array_key_exists('class', $options) ) {
@@ -108,10 +108,10 @@ class Macros extends FormBuilder {
             
             switch($type) {
                 case 'radio':
-                    
+                    $options['data-value'] = $ansval;
                     $html .= "<div class=\"radio\">";
                     $html .= "<label class='control-label'>";
-                    $html .= $this->radio($inputname, $name, $value, $options);
+                    $html .= $this->radio($inputname, $ans_slug, $value, $options);
                     $html .= "<span class='badge'>$ansval</span> ";
                     $html .= $text;
                     $html .= "</label>";

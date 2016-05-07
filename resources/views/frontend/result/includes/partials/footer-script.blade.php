@@ -81,41 +81,56 @@
             var input = $(this).find('input');
             var select = $(this).find('select'); // need to implement later
             var textarea = $(this).find('textarea');
-            console.log('focusout fired');
+            //console.log('focusout fired');
             
             $.each(input,function(index,value){
-                if(typeof value.dataset.logic !== 'undefined' && value.dataset.logic !== 'null'){
-                    var logic = JSON.parse(value.dataset.logic);
-                    
-                    var lftval = $("#"+logic.lftans).val();
-                    var rftval = $("#"+logic.rftans).val();
-                    var message = ((typeof logic.message != 'undefined')? logic.message:'Logic Error!');
-                    switch(logic.operator) {
-                        case '=':
-                            if(lftval != rftval){
-                               $("#logicmessage").html(message);
-                               $("#notice").modal('show');
+                if(value.dataset.logic){
+                    $(this).on('change', function(){
+                        var logic = JSON.parse(value.dataset.logic);
+                        if(logic) {
+                            var lftval, rftval;
+
+                            if($("#"+logic.lftans).attr('type') == 'radio') {
+                                lftval = $("#"+logic.lftans).is(':checked');
+                            } else {
+                                lftval = $("#"+logic.lftans).val();
+                            } 
+
+                            if($("#"+logic.rftans).attr('type') == 'radio') {
+                                rftval = $("#"+logic.rftans).is(':checked');
+                            } else {
+                                rftval = $("#"+logic.rftans).val();
                             }
-                            break;
-                        case '>':
-                            if(lftval < rftval){
-                               $("#logicmessage").html(message);
-                               $("#notice").modal('show');
+
+                            var message = ((logic.message)? logic.message:'Logic Error!');
+                            switch(logic.operator) {
+                                case '=':
+                                    if(lftval != rftval){
+                                       $("#logicmessage").html(message);
+                                       $("#notice").modal('show');
+                                    }
+                                    break;
+                                case '>':
+                                    if(lftval < rftval){
+                                       $("#logicmessage").html(message);
+                                       $("#notice").modal('show');
+                                    }
+                                    break;
+                                case '<':
+                                    if(lftval > rftval){
+                                       $("#logicmessage").html(message);
+                                       $("#notice").modal('show');
+                                    }
+                                    break;
+                                case 'between':
+                                    if(lftval < logic.minval || lftval > logic.maxval){
+                                       $("#logicmessage").html(message);
+                                       $("#notice").modal('show');
+                                    }
+                                    break;
                             }
-                            break;
-                        case '<':
-                            if(lftval > rftval){
-                               $("#logicmessage").html(message);
-                               $("#notice").modal('show');
-                            }
-                            break;
-                        case 'between':
-                            if(lftval < logic.minval || lftval > logic.maxval){
-                               $("#logicmessage").html(message);
-                               $("#notice").modal('show');
-                            }
-                            break;
-                    }
+                        }
+                    });
                 }
             });
             
