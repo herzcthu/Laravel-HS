@@ -107,14 +107,14 @@
                                                     <div class="col-xs-6">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
                                                     <div class="col-xs-6">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                                     @endif
                                                     @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
@@ -124,31 +124,31 @@
                                                     <div class="col-xs-4 col-xs-4">
                                                     @endif    
                                                     @if($key <= ceil(($question->qanswers->count() / 3))+1)
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3))+1)
                                                     </div>
                                                     <div class="col-xs-4 col-xs-4">
                                                     @endif
                                                     @if($key > ceil(($question->qanswers->count() / 3)+1) && $key <= ceil(($question->qanswers->count() / 3) * 2)+1)
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3) * 2)+1)
                                                     </div>
                                                     <div class="col-xs-4 col-xs-4">
                                                     @endif
                                                     @if($key > ceil(($question->qanswers->count() / 3) * 2)+1 && $key < $question->qanswers->count())
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                    {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                                     @endif
                                                     @if($key + 1 == ($question->qanswers->count()) )
                                                     </div>
                                                     @endif 
                                                 @elseif($question->answer_view == 'horizontal')
                                                 <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
-                                                {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                                {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                                 </div>
                                                 @else
-                                                {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                                {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                                 @endif
                                             @endforeach                        
                                         @endif
@@ -202,10 +202,10 @@
                                     @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
                                         <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
-                                        {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                        {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                         </div>
                                         @else
-                                        {!! Form::answerField($question, $answer, $question->qnum, $key, null,['class' => "form-control"]) !!} 
+                                        {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
                                         @endif
                                     @endforeach                        
                                 @endif
