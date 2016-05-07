@@ -184,15 +184,18 @@ class EloquentQuestionRepository implements QuestionContract {
 		if ($question->update($input)) { 
                     if(array_key_exists('answers', $input)) {
                         \App\QAnswers::where('qid', $question->id)->delete();
+                        $sort = 1;
                         foreach($input['answers'] as $k => $av){
                             $qanswer = \App\QAnswers::firstOrNew(['qid' => $question->id, 'akey' => $k]);
                             $qanswer->akey = $k;
+                            $qanswer->sort = $sort; 
                             $qanswer->type = $av['type'];
                             $qanswer->text =  htmlspecialchars($av['text'], ENT_QUOTES);
                             $qanswer->value = $av['value'];
                             $qanswer->qarequire = (isset($av['require']))?$av['require']:'';
                             $qanswer->css = (isset($av['css']))?$av['css']:'';
                             $question->qanswers()->save($qanswer);
+                            $sort++;
                         }
                     } else {
                         \App\QAnswers::where('qid', $question->id)->delete();

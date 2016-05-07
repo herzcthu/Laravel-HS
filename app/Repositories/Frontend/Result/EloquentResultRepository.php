@@ -488,10 +488,11 @@ class EloquentResultRepository implements ResultContract {
                         if (!empty($qanswer->logic['rftval'])) {
                             $rftval = $qanswer->logic['rftval'];
                         } else {
+                            // initialize right side value
+                            $rftval = '';
                             // get right side question
                             if(isset($qanswer->logic['rftquess'])) {
-                                // initialize right value
-                                $rftval = '';
+                                
                                 $rftq = $this->questions->getQuestionByQnum($qanswer->logic['rftquess'], $section, $project->id);
                                 if (!is_null($rftq)) {
                                     if(isset($qanswer->logic['rftans'])) {

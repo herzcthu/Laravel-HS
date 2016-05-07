@@ -33,7 +33,7 @@ class Project extends Model
       return $this->hasManyThrough('App\Answers', 'App\Question', 'project_id', 'qid');
   }
 
-  public function answersR() {
+  public function answersr() {
       return $this->hasManyThrough('App\Answers', 'App\Result', 'project_id', 'status_id');
   }
 

@@ -518,135 +518,51 @@ class EloquentProjectRepository implements ProjectContract {
     }
 
     public function export2($project){
-        $questions = \DB::select(\DB::raw("SELECT questions.qnum, questions.id, qanswers.akey, qanswers.type FROM questions "
-                . "LEFT JOIN qanswers ON qanswers.qid = questions.id "
-                . " WHERE (questions.project_id = $project->id)"));
-        $default['pcode'] = "";
-        $default['state'] = "";
-        $default['township'] = "";
-        $default['village'] = "";
-        foreach ($questions as $question){
-            switch ($question->type){
-                case 'radio':
-                    $qkey = $question->qnum;
-                    break;
-                default:
-                    $qkey = $question->akey;
-                    break;
-            }
-            $default[$qkey] = "";
-        }
-        $rawproject = \DB::select(\DB::raw("SELECT projects.type,projects.sections FROM projects WHERE (projects.id = $project->id)"));
-        $sections = json_decode($rawproject[0]->sections);
-        foreach($sections as $section)
-        {
-            $default[$section->text] = 0;
-            $default[$section->text . ' Time'] = "";
-            $default[$section->text . ' Data Clerk'] = "";
-        }
+        // increase group_concat maxinum length in mysql
+        \DB::statement(\DB::raw("SET SESSION group_concat_max_len = 120000;"));
+        $anscolumns = \DB::select(\DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('IF(ans.akey=',QUOTE(qa.slug),',ans.value,NULL) AS ',QUOTE(qa.akey)) ORDER BY qs.sort) AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id  ORDER BY qs.sort;"));
+        $query = [
+            //'*',
+            'pcode.id',
+            'pcode.pcode', 
+            'pcode.state', 
+            'pcode.district', 
+            'pcode.township', 
+            'pcode.village',
+            'results.incident_id as response'
+            ];
         
-        $type = $rawproject[0]->type;
-        if($type == 'incident')
-        {
-            $default['incident_id'] = '';
+        if(!empty($anscolumns[0]->ans)){
+            $query[] = \DB::raw($anscolumns[0]->ans);
         }
-        //@uksort($arqs, 'natsort');
-        
-        //$default = array_merge($default, $arqs);
-        //dd($default);
-        
-        $results = \DB::select(\DB::raw("SELECT pcode.state,pcode.township,pcode.village,pcode.pcode,"
-                . "rs.section_id,rs.results,rs.information,rs.incident_id,rs.updated_at,users.name "
-                . "FROM (SELECT pcode.* FROM pcode WHERE (pcode.org_id = $project->org_id)) AS pcode JOIN results as rs ON (rs.resultable_id = pcode.primaryid) AND (rs.project_id = $project->id) "
-                . "JOIN users ON users.id = rs.user_id "
-                . "ORDER BY pcode.pcode"));//dd($results);
-        $qna = \DB::select(\DB::raw("SELECT questions.qnum,qanswers.akey,qanswers.value,qanswers.type "
-                . "FROM (SELECT questions.* FROM questions WHERE(questions.project_id = $project->id))"
-                . "AS questions "
-                . "LEFT JOIN qanswers ON qanswers.qid = questions.id "));
-        foreach($qna as $qa)
-        {
-            $qnaarray[$qa->qnum][$qa->akey]['value'] = $qa->value;
-            $qnaarray[$qa->qnum][$qa->akey]['type'] = $qa->type;
-        }
-        $arr = [];
-        $array = [];
-        //dd($qnaarray);
-        //dd($results);
-        $locations = collect($results);
-        foreach($locations->groupBy('pcode') as $pcode => $answers){
-            foreach ($answers as $result){
-                if($type == 'incident' && !is_null($result->incident_id))
-                {                    
-                    $incident_id = $result->incident_id;
-                    $arr[$pcode.$incident_id]['incident_id'] = $result->pcode.$result->incident_id;
-                }
-                else
-                {
-                    $incident_id = '';
-                }
-                $arr[$pcode.$incident_id]['pcode'] = $result->pcode;
-                $arr[$pcode.$incident_id]['state'] = $result->state;
-                $arr[$pcode.$incident_id]['township'] = $result->township;
-                $arr[$pcode.$incident_id]['village'] = $result->village;
+        $project_id = $project->id;
+        $org_id = $project->org_id;
+        $status = \DB::table('pcode')
+                ->select($query)
+                ->where('pcode.org_id','=', "$project->org_id")
+                //->with(['participants'])
+                ->leftjoin('results',function($results) use ($project){ 
+                    $results->on('pcode.id','=','results.resultable_id')
+                            ->where('results.project_id','=', $project->id);
+                })
+                ->leftjoin('questions as qs', function($questions) use ($project) {
+                    $questions->where('qs.project_id','=',$project->id);
+                })
+                ->leftjoin('answers as ans', function($answers) {
+                    $answers->on('ans.status_id','=','results.id');
+                })                
+                ->groupBy('pcode', 'response')
+                ->orderBy('pcode', 'ASC')
+                ->orderBy('response', 'ASC')
                 
-                foreach ($project->sections as $sk => $section) {
-                            if( $sk == $result->section_id){
-                                $information = $result->information;
-                                switch ($information) {
-                                    case 'complete':
-                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = 1;
-                                        break;
-                                    case 'incomplete':
-                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = 2;
-                                        break;
-                                    case 'error':
-                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = 3;
-                                        break;
-                                    case 'unknown':
-                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = -1;
-                                        break;
-                                    default:
-                                        $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text] = "0";
-                                        break;
-                                }
-
-                                $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text . ' Time'] = $result->updated_at;
-                                $arr[$pcode.$incident_id][$project->sections[$result->section_id]->text . ' Data Clerk'] = $result->name;
-                            }else{
-                                continue;
-                            }
-
-                        }
-                $allResults = json_decode($result->results, true);
-                foreach($allResults as $qnum => $ranswers)
-                {
-                    foreach($ranswers as $akey => $value)
-                    {
-                        switch($akey)
-                        {
-                            case 'radio':
-                                $arr[$pcode.$incident_id][$qnum] = $qnaarray[$qnum][$value]['value'];
-                                break;
-                            default:
-                                $arr[$pcode.$incident_id][$akey] = $value; 
-                                break;
-                        }
-                    }
-                }
-                $array[$pcode.$incident_id] = array_merge($default, $arr[$pcode.$incident_id]);
-            }            
-            
-                
-            
-        }
-        //dd($array);
+                ->get();
+        dd($status);
         $filename = preg_filter('/[^\d\w\s\.]/', ' ', $project->name . Carbon::now());
-        $file = Excel::create(str_slug($filename), function($excel) use($array) {
+        $file = Excel::create(str_slug($filename), function($excel) use($status) {
 
-                    $excel->sheet('Sheetname', function($sheet) use($array) {
+                    $excel->sheet('Sheetname', function($sheet) use($status) {
 
-                        $sheet->fromArray($array);
+                        $sheet->fromArray($status);
                     });
                 });
         $store = $file->store('xls', false, true); // dd($store);

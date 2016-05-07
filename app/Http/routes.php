@@ -1,4 +1,11 @@
 <?php
+/**
+Event::listen('illuminate.query', function($query)
+{
+    var_dump($query);
+});
+ * 
+ */
 Route::group(['prefix' => 'lang', 'middleware' => ['locale']], function(){
   Route::get('{lang}', function($lang){
     Translation::setLocale($lang);
