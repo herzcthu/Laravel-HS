@@ -655,7 +655,7 @@
         //console.log(form);
         var j = 0, op = {};
         for ( var i = 0; i < form.elements.length; i++ ) {
-           var e = form.elements[i]; console.log(e);
+           var e = form.elements[i]; //console.log(e);
            var ename = e.getAttribute("data-prefix"); //console.log(e.type);
            switch(e.type) {
                case "hidden":

@@ -166,7 +166,7 @@ class EloquentQuestionRepository implements QuestionContract {
 	 * @throws GeneralException
 	 */
 	public function update($question, $input, $project, $ajax = false) {
-            dd($question);
+            
 		$related_id = (isset($input['related_data'])) ? $input['related_data']['q']:'';
                 if(!empty($related_id)){
                     $this->flushParent($related_id, $question);
