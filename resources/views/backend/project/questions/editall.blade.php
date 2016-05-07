@@ -780,7 +780,7 @@
 
                 logicdata.push({name: '_method', value: method},{name: 'logicdata', value: true});
                 //send ajax request
-                console.log(logicdata);
+                //console.log(logicdata);
                 var saved;
                 $.ajax({
                         url    : ajaxLURL,
