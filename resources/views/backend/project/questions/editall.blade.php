@@ -1073,9 +1073,9 @@
                     * get content using ajax
                     * return array
                     */
-                   console.log(ajaxurl);
+                  console.log(ajaxurl);
                   var content = getData(ajaxurl, ['urlhash','section','qnum','question','qanswers','answer_view']);
-                  console.log(content);
+                  //console.log(content);
                   var urlhash = content[0].urlhash.edit;
               }  
               //console.log(urlhash);
