@@ -5,6 +5,8 @@
 @section ('before-styles-end')
 <style type='text/css'>
     .quest{margin-top:30px;}
+    .question-text{margin-bottom: 10px;}
+    label.text-normal {font-weight: normal;}
 </style>
     {!! HTML::style('css/plugin/jquery.onoff.css') !!}
 @endsection
@@ -128,14 +130,14 @@
                             @if($section_key == $question->section)
                             <div class="row">
                             <div id="{!! $question->slug !!}" class="col-xs-12 quest {!! aio()->section($section->column) !!}">
-                                <div class="row col-xs-offset-0">
+                                <div class="row col-xs-offset-0 question-text">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
                                 @if((isset($question->display->question) && $question->display->question == 0) || empty($question->display))
                                 <div class="col-xs-11 col-lg-11">
                                     <div class="form-control-static">
-                                    {!! _t($question->question) !!}
+                                        <strong>{!! _t($question->question) !!}</strong>
                                     </div>
                                 </div>
                                 @endif                            
@@ -212,14 +214,14 @@
                             @if($section_key == $question->section)
                             <div class="row">
                             <div id="{!! $question->slug !!}" class="col-xs-12 quest {!! aio()->section($section->column) !!}">
-                                <div class="row col-xs-offset-0">
+                                <div class="row col-xs-offset-0 question-text">
                                 @if((isset($question->display->qnum) && $question->display->qnum == 0) || empty($question->display))
                                 <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                                 @endif
                                 @if((isset($question->display->question) && $question->display->question == 0) || empty($question->display))
                                 <div class="col-xs-11 col-lg-11">
                                     <div class="form-control-static">
-                                    {!! _t($question->question) !!}
+                                        <strong>{!! _t($question->question) !!}</strong>
                                     </div>
                                 </div>
                                 @endif                            
@@ -333,14 +335,14 @@
                 @if(!empty($question->related_data))
                     @if(empty($question->related_data->q) && $question->related_data->type != 'parent') 
                     <div class="col-xs-12" id="{!! $question->slug !!}">
-
+                        <div class="question-text">
                         <label class="col-xs-1 col-lg-1 control-label">{!! $question->qnum !!}</label>
                         <div class="col-xs-11 col-lg-11">
                             <div class="form-control-static">
-                            {!! _t($question->question) !!}
+                                <strong>{!! _t($question->question) !!}</strong>
                             </div>
                         </div>
-
+                        </div>
                             <label class="col-xs-1 col-lg-1 control-label"><span class=""><input type="button" class="reset btn btn-xs btn-warning" value="Reset"/></span></label>
                             <div class="col-xs-11 col-lg-11">
                                 <div class="form-control-static">
