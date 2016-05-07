@@ -520,7 +520,7 @@ class EloquentProjectRepository implements ProjectContract {
     public function export2($project){
         // increase group_concat maxinum length in mysql
         \DB::statement(\DB::raw("SET SESSION group_concat_max_len = 120000;"));
-        $anscolumns = \DB::select(\DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('IF(ans.akey=',QUOTE(qa.slug),',ans.value,NULL) AS ',QUOTE(qa.akey)) ORDER BY qs.sort) AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id  ORDER BY qs.sort;"));
+        $anscolumns = \DB::select(\DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('IF(ans.akey=',QUOTE(qa.slug),',ans.value,NULL) AS ',QUOTE(qa.akey))) AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id  ORDER BY qs.sort,qa.sort;"));
         $query = [
             //'*',
             'pcode.id',

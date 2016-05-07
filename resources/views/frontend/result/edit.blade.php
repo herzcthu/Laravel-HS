@@ -150,7 +150,7 @@
                                     <div class="col-lg-11">
                                         <div class="row col-xs-offset-0">
                                         @if($question->qanswers->count() > 0 )
-                                        {{-- */ $key = 0; $answers = $question->qanswers->sortBy('akey', SORT_NATURAL); /** --}}
+                                        {{-- */ $key = 0; $answers = $question->qanswers->sortBy('slug', SORT_NATURAL); /** --}}
                                             @foreach($answers as $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
@@ -234,7 +234,7 @@
                                     <div class="col-xs-11 col-lg-11">
                                         <div class="row col-xs-offset-0">
                                         @if($question->qanswers->count() > 0 )
-                                           {{-- */ $key = 0;$answers = $question->qanswers->sortBy('akey', SORT_NATURAL); /** --}}
+                                           {{-- */ $key = 0;$answers = $question->qanswers->sortBy('slug', SORT_NATURAL); /** --}}
                                             @foreach($answers as $k => $answer)
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)

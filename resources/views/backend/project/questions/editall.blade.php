@@ -100,7 +100,7 @@
                                     <label class="col-xs-1 control-label">&nbsp;</label>
                                     <div class="col-xs-11">
                                         @if($question->qanswers->count() > 0 )
-                                            @foreach($question->qanswers->sortBy('akey', SORT_NATURAL) as $key => $answer)
+                                            @foreach($question->qanswers->sortBy('slug', SORT_NATURAL) as $key => $answer)
                                                 
                                                 @if($question->answer_view == 'two-column')
                                                     @if($key == 0)
@@ -199,7 +199,7 @@
                                 <div class="form-control-static">
                                 <!-- this code does not work for select box -->
                                 @if($question->qanswers->count() > 0 )
-                                    @foreach(Aio()->sortNatural($question->qanswers, 'akey') as $key => $answer)
+                                    @foreach(Aio()->sortNatural($question->qanswers, 'slug') as $key => $answer)
                                         @if($question->answer_view == 'horizontal')
                                         <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!}">
                                         {!! Form::makeInput($answer) !!} @if($answer->logic) <span class='badge badge-info'>logic</span> @endif
