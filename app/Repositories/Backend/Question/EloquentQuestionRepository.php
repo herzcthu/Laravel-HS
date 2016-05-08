@@ -136,7 +136,7 @@ class EloquentQuestionRepository implements QuestionContract {
                         if(isset($av['type']))
                             $qanswer->type = $av['type'];
                         if(isset($av['text']))
-                            $qanswer->text = $av['text'];
+                            $qanswer->text = htmlspecialchars($av['text'], ENT_QUOTES|ENT_HTML5,'UTF-8',false);
                         if(isset($av['value']))
                             $qanswer->value = $av['value'];
                         if(isset($av['require']))
@@ -192,7 +192,7 @@ class EloquentQuestionRepository implements QuestionContract {
                             $qanswer->akey = $k;
                             $qanswer->sort = $sort; 
                             $qanswer->type = $av['type'];
-                            $qanswer->text =  htmlspecialchars($av['text'], ENT_QUOTES);
+                            $qanswer->text =  htmlspecialchars($av['text'], ENT_QUOTES|ENT_HTML5,'UTF-8',false);
                             $qanswer->value = $av['value'];
                             $qanswer->qarequire = (isset($av['require']))?$av['require']:'';
                             $qanswer->css = (isset($av['css']))?$av['css']:'';
@@ -383,7 +383,7 @@ class EloquentQuestionRepository implements QuestionContract {
                 
 		$question->qnum = $input['qnum'];
                 $question->slug = snake_case($input['qnum']);
-		$question->question = htmlspecialchars($input['question'], ENT_QUOTES);
+		$question->question = htmlspecialchars($input['question'], ENT_QUOTES|ENT_HTML5,'UTF-8',false);
                 
                 if(isset($input['related_data']))
                     $question->related_data = $input['related_data'];

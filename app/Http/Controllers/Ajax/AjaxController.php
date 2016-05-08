@@ -175,13 +175,18 @@ class AjaxController extends Controller
         //dd($question->where('id','=',$question->id)->get());
         if($request->get('columns')){
             $columns = $request->get('columns');
-            $q = $question->where('id','=',$question->id)->get()->map(function ($item, $key) use ($columns) {
-                return array_intersect_key($item->toArray(), array_flip ($columns));
-            });
+            $q = $question->with(array('qanswers' => function($query) {
+                                $query->orderBy('qanswers.id', 'ASC')
+                                      ->orderBy('qanswers.sort', 'ASC');
+                            }))
+                            ->where('id','=',$question->id)
+                            ->get()
+                            ->map(function ($item, $key) use ($columns) {
+                                return array_intersect_key($item->toArray(), array_flip ($columns));
+                            });
         }else{
             $q = $question;
         }
-      
         return json_encode($q);
     }
     
