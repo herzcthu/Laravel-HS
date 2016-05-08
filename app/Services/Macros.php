@@ -126,7 +126,7 @@ class Macros extends FormBuilder {
                     $html .= "<div class=\"checkbox\">";
                     $html .= "<label class='control-label'>";
                     $html .= $this->checkbox($inputname, $ansval, $value, $options);
-                    
+                    $html .= "<span class='badge'>$ansval</span> ";
                     $html .= $text;
                     $html .= "</label>";
                     $html .= "</div>";
