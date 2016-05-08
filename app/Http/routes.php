@@ -95,6 +95,7 @@ Route::group(['namespace' => 'Backend'], function ()
                 {                        
 
                     Route::get('language', ['as' => 'admin.language.index', 'uses' => 'LocalizationController@index']);
+                    Route::post('language/import', ['as' => 'admin.language.import', 'uses' => 'LocalizationController@import']);
                     Route::match(['patch','put'],'language', ['as' => 'backend.language.update', 'uses' => 'LocalizationController@update']);
 
                 });

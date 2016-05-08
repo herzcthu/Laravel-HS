@@ -65,7 +65,7 @@ class Macros extends FormBuilder {
             $html = '';
             $type = $answer->type;
             $name = $answer->akey;
-            $text = $answer->text;
+            $text = (!empty($answer->text))?_t(ucfirst($answer->text)):'';
             $ansval = $answer->value;
             $section = $answer->question->section;
             $qslug = $answer->question->slug;

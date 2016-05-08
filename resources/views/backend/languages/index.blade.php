@@ -46,9 +46,33 @@
 								</div>
 								<!-- /.box-header -->
 								<div class="box-body">
-                                                                    <form method="get" action="<?php $_PHP_SELF ?>"><input type="text" name="lang"></input>
+                                                                    <div class="row">
+                                                                        <div class="col-xs-6">
+                                                                    <form method="get" action="<?php $_PHP_SELF ?>" class="form-inline"><input type="text" name="lang"></input>
                                                                         <input type="submit" value="Search">
                                                                     </form>
+                                                                        </div>
+                                                                        <div class="col-xs-6">
+                                                                    {!! Form::open(['route' => 'admin.language.import','files'=>true, 'class' => 'form-inline', 'organization' => 'form', 'method' => 'post']) !!}
+
+                                                                    <div class="form-group">
+
+                                                                        {!! Form::label('file','File',['id'=>'','class'=>'col-xs-3 sr-only control-label']) !!}
+
+                                                                        <div class="col-xs-6">
+                                                                        {!! Form::file('file',[ 'class'=>'filestyle', 'data-icon'=>'true', 'data-iconName'=>'fa fa-upload']) !!}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">                                                                       
+                                                                        <div class="col-xs-3">
+                                                                            <div class="pull-right">
+                                                                            {!! Form::submit('Import', ['class'=>'btn btn-success']) !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    {!! Form::close() !!}
+                                                                        </div>
+                                                                    </div>
 							<table id="datatable-allfeatures" class="table table-bordered table-striped">
 								<thead>
                                                                     <th>Action</th>

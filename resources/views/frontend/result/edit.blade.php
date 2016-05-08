@@ -98,12 +98,12 @@
             <div class="panel panel-default" id="linktosection{{$section_key}}">
                 <div class="panel-heading">
                     <div class="panel-title">
-                         {!! $section->text !!}
+                         {!! (!empty($section->text))?_t(ucfirst($section->text)):'' !!}
                     </div>
                     
                 @if(!empty($section->desc))
                 
-                <span class="text-bold text-muted">{!! $section->desc !!}</span>
+                <span class="text-bold text-muted">{!! _t(ucfirst($section->desc)) !!}</span>
                 
                 @endif
                 </div>
@@ -316,7 +316,7 @@
                 </div>
                    
                 <div class="panel-footer">
-                    {!! $section->text !!} (Section End)
+                    {!! (!empty($section->text))?_t(ucfirst($section->text)):'' !!} (Section End)
                 </div>
             </div><!-- panel end -->    
             @endforeach
