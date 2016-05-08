@@ -70,7 +70,11 @@ class Macros extends FormBuilder {
             $section = $answer->question->section;
             $qslug = $answer->question->slug;
             $qid = $answer->question->id;
+            if(empty($answer->slug)){
+                $answer->update(['slug' => snake_case($answer->akey)]);
+            }
             $ans_slug = $answer->slug;
+            
             $options['id'] = $ans_slug;
             $options['data-logic'] = json_encode($answer->logic);
             $value = null;

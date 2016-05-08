@@ -114,7 +114,7 @@ class Question extends Model
             $this->update(['urlhash' => $hash]);
         }
         if(empty($this->slug)){
-            $this->update(['slug' => str_slug($this->qnum)]);
+            $this->update(['slug' => snake_case($this->qnum)]);
         }
         $id = str_slug("$this->qnum -btn");
      return '<a id="'.$id.'" href="#" data-href="'.$question_url.'" class="btn btn-xs btn-primary '.$id.'" data-toggle="modal" data-target="#formTemplate" data-type="edit"><i class="fa fa-pencil" data-toggle="tooltip" data-placement="top" title="Edit"  ></i></a>';
@@ -140,8 +140,8 @@ class Question extends Model
             
             $this->update(['urlhash' => $hash]);
         }
-        $id = str_slug("$this->qnum -lgbtn");
-        $dataid = str_slug("$this->qnum -btn");
+        $id = snake_case("$this->qnum -lgbtn");
+        $dataid = snake_case("$this->qnum -btn");
      return '<a data-href="'.$logicurl.'" id=" '.$id.'" data-modal="'.$dataid.'" href="#" class="btn btn-xs btn-primary '.$dataid.'" data-toggle="modal" data-target="#logic" data-type="edit"><i class="fa fa-info" data-toggle="tooltip" data-placement="top" title="Add Logic"  ></i></a>';
   }
   

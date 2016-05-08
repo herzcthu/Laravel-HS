@@ -520,9 +520,9 @@ class EloquentProjectRepository implements ProjectContract {
     public function export2($project){
         // increase group_concat maxinum length in mysql
         \DB::statement(\DB::raw("SET SESSION group_concat_max_len = 120000;"));
-        $anscolumns = \DB::select(\DB::raw("SELECT GROUP_CONCAT(DISTINCT CONCAT('IF(ans.akey=',QUOTE(qa.slug),',ans.value,NULL) AS ',QUOTE(qa.akey))) AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id  ORDER BY qs.sort,qa.sort;"));
+        $anscolumns = \DB::select(\DB::raw("SELECT GROUP_CONCAT(CONCAT('GROUP_CONCAT(IF(ans.akey=\"',qa.slug,'\",ans.value,NULL)) AS ',QUOTE(`qa`.`akey`))) AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id;"));
+        //dd($anscolumns);
         $query = [
-            //'*',
             'pcode.id',
             'pcode.pcode', 
             'pcode.state', 
@@ -537,10 +537,9 @@ class EloquentProjectRepository implements ProjectContract {
         }
         $project_id = $project->id;
         $org_id = $project->org_id;
-        $status = \DB::table('pcode')
-                ->select($query)
+        $status = \App\PLocation::select($query)
                 ->where('pcode.org_id','=', "$project->org_id")
-                //->with(['participants'])
+                ->with(['participants'])
                 ->leftjoin('results',function($results) use ($project){ 
                     $results->on('pcode.id','=','results.resultable_id')
                             ->where('results.project_id','=', $project->id);
@@ -549,14 +548,17 @@ class EloquentProjectRepository implements ProjectContract {
                     $questions->where('qs.project_id','=',$project->id);
                 })
                 ->leftjoin('answers as ans', function($answers) {
-                    $answers->on('ans.status_id','=','results.id');
+                    $answers->on('ans.status_id','=','results.id')
+                            ->on('ans.qid','=','qs.id');
                 })                
                 ->groupBy('pcode', 'response')
                 ->orderBy('pcode', 'ASC')
                 ->orderBy('response', 'ASC')
                 
                 ->get();
-        dd($status);
+                
+        $status = $status->toArray();
+        //dd($status);        
         $filename = preg_filter('/[^\d\w\s\.]/', ' ', $project->name . Carbon::now());
         $file = Excel::create(str_slug($filename), function($excel) use($status) {
 

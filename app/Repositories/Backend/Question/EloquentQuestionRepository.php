@@ -145,6 +145,8 @@ class EloquentQuestionRepository implements QuestionContract {
                             $qanswer->optional = $av['optional'];
                         if(isset($av['css']))
                             $qanswer->css = $av['css'];
+                        
+                        $qanswer->slug = snake_case($k);
                         $question->qanswers()->save($qanswer);
                     }
                     if($ajax == true){
@@ -194,6 +196,7 @@ class EloquentQuestionRepository implements QuestionContract {
                             $qanswer->value = $av['value'];
                             $qanswer->qarequire = (isset($av['require']))?$av['require']:'';
                             $qanswer->css = (isset($av['css']))?$av['css']:'';
+                            $qanswer->slug = snake_case($k);
                             $question->qanswers()->save($qanswer);
                             $sort++;
                         }
@@ -379,6 +382,7 @@ class EloquentQuestionRepository implements QuestionContract {
                     $question->report = $input['report'];
                 
 		$question->qnum = $input['qnum'];
+                $question->slug = snake_case($input['qnum']);
 		$question->question = htmlspecialchars($input['question'], ENT_QUOTES);
                 
                 if(isset($input['related_data']))
