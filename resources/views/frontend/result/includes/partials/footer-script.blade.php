@@ -81,7 +81,7 @@
             var input = $(this).find('input');
             var select = $(this).find('select'); // need to implement later
             var textarea = $(this).find('textarea');
-            //console.log('focusout fired');
+            console.log('focusout fired');
             
             $.each(input,function(index,value){
                 if(value.dataset.logic){

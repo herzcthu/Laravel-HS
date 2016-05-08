@@ -76,7 +76,8 @@ class LocalizationController extends Controller {
                                 $new_trans = LocaleTranslation::firstOrNew(['locale_id' => $langs[$default->name]['id'],'translation' => $langs[$default->name]['translation']]);
                                 $new_trans->save();
                                 foreach($langs['child'] as $cland => $ctrans) {
-                                    $new_ctrans = LocaleTranslation::firstOrNew(['locale_id' => $ctrans['id'],'translation' => $ctrans['translation'],'translation_id' => $new_trans->id]);
+                                    $new_ctrans = LocaleTranslation::firstOrNew(['locale_id' => $ctrans['id'],'translation_id' => $new_trans->id]);
+                                    $new_ctrans->translation =$ctrans['translation'];
                                     $new_ctrans->save();
                                 }
                                         
