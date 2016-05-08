@@ -205,6 +205,9 @@ class AjaxController extends Controller
         return json_encode($answers);
     }
     
+    public function translate(Request $request) {
+        return _t($request->get('str'));
+    }
     public function updateTranslation(Request $request) {
         $lang_id = $request->get('lang_id');//return $lang_id; die();
             

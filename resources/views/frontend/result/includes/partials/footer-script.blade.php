@@ -23,13 +23,13 @@
           <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <H2 id="modal-title">Notice</H2>
+                <H2 id="modal-title">{!! _t('Notice') !!}</H2>
                       
 
             </div><!-- Modal header -->
             <div class="modal-body">
                 <div id="logicmessage">
-                    This is message
+                    Logic Error
                 </div>  
             </div><!-- Modal body -->
             <div class="modal-footer">
@@ -42,8 +42,25 @@
 @endsection
 @section('after-scripts-end')
 <script type="text/javascript">
+    function translate(url, message) {
+            var mydata;
+            
+            $.ajax({
+                    url    : url,
+                    type: 'GET',
+                    async:false,
+                    data: {str:message},
+                    success: function (data) {
+                            mydata = data;
+                    }
+
+            });
+            console.log(mydata);
+            return mydata;
+        }
 (function ($) {
     $(document).ready(function() {
+        
         $('.quest').mouseenter(function(e){
             var input = $(this).find('input');
             var select = $(this).find('select'); // need to implement later
@@ -77,15 +94,21 @@
             });
         }).on('mouseleave',function(){
             
-        }).on('focusout',function(){
+        }).on('focusenter mouseenter',function(){
             var input = $(this).find('input');
             var select = $(this).find('select'); // need to implement later
             var textarea = $(this).find('textarea');
-            console.log('focusout fired');
             
             $.each(input,function(index,value){
                 if(value.dataset.logic){
-                    $(this).on('change', function(){
+                    var ev = 'load';
+                    if($(this).attr('type') == 'radio' || $(this).attr('type') == 'checkbox') {
+                        ev = 'click change';
+                    } else {
+                        ev = 'change'
+                    }
+                    $(this).on(ev, function(){
+                        console.log(ev);
                         var logic = JSON.parse(value.dataset.logic);
                         if(logic) {
                             var lftval, rftval;
@@ -101,8 +124,12 @@
                             } else {
                                 rftval = $("#"+logic.rftans).val();
                             }
-
+                            console.log(lftval); 
+                            console.log(logic.lftans);
+                            console.log(logic.rftans); 
+                            console.log(rftval);
                             var message = ((logic.message)? logic.message:'Logic Error!');
+                            message = translate(ems.translateurl,message);
                             switch(logic.operator) {
                                 case '=':
                                     if(lftval != rftval){

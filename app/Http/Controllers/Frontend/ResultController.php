@@ -81,9 +81,10 @@ class ResultController extends Controller
         }else{
             $route = '';
         }
+        $translate = route('ajax.translate');
         javascript()->put([
 			'url' => $route,
-                        //'org' => 
+                        'translateurl' => $translate
 		]);
         return view('frontend.result.create')
 			->withUser($user)
@@ -154,8 +155,10 @@ class ResultController extends Controller
             $validated['validator_key'] = $code->id;
             $validated['validator'] = $idcode;
         }
+        $translate = route('ajax.translate');
         javascript()->put([
 			'url' => $route,
+                        'translateurl' => $translate
 		]); 
         
         return view('frontend.result.edit')
@@ -180,7 +183,11 @@ class ResultController extends Controller
         if(empty($results->all())) {
             return redirect()->route('data.project.survey.index',[$project->id])->withFlashWarning('Data not exist.');
         }
-        
+        $translate = route('ajax.translate');
+        javascript()->put([
+			'url' => $route,
+                        'translateurl' => $translate
+		]); 
         return view('frontend.result.edit-survey')
 			->withUser($user) // App\User
                         ->withProject($project) // App\Project

@@ -21,6 +21,7 @@ Route::group(['middleware' => 'auth'], function ()
 {
     Route::group(['prefix' => 'ajax'], function ()
     {       
+        Route::get('translate',['as' => 'ajax.translate','uses' => 'AjaxController@translate']);
         Route::get('locations/search', ['as' => 'ajax.locations.searchname', 'uses' => 'AjaxController@searchLocationsOnlyName']);
         Route::match(['post','put', 'patch'],'language',['as' => 'ajax.language', 'uses' => 'AjaxController@updateTranslation']);
         Route::delete('participants/{participant}/location/{location}', ['as' => 'ajax.participants.delocate', 'uses' => 'AjaxController@delocate']);
