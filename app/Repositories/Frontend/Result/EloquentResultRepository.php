@@ -466,6 +466,7 @@ class EloquentResultRepository implements ResultContract {
                         if (!empty($qanswer->logic['lftval'])) {
                             $lftval = $qanswer->logic['lftval'];
                         } else {
+                            $lftval = '';
                             switch ($qanswer->type) {
                                 case 'radio':
                                     $lftval = $qanswer->value;
@@ -479,8 +480,6 @@ class EloquentResultRepository implements ResultContract {
                                          *  Ofcourse it will exist because it is left side answer
                                          */
                                         $lftval = $flat_answers[$qanswer->logic['lftans']];
-                                    } else {
-                                        // get answer from database
                                     }
                                     break;
                             }
