@@ -48,8 +48,8 @@
                     </td>
                     <td>
                         @if($participant->phones)
-                        M: {!! $participant->phones->primary !!} <br>
-                        E: {!! $participant->phones->secondary !!}
+                        M: {!! (isset($participant->phones->primary)?$participant->phones->primary:'') !!} <br>
+                        E: {!! (isset($participant->phones->secondary)?$participant->phones->secondary:'') !!}
                         @endif
                     </td>
                     <td>{{ $participant->pcode->implode('pcode',', ') }}</td>

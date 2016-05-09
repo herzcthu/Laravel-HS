@@ -124,7 +124,7 @@
             <div class="col-xs-10">
                 <select name="role" class="form-control" id="prole">
                     @foreach($roles as $role)
-                    <option value="{{ $role->id }}" data-role="{{ $role->level }}">{{ $role->name }} ({{ $area[$participant->role->level] }}) </option>
+                    <option value="{{ $role->id }}" data-role="{{ $role->level }}" @if($participant->role->id == $role->id) selected @endif>{{ $role->name }} ({{ $area[$participant->role->level] }}) </option>
                     @endforeach
                 </select>
                 
@@ -145,7 +145,7 @@
                         <div class="input-group"> 
                             <p class="input-group-addon">{{ $pcode->pcode }}</p> 
                             <span class="input-group-btn"> 
-                                <button data-href="{{ route('ajax.participants.delocate',['participant' => $participant->id, 'location' => $pcode->primaryid]) }}" class="btn btn-danger btn-area" type="button" data-group="p{{ str_slug($pcode->pcode) }}">X</button> 
+                                <button data-href="{{ route('ajax.participants.delocate',['participant' => $participant->id, 'location' => $pcode->id]) }}" class="btn btn-danger btn-area" type="button" data-group="p{{ str_slug($pcode->pcode) }}">X</button> 
                             </span> 
                         </div> 
                     </div>

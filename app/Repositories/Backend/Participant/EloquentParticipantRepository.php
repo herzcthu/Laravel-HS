@@ -452,7 +452,7 @@ class EloquentParticipantRepository implements ParticipantContract {
                 $participant->phones = (array_key_exists('phones', $input)? $input['phones']:$array);
                 //$participant->base = (array_key_exists('base', $input)? $input['base']:'');
                 $participant->gender = (array_key_exists('gender', $input)? $input['gender']:'Not Specified');
-                $participant->participant_id = (array_key_exists('participant_id', $input)? $input['participant_id']:null);
+                $participant->participant_code = (array_key_exists('participant_id', $input)? $input['participant_id']:null);
                 
 		return $participant;
 	}
