@@ -440,6 +440,7 @@
                     $('#validator').removeClass('alert-danger');
                     
                     $('<dl />').attr('id', 'record').addClass('dl-horizontal').appendTo('#validated');
+                    $('#record').html("");
                     $.each(data, function (index, record) {
                         
                         $('<dt />').css({'white-space':'normal'}).text(index).appendTo('#record');
