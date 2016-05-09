@@ -139,14 +139,18 @@
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                        <div class="row"><div class="col-xs-12">
+                                                        {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        </div></div>
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
-                                                    {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                        <div class="row"><div class="col-xs-12">
+                                                        {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        </div></div>
                                                     @endif
                                                     @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
@@ -156,32 +160,42 @@
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif   
                                                     @if($key < ceil($question->qanswers->count() / 3))
-                                                        {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                        <div class="row"><div class="col-xs-12">
+                                                        {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        </div></div>
                                                     @endif
                                                     @if($key == ceil($question->qanswers->count() / 3))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil($question->qanswers->count() / 3) && $key < (ceil($question->qanswers->count()/3) * 2))
-                                                        {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                        <div class="row"><div class="col-xs-12">
+                                                        {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        </div></div>
                                                     @endif
                                                     @if($key == ceil($question->qanswers->count() / 3) * 2)
                                                     </div> 
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil($question->qanswers->count() / 3) * 2)
-                                                        {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"], ['class' => 'form-inline', 'wrapper' => 'div']) !!}
+                                                        <div class="row"><div class="col-xs-12">
+                                                        {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        </div></div>
                                                     @endif
                                                     @if($key + 1 == ($question->qanswers->count()) )
                                                     </div>
                                                     @endif    
                                                 @elseif($question->answer_view == 'horizontal')
                                                 <div class="col-xs-{!! Aio()->getColNum($question->qanswers->count()) !!} col-lg-{!! Aio()->getColNum($question->qanswers->count()) !!}">
-                                                {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"]) !!} 
+                                                    <div class="row"><div class="col-xs-12">
+                                                        {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        </div></div>
                                                 </div>
                                                 @else
-                                                <div class="col-xs-12">
-                                                {!! Form::answerField($question, $answer, $question->qnum, $answer->key, null,['class' => "form-control"]) !!} 
+                                                <div class="row">
+                                                        <div class="col-xs-12">
+                                                        {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        </div>
                                                 </div>
                                                 @endif
                                                 {{-- */ $key++; /** --}}
@@ -223,14 +237,22 @@
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif    
                                                     @if($key >= 0 && $key < ceil(($question->qanswers->count() / 2)))
-                                                    {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                            {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                            </div>
+                                                        </div>
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 2)))
                                                     </div>
                                                     <div class="col-xs-6 col-lg-6">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 2)) && $key < $question->qanswers->count())
-                                                    {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                            {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                            </div>
+                                                        </div>
                                                     @endif
                                                     @if($key == ($question->qanswers->count() - 1) )
                                                     </div>
@@ -240,21 +262,33 @@
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif    
                                                     @if($key < ceil(($question->qanswers->count() / 3)))
-                                                    {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                            {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                            </div>
+                                                        </div>
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3)))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3)) && $key < ceil(($question->qanswers->count() / 3) * 2))
-                                                    {!! Form::makeInput($answer, $results, ['class' => ""]) !!}
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                            {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                            </div>
+                                                        </div>
                                                     @endif
                                                     @if($key == ceil(($question->qanswers->count() / 3) * 2))
                                                     </div>
                                                     <div class="col-xs-4 col-lg-4">
                                                     @endif
                                                     @if($key >= ceil(($question->qanswers->count() / 3) * 2))
-                                                    {!! Form::makeInput($answer, $results, ['class' => ""],$form) !!}
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                            {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                            </div>
+                                                        </div>
                                                     @endif
                                                     @if($key + 1  == ($question->qanswers->count()) )
                                                     </div>
@@ -265,11 +299,9 @@
                                                     {!! Form::makeInput($answer, $results, ['class' => ""],$form) !!}
                                                 </div>
                                                 @else
-                                                <div class="col-xs-12">
-                                                <div class="form-group">
-                                                    {!! Form::makeInput($answer, $results, ['class' => ""],$form) !!}
-                                                </div>
-                                                </div>
+                                                    <div class="col-xs-12">
+                                                    {!! Form::makeInput($answer, $results, ['class' => ""], $form) !!}
+                                                    </div>                                                
                                                 @endif
                                                 {{-- */ $key++; /** --}}
                                             @endforeach                        

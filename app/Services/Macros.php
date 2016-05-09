@@ -146,8 +146,8 @@ class Macros extends FormBuilder {
                     break;
                 default:
                     $options['class'] = $cssClass . ' form-control';
-                    $html .=  "<label for=\"$inputname\" class='col-xs-2 text-normal'>$text</label>";
-                    $html .=  "<div class='col-xs-10' style='padding-left:0px'>";
+                    $html .=  "<label style='padding-left:0px;margin-top:15px' for=\"$inputname\" class='col-xs-3 text-normal'>$text</label>";
+                    $html .=  "<div style='padding-left:0px;margin-top:15px' class='col-xs-9' style='padding-left:0px'>";
                     $html .=  $this->input($type, $inputname, $value, $options);
                     $html .=  "</div>";
                     break;
