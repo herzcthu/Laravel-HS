@@ -19,11 +19,8 @@ class DashboardController extends Controller {
         //dd($user->organization);
             if($user->can('view_backend')){
                 return redirect(route('backend.dashboard'));
-            }elseif($user->organization && $user->role->name == 'Data Clerk' && $user->organization->projects->count() > 1){
-                //dd($user->organization->projects);
+            }elseif($user->organization && $user->role->name == 'Data Clerk'){
                 return redirect(route('data.projects.index'));
-            }elseif($user->organization && $user->organization->projects->count() == 1 && $user->role->name == 'Data Clerk'){
-                return redirect(route('data.project.status.index', [$user->organization->projects->first()->id]));
             } else {
                 return view('frontend.user.dashboard')
 			->withUser($user);
