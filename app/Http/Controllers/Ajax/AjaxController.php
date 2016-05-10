@@ -435,7 +435,7 @@ class AjaxController extends Controller
         $status = PLocation::select($query)
                 ->where('pcode.org_id', $org_id)
                 ->with(['participants'])
-                ->join('results',function($pcode) use ($project_id){
+                ->leftjoin('results',function($pcode) use ($project_id){
                     $pcode->on('pcode.id','=','results.resultable_id')
                             ->where('results.project_id','=', $project_id);
                 })                

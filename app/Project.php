@@ -21,6 +21,10 @@ class Project extends Model
       return $this->belongsTo('App\Organization', 'org_id');
   }
   
+  public function pcodes() {
+      return $this->hasManyThrough('App\PLocation', 'App\Organization', 'id', 'org_id');
+  }
+  
   public function questions() {
       return $this->hasMany('App\Question', 'project_id');
   }

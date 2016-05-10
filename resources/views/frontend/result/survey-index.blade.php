@@ -20,7 +20,7 @@
 @stop
 
 @section('content')
-        {!! link_to_route('data.project.status.index', 'Reset filters', $project->id, ['class'=>'btn btn-primary btn-xs']) !!}
+        {!! link_to_route('data.project.survey.index', 'Reset filters', $project->id, ['class'=>'btn btn-primary btn-xs']) !!}
     <table id="results-table" class="table table-bordered table-inverse panel panel-default">
         <thead>
             <tr>

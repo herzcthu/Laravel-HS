@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\Project\Result\CreateResultRequest;
-use App\Participant;
 use App\PLocation;
 use App\Repositories\Backend\Participant\Role\RoleRepositoryContract;
 use App\Repositories\Backend\Project\ProjectContract;
 use App\Repositories\Frontend\Participant\ParticipantContract;
 use App\Repositories\Frontend\PLocation\PLocationContract;
 use App\Repositories\Frontend\Result\ResultContract;
+use App\Result;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -57,6 +57,33 @@ class ResultController extends Controller
     }
     
     public function surveyIndex($project, Request $request) {
+        /**
+        $sections = count($project->sections);
+        if ($project->validate == 'person') {
+            $resultable_type = 'App\Participant';
+        } else {
+            $resultable_type = 'App\PLocation';
+        }
+        $total = $project->pcodes->count() * 10;
+        foreach($project->pcodes as $pcode) {
+            while($total !== $project->results->groupBy('incident_id')->count() ) {
+                 for($i=0; $i < $sections;$i++){
+                     for($j=1; $j <= 10; $j++) {
+                        $result = Result::firstOrNew(['information'=>'missing','section_id' => $i,
+                        'incident_id' => $j]);
+                        $current_user = auth()->user();
+                        $result->user()->associate($current_user);
+
+                        $result->project()->associate($project);
+                        $result->resultable()->associate($pcode);
+                        $result->save();
+                     }
+                 }
+            }
+        }
+        dd($project->results->groupBy('incident_id')->count());
+         * 
+         */
         $alocations = PLocation::where('org_id', $project->organization->id )->get();
         return view('frontend.result.survey-index')
                     ->withAllLoc($alocations)
@@ -144,7 +171,7 @@ class ResultController extends Controller
         }
         
         
-        if($code instanceof \App\Result){
+        if($code instanceof Result){
             $validated = $this->formValidatePcode($project, $code->resultable, $request);
             if($code->resultable_type == 'App\PLocation') {
             $idcode = $code->resultable->pcode;

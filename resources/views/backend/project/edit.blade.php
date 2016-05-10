@@ -114,9 +114,7 @@
                     <div class="col-xs-3">
                         {!! Form::textarea("sections[0][desc]", null, ['rows' => '3', 'class' => 'form-control', 'placeholder' => 'Some text to display on the top of section.']) !!}
                     </div>
-                    <div class="col-xs-1">
-                        {!! Form::checkbox("sections[0][report]", 1, null, ['class' => 'checkbox']) !!}
-                    </div>
+                    
                     
                     <div class="col-xs-2">
                         <button type="button" class="btn btn-default addSectButton"><i class="fa fa-plus"></i></button>                    
