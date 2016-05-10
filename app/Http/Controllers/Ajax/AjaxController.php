@@ -472,8 +472,9 @@ class AjaxController extends Controller
                             if($request->has('phone')){
                                 $code = $request->get('phone');
                                 $instance->collection = $instance->collection->filter(function ($row) use ($request) {
-                                    //dd($row->toArray());
-                                    return Str::contains($row['participants'], $request->get('phone')) ? true : false;
+                                    $plist =  $row['participants']->where('participant_code', $request->get('phone'));
+                                    
+                                    return Str::contains($plist, $request->get('phone')) ? true : false;
                                 });
                             }
                             
