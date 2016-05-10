@@ -201,8 +201,8 @@ class Project extends Model
           $buttons .= $this->getViewResponseFrontendButtonAttribute().' '.
                         $this->getViewStatusFrontendButtonAttribute();
       } else {
-          $buttons .= $this->getAddResultsFrontendButtonAttribute().' '.
-              $this->getListsViewFrontendButtonAttribute();
+          //$buttons .= $this->getAddResultsFrontendButtonAttribute().' ';
+          $buttons .= $this->getListsViewFrontendButtonAttribute();
       }
      
       return  $buttons;
