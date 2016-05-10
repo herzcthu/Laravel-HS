@@ -45,10 +45,14 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <div class="col-xs-2">
-                            
+                            <div class="form-group">
                             {!! Form::label('validator', 'Location Code', ['class'=>'control-label']) !!}
                             {!! Form::text('validator', $code->pcode,['disabled', 'class'=>'form-control', 'placeholder'=>'PCODE', 'id'=>'validator']) !!}
                             {!! Form::button('check',['class'=>'form-control btn btn-default','id'=>'check']) !!}
+                            </div>
+                            <div class="form-group">
+                            <label class="control-label">{!! _t('Respondent ID').' '.$form!!}</label>
+                            </div>
                             
                         </div>
                         <div class="col-xs-3 col-lg-3">
