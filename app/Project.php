@@ -164,12 +164,25 @@ class Project extends Model
   }
   
   public function getSurveyActionButtonsAttribute() {
-      return $this->getEditButtonAttribute().' '.
-              $this->getDeleteButtonAttribute().' '.
-              $this->getEditQuestionsButtonAttribute().' '.
-              $this->getAddResultsFrontendButtonAttribute().' '.
-              $this->getListsViewFrontendButtonAttribute().' '.
-              $this->getExportButtonAttribute();
+      $user = auth()->user();
+      $buttons = '';
+      if($user->can('manage_project')) {
+      $buttons .= $this->getEditButtonAttribute().' ';
+      $buttons .= $this->getDeleteButtonAttribute().' ';
+      }
+      if($user->can('manage_question')) {
+      $buttons .= $this->getEditQuestionsButtonAttribute().' ';
+      }
+      if($user->can('add_result')) {
+      //$buttons .= $this->getAddResultsFrontendButtonAttribute().' ';
+      }
+      if($user->can('access_result')) {
+      $buttons .= $this->getListsViewFrontendButtonAttribute().' ';
+      }
+      if($user->can('manage_media')) {
+      $buttons .= $this->getExportButtonAttribute();
+      }
+      return $buttons;
   }
   
   public function getChecklistActionButtonsAttribute() {

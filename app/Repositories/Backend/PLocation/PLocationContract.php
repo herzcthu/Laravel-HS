@@ -82,7 +82,7 @@ interface PLocationContract {
 	 * @param $status
 	 * @return mixed
 	 */
-	public function searchLocations($queue, $location, $area, $org_id, $order_by, $sort = 'asc');
+	public function searchLocations($queue, $org_id, $order_by, $sort = 'asc');
 
 	/**
 	 * @param $per_page

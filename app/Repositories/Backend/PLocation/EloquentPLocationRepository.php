@@ -262,24 +262,12 @@ class EloquentPLocationRepository implements PLocationContract {
 	 * @param int $status
 	 * @return mixed
 	 */
-	public function searchLocations($q, $location, $area, $org_id, $order_by, $sort = 'asc') {
+	public function searchLocations($q, $org_id, $order_by, $sort = 'asc', $pages = 100) {
             
-            $query = PLocation::select($location)->where('org_id','=',$org_id);                    
-            if(is_array($area) && !empty($area)) {       
-                foreach($area as $key => $val){
-                    if(!empty($val) && $key !== $location){
-                        $query->where($key, '=', $val);
-                    }else{
-                        break;
-                    }
-                }
-            }
-            if($location != '*'){
-                $query->where($location, 'LIKE', "$q%")
-                        ->groupBy($location)
-                        ->orderBy($order_by, $sort);
-            }
-            return $query->get();
+            $query = PLocation::where('pcode','=',$q)->where('org_id','=',$org_id)
+                        ->orderBy($order_by, $sort)->paginate($pages);
+            
+            return $query;
             
 	}
 

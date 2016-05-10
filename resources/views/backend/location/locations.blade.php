@@ -25,12 +25,12 @@
         {!! Form::open(['route' => 'admin.locations.search', 'class' => 'form-horizontal col-xs-4', 'role' => 'form', 'method' => 'get']) !!}
         <div class="form-inline">
             <div class="form-group">
-                {!! Form::select('search_by', ['village' => 'Village', 
+                {{-- Form::select('search_by', ['village' => 'Village', 
                                             'township' => 'Township', 
                                             'district' => 'District', 
                                             'state' => 'State'], 
                                             Input::get('search_by')? Input::get('search_by'):'village', 
-                                            ['class' => 'hidden form-control col-xs-2 disable', 'disable']) !!}
+                                            ['class' => 'hidden form-control col-xs-2 disable', 'disable']) --}}
             
                 
                 <input name="q" class="form-control col-xs-2 " placeholder="{!! Input::get('q')? Input::get('q'):'Search' !!}" type="text">

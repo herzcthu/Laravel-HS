@@ -19,6 +19,8 @@ class QAnswers extends Model
    */
   protected $guarded = ['id'];
   
+  protected $orderColumn = 'value';
+  
   public function question() {
       return $this->belongsTo('App\Question', 'qid');
   }

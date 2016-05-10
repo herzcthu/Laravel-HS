@@ -4,11 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Nicolaslopezj\Searchable\SearchableTrait;
 use Stevebauman\EloquentTable\TableTrait;
 
 class PLocation extends Model
 {
-    use TableTrait;
+    use TableTrait, SearchableTrait;
     
     public $timestamps = false;
     

@@ -182,32 +182,27 @@ class LocationController extends Controller
      * 
      */
     public function search() {
-        
+        $current_user = $this->users->findOrThrowException(access()->id(), true, true);
+        if($current_user->organization){
+            $org_id = $current_user->organization->id;
+        }else{
+            $org_id = false;
+        }
         $query = Input::get('q');
-        //$search_by = Input::get('search_by');
-        $search_by = 'village';
-        $order_by = ((null !== Input::get('field'))? Input::get('field'): 'name');
+        $order_by = ((null !== Input::get('field'))? Input::get('field'): 'pcode');
         $sort = ((null !== Input::get('sort'))? Input::get('sort'): 'asc');
-        $location = $this->locations->searchLocations($query, $search_by, $order_by, $sort)->has('pcode')->get();//dd($location->get());
-        $total = $location->count();
-        $pageName = 'page';
-        $per_page = config('access.users.default_per_page');
-        $page = null;
-        //Create custom pagination
-        $plocations = new LengthAwarePaginator($location, $total, $per_page, $page, [
-                            'path' => Paginator::resolveCurrentPath(),
-                            'pageName' => $pageName,
-                            'query' => ['search_by' => $search_by, 'q' => $query],
-                        ]);
+        $pages = 100;
+        $plocations = $this->plocations->searchLocations($query, $org_id, $order_by, $sort, $pages);
+        
         //dd($locations);
         if($plocations->count() == 0){
             return redirect()->route('admin.locations.index')->withFlashDanger('Your search term "'.$query.'" not found!');
         }
-        $alltownships = $this->locations->getTownshipsScope('MMR')->lists('name','id');
-        $alldistricts = $this->locations->getDistrictsScope('MMR')->lists('name','id');
-        $allstates = $this->locations->getStatesScope('MMR')->lists('name','id');
-        //$locations = $this->locations->getLocationsPaginatedTable(config('access.locations.default_per_page'), 'village');
-           //dd($locations); 
+        
+        $alltownships = $this->plocations->getAllLocations('township')->lists('township', 'township');
+        $alldistricts = $this->plocations->getAllLocations('district')->lists('district', 'district');
+        $allstates = $this->plocations->getAllLocations('state')->lists('state', 'state');
+        
         $current_user = $this->users->findOrThrowException(access()->id(), true, true);
         if($current_user->organization){
             $org_id = $current_user->organization->id;
