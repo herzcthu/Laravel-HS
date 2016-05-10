@@ -244,7 +244,7 @@ class EloquentProjectRepository implements ProjectContract {
         // increase group_concat maxinum length in mysql
         \DB::statement(\DB::raw("SET SESSION group_concat_max_len = 120000;"));
         //$anscolumns = \DB::select(\DB::raw("SELECT GROUP_CONCAT(CONCAT('GROUP_CONCAT(IF(ans.akey=\"',qa.slug,'\",ans.value,NULL)) AS ',QUOTE(`qa`.`akey`))) AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id;"));
-        $anscolumns = \DB::select(\DB::raw("SELECT qs.qnum, GROUP_CONCAT(CONCAT('ans.akey=\"',qa.slug,'\"') SEPARATOR ' OR ') AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id GROUP BY CASE WHEN (qa.type='radio') THEN qs.id ELSE qa.id END;"));
+        $anscolumns = \DB::select(\DB::raw("SELECT GROUP_CONCAT(DISTINCT CASE WHEN (qa.type='radio') THEN qs.qnum ELSE qa.akey END) AS qkey, GROUP_CONCAT(CONCAT('ans.akey=\"',qa.slug,'\"') SEPARATOR ' OR ') AS ans FROM questions qs,qanswers qa WHERE project_id=$project->id AND qa.qid=qs.id GROUP BY CASE WHEN (qa.type='radio') THEN qs.id ELSE qa.id END;"));
 
         //dd($anscolumns);
         $query = [
@@ -257,7 +257,7 @@ class EloquentProjectRepository implements ProjectContract {
             'results.incident_id as response'
             ];
         foreach($anscolumns as $anscol) {
-            $query[] = \DB::raw("GROUP_CONCAT(IF($anscol->ans,ans.value,NULL)) AS '".$anscol->qnum."'");
+            $query[] = \DB::raw("GROUP_CONCAT(IF($anscol->ans,ans.value,NULL)) AS '".$anscol->qkey."'");
         }
         //dd($query);
         $project_id = $project->id;
