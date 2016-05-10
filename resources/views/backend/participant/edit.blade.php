@@ -52,7 +52,7 @@
         <div class="form-group">
             <label class="col-xs-2 control-label">Organization</label>
             <div class="col-xs-10">
-                {!! Form::select('org_id',access()->user()->organizations->lists('name','id'), null, ['id' => 'org_id', 'class' => 'form-control', 'placeholder' => 'P117001']) !!}
+                {!! Form::select('org_id',auth()->user()->organization->lists('name','id'), null, ['id' => 'org_id', 'class' => 'form-control', 'placeholder' => 'P117001']) !!}
             </div>
         </div><!--form control-->
         @endif
