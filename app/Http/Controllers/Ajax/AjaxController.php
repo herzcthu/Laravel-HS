@@ -480,15 +480,15 @@ class AjaxController extends Controller
                             if(!is_null($request->get('section')) && $request->get('section') >= 0){ 
                                 $section = "s".$request->get('section'); // array key will be s0,s1,s2 etc..
                                 $status = $request->get('status');
-                                if($status == 'missing'){
-                                    $instance->collection = $instance->collection->filter(function ($row) use ($request, $section) {
-                                        return Str::is($row[$section], null) ? true : false;
-                                    });
-                                }else{
+                                //if($status == 'missing'){
+                                //    $instance->collection = $instance->collection->filter(function ($row) use ($request, $section) {
+                                //        return Str::is($row[$section], null) ? true : false;
+                                //    });
+                                //}else{
                                    $instance->collection = $instance->collection->filter(function ($row) use ($request, $section, $status) {
                                         return Str::is($row[$section], $status) ? true : false;
                                     });
-                                }
+                                //}
                             }
                         })
                         ->editColumn('pcode', function ($modal) use ($project){

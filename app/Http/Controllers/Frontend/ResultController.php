@@ -57,33 +57,37 @@ class ResultController extends Controller
     }
     
     public function surveyIndex($project, Request $request) {
-        /**
+        
         $sections = count($project->sections);
         if ($project->validate == 'person') {
             $resultable_type = 'App\Participant';
         } else {
             $resultable_type = 'App\PLocation';
         }
-        $total = $project->pcodes->count() * 10;
-        foreach($project->pcodes as $pcode) {
-            while($total !== $project->results->groupBy('incident_id')->count() ) {
-                 for($i=0; $i < $sections;$i++){
-                     for($j=1; $j <= 10; $j++) {
-                        $result = Result::firstOrNew(['information'=>'missing','section_id' => $i,
-                        'incident_id' => $j]);
-                        $current_user = auth()->user();
+        $total = $project->organization->pcode->count() * 10 * $sections;
+        
+        if($total !== $project->results->count()) {
+            $current_user = auth()->user();
+            
+            for($i=0; $i < $sections;$i++){
+             for($j=1; $j <= 10; $j++) {
+                 
+                 foreach($project->organization->pcode as $pcode) {
+                        $result = Result::firstOrNew(['section_id' => $i,
+                        'incident_id' => $j,'resultable_id' => $pcode->id, 'resultable_type' => $resultable_type]);
+                        if(is_null($result->information)){
+                            $result->information = 'missing';
+                        }
                         $result->user()->associate($current_user);
-
                         $result->project()->associate($project);
                         $result->resultable()->associate($pcode);
                         $result->save();
+                        $final[] = $result;
                      }
                  }
-            }
+            } 
         }
-        dd($project->results->groupBy('incident_id')->count());
-         * 
-         */
+        
         $alocations = PLocation::where('org_id', $project->organization->id )->get();
         return view('frontend.result.survey-index')
                     ->withAllLoc($alocations)
