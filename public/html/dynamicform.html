@@ -1,0 +1,257 @@
+<HTML>
+<HEAD>
+<TITLE>Dynamically add Textbox, Radio, Button in html Form using JavaScript</TITLE>
+<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="jQuery-2.1.4/jquery-2.1.4.min.js"><\/script>')</script>        
+        <script src="jquery-ui/jquery-ui.min.js"></script>
+        <script type="text/javascript">
+            $.widget.bridge('uibutton', $.ui.button);
+            $.widget.bridge('uitooltip', $.ui.tooltip);        
+        </script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="formToObject.min.js"></script>
+<SCRIPT language="javascript">
+    var index = 0;
+    
+    function add(type, value, name, labeltext, index) {
+
+        //Create an input type dynamically.
+        var element = document.createElement("input");
+
+        //Assign different attributes to the element.
+        element.setAttribute("type", type);
+        element.setAttribute("value", value);
+        element.setAttribute("name", name);
+        
+        element.setAttribute("data-name", name + index);
+        element.setAttribute("data-label", labeltext);
+        element.setAttribute("class", name + index);
+
+        var label = document.createElement("label");
+        label.setAttribute("for", name);
+        label.setAttribute("data-label", name + index);
+        label.setAttribute("class", name + index);
+        label.innerHTML = labeltext;
+        
+        var del = document.createElement("button");
+        del.setAttribute("class", "del " + name + index);
+        del.setAttribute("type", "button");
+        del.setAttribute("data-del", name + index);
+        del.innerHTML = "X";
+        
+        var foo = document.getElementById("answers");
+
+        var br = document.createElement("br");
+
+        //Append the element in page (in span).
+        foo.appendChild(label);
+        foo.appendChild(element);
+        foo.appendChild(del);
+       // foo.appendChild(br);
+
+    }
+
+    function createQuestion(form) {
+        var kvpairs = {};
+        //console.log(form.elements);
+        var j = 0;
+        for ( var i = 0; i < form.elements.length; i++ ) {
+           var e = form.elements[i]; console.log(e);
+           var ename = e.name; //console.log(e.type);
+           switch(e.type) {
+               case "hidden":
+                   kvpairs[ename] = {   "type": e.getAttribute("type"),
+                                        "name": e.getAttribute("name"),
+                                        "value": e.getAttribute("value"),
+                                        "data-name": e.getAttribute("data-name"),
+                                        "data-label": e.getAttribute("data-label")
+                                    };
+               case "button":
+                    break;
+               default:
+                   e.setAttribute("data-name", ename + j);
+                   console.log(e.getAttribute("data-name"));
+                   kvpairs[ename + j] = {   "type": e.getAttribute("type"),
+                                        "name": e.getAttribute("name"),
+                                        "value": e.getAttribute("value"),
+                                        "data-name": e.getAttribute("data-name"),
+                                        "data-label": e.getAttribute("data-label")
+                                    };
+                   j++;
+                   break;
+           }
+           
+        }
+        console.log(kvpairs);
+    }
+    
+    //
+    //var qForm = document.getElementById("qForm");
+    //var qnum = document.getElementsByName("num");
+    //var ques = document.getElementsByName("question");
+    (function ($) {
+        $(document).ready(function() {
+                        
+            $( "#formTemplate" ).on("click", "#add", function(){                
+                var inputForm = document.getElementById("inputForm");
+                var fnum = inputForm.inputnum.value;
+                var fq = inputForm.inputq.value;
+                var ftype = inputForm.ftype.value;
+                var fname = inputForm.fname.value;
+                var fvalue = inputForm.fvalue.value;
+                var flabel = inputForm.flabel.value;
+                
+                if( fnum == '' || fq == '' ) return;
+                add(ftype, fvalue, fname, flabel, index);
+                index++;
+            })            
+            .on("keyup change", "#inputForm input[name='inputnum']", function(){
+                var num = $(this).val();
+                if(num !== ''){
+                    $("#qnum").text(num + ' : ');
+                    $("#qForm input[name='qnum']").val(num);
+                    $("#inputForm input[name='fname']").val(num + "a_");
+                }else{
+                    $("#qnum").text('');
+                    $("#qForm input[name='qnum']").val('');
+                    $("#inputForm input[name='fname']").val('');
+                    //$("#inputForm").trigger("reset");
+                }
+                console.log( $(this).val() );
+            })            
+            .on("keyup change", "#inputForm input[name='inputq']", function(){
+                var qtext = $(this).val();
+                $("#qtext").text(qtext);
+                $("#qForm input[name='qtext']").val(qtext);
+                console.log( $(this).val() );
+            })
+            .on('click', "#resetall", function(){
+                $("#qnum").text('');
+                $("#qtext").text('');
+                $("#answers").html('');
+                $("#inputForm").trigger("reset");
+                $("#qForm").trigger("reset");
+            })
+            .on("click", ".del", function(){
+                //console.log("del clicked");
+                var self = $(this);
+                //element name to delete
+                var deldata = $(this).data("del");
+                //console.log(deldata);
+                $("." + deldata).remove();
+                //index--;
+            });
+            
+            $( "#launch" ).on('click', function(){
+                $("#inputForm").trigger("reset");
+            });
+            
+        });
+    }(jQuery));
+</SCRIPT>
+</HEAD>
+<BODY>
+<div class="container"> 
+    <div class="row">
+        <!-- Button trigger modal -->
+        <button id="launch" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#formTemplate">
+          Launch
+        </button>
+    </div>   
+    <div class="row">
+        <div id="formContainer"></div>
+        <div class="panel-group" id="accordion">
+                <span id="message"></span>
+                    <div class="panel panel-default sortable" id="listid-QID">
+                                <div class="panel-heading">
+                                  <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseQID">
+                                    +</a>
+                                      <div class="row">
+                                      <label class="col-lg-1 control-label">QNUM</label>
+                                        <div class="col-lg-11">
+                                            <div class="form-control-static">
+                                            QUESTION 
+                                                    <div class="col-lg-1 pull-right">
+                                                    {!! $question->action_buttons !!}
+                                                    </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                  </h4>
+                                </div>
+                        
+                    <div id="collapseQID" class="panel-collapse collapse">
+                        <div class="panel-body">
+                    <div class="form-group">
+
+                            <label class="col-lg-1 control-label">&nbsp;</label>
+                            <div class="col-lg-11">
+                                <div class="form-control-static">
+                                        <div class="col-xs-"> </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+    </div>
+<div class="modal fade" id="formTemplate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <!--div class="modal-header">
+          
+      </div-->
+        <div class="modal-body">
+            <FORM id="inputForm">
+                <H2>Dynamic form.</H2>
+                Select the element and hit Add to add it in form.
+                <BR />
+                <LABEL for="num">Q No.: </LABEL>
+                <INPUT id="num" type="text" name="inputnum" value="" />
+                <BR />
+                <LABEL for="question">Question: </LABEL>
+                <INPUT type="text" name="inputq"  value="" />
+                <br />
+                <!--LABEL for="name">Name: </LABEL-->
+                <INPUT type="hidden" name="fname" />
+                <LABEL for="type">Type: </LABEL>
+                <SELECT name="ftype">
+                    <OPTION value="text">Text</OPTION>
+                    <OPTION value="radio">Radio</OPTION>
+                    <OPTION value="textarea">Textarea</OPTION>
+                    <OPTION value="checkbox">Checkbox</OPTION>                    
+                    <OPTION value="button">Button</OPTION>
+                </SELECT>
+                <br />
+                <LABEL for="value">Value: </LABEL>
+                <INPUT type="text" name="fvalue" />
+                <LABEL for="label">Label: </LABEL>
+                <INPUT type="text" name="flabel" />
+                <INPUT id="add" type="button" value="Add"/>
+
+            </FORM>
+            <form id="qForm" name="qForm">
+                <div id="question">
+                    <label for="qnum" id="qnum"></label>
+                    <input type="hidden" value="" name="qnum" data-name="qnum" data-label="">
+                    <label for="qtext" id="qtext"></label>
+                    <input type="hidden" value="" name="qtext" data-name="qtext" data-label="">
+                </div>
+                <div id="answers">
+                </div>                
+            </form>
+            <input id="create" type="button" value="Create" onclick="createQuestion(document.qForm)">
+            <button id="resetall" type="button" class="btn btn-primary btn-xs">reset</BUTTON>
+        </div><!-- Modal body -->
+        <!--div class="modal-footer"></div-->
+    </div>
+    </div>
+  </div>
+
+    
+    
+</div><!-- Container -->
+</BODY>
+</HTML>

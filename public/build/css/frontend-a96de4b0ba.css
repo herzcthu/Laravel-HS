@@ -1,0 +1,75 @@
+.navbar-nav > .login-menu > .dropdown-menu > li.login-header {
+  height: 75px;
+  padding: 10px;
+  text-align: center; }
+
+.navbar-nav > .login-menu > .dropdown-menu > li.login-header > img {
+  z-index: 5;
+  height: 90px;
+  width: 90px;
+  border: 3px solid;
+  border-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2); }
+
+.navbar-nav > .login-menu > .dropdown-menu > li.login-header > p {
+  z-index: 5;
+  color: #fff;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 17px;
+  margin-top: 10px; }
+
+.navbar-nav > .login-menu > .dropdown-menu > li.login-header > p > small {
+  display: block;
+  font-size: 12px; }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-body {
+  padding: 15px;
+  border-bottom: 1px solid #f4f4f4;
+  border-top: 1px solid #dddddd; }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-body:before, .navbar-nav > .login-menu > .dropdown-menu > .login-body:after {
+  content: " ";
+  display: table; }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-body:after {
+  clear: both; }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-body a {
+  color: #444 !important; }
+
+@media (max-width: 991px) {
+  .navbar-nav > .login-menu > .dropdown-menu > .login-body a {
+    background: #fff !important;
+    color: #444 !important; } }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-footer {
+  background-color: #f9f9f9;
+  padding: 10px; }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-footer:before, .navbar-nav > .login-menu > .dropdown-menu > .login-footer:after {
+  content: " ";
+  display: table; }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-footer:after {
+  clear: both; }
+
+.navbar-nav > .login-menu > .dropdown-menu > .login-footer .btn-default {
+  color: #666666; }
+
+.navbar-nav > .login-menu .login-image {
+  float: left;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  margin-right: 10px;
+  margin-top: -2px; }
+
+@media (max-width: 767px) {
+  .navbar-nav > .login-menu .login-image {
+    float: none;
+    margin-right: 0;
+    margin-top: -8px;
+    line-height: 10px; } }
+
+/*# sourceMappingURL=main.css.map */
+/*# sourceMappingURL=frontend.css.map */

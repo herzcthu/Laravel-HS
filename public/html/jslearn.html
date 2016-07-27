@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Javascript Learning</title>
+<script type="text/javascript">
+var prepend = function (element, node) {
+	node.insertBefore(element, node.firstChild);
+};
+</script>
+</head>
+<body>
+<footer>
+</footer>
+<script type="text/javascript">
+var myDiv = document.createElement("div");
+prepend(myDiv, document.body);
+</script>
+</body>
+</html>

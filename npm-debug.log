@@ -1,0 +1,42 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/sithu/.nvm/versions/node/v0.12.7/bin/node',
+1 verbose cli   '/home/sithu/.nvm/versions/node/v0.12.7/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '--global',
+1 verbose cli   'gulp' ]
+2 info using npm@2.11.3
+3 info using node@v0.12.7
+4 verbose install initial load of /home/sithu/.nvm/versions/node/v0.12.7/lib/package.json
+5 verbose readDependencies loading dependencies from /home/sithu/.nvm/versions/node/v0.12.7/lib/package.json
+6 silly cache add args [ 'gulp', null ]
+7 verbose cache add spec gulp
+8 silly cache add parsed spec { raw: 'gulp',
+8 silly cache add   scope: null,
+8 silly cache add   name: null,
+8 silly cache add   rawSpec: 'gulp',
+8 silly cache add   spec: '/home/sithu/PHPDev/laravel-5-boilerplate/gulp',
+8 silly cache add   type: 'local' }
+9 silly addLocalTarball shasum (computed) 6febf2868b92a817f55f40172cc25b742da27e5e
+10 verbose addTmpTarball /home/sithu/PHPDev/laravel-5-boilerplate/gulp not in flight; adding
+11 verbose addTmpTarball validating metadata from /home/sithu/PHPDev/laravel-5-boilerplate/gulp
+12 verbose tar unpack /home/sithu/PHPDev/laravel-5-boilerplate/gulp
+13 verbose tar unpacking to /tmp/npm-17174-ff3ce9a1/unpack-d0844c62c9f2
+14 silly gentlyRm /tmp/npm-17174-ff3ce9a1/unpack-d0844c62c9f2 is being purged
+15 verbose gentlyRm don't care about contents; nuking /tmp/npm-17174-ff3ce9a1/unpack-d0844c62c9f2
+16 silly gunzTarPerm modes [ '775', '664' ]
+17 error not a package /home/sithu/PHPDev/laravel-5-boilerplate/gulp
+18 error addLocal Could not install /home/sithu/PHPDev/laravel-5-boilerplate/gulp
+19 verbose stack Error: ENOENT, open '/tmp/npm-17174-ff3ce9a1/unpack-d0844c62c9f2/package.json'
+19 verbose stack     at Error (native)
+20 verbose cwd /home/sithu/PHPDev/laravel-5-boilerplate
+21 error Linux 3.13.0-62-generic
+22 error argv "/home/sithu/.nvm/versions/node/v0.12.7/bin/node" "/home/sithu/.nvm/versions/node/v0.12.7/bin/npm" "install" "--global" "gulp"
+23 error node v0.12.7
+24 error npm  v2.11.3
+25 error path /tmp/npm-17174-ff3ce9a1/unpack-d0844c62c9f2/package.json
+26 error code ENOENT
+27 error errno -2
+28 error enoent ENOENT, open '/tmp/npm-17174-ff3ce9a1/unpack-d0844c62c9f2/package.json'
+28 error enoent This is most likely not a problem with npm itself
+28 error enoent and is related to npm not being able to find a file.
+29 verbose exit [ -2, true ]

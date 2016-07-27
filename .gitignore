@@ -7,9 +7,23 @@
 /tests
 /storage
 /bootstrap
-<<<<<<< HEAD
 composer.lock
-
-=======
-composer.lock
->>>>>>> c9d8eb1910c2795ad28feefb22cf595bba6100f6
+/node_modules
+Homestead.yaml
+.env
+/.DS_Store
+/Thumbs.db
+/*.sublime-project
+/*.sublime-workspace
+.idea
+.project
+_ide_helper.php
+composer.phar
+error.log
+/nbproject/private/
+.bowerrc
+gulp
+/locations
+/public/uploads
+/public/html
+/resources/assets/vendor/
